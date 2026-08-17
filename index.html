@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dog Camera Annotation Tool</title>
+  <title>Dog Cam Annotation Tool</title>
   <style>
     /* ── Reset & Variables ── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -107,7 +107,6 @@
     .card-head .slot { margin-left: auto; display: flex; gap: 6px; }
     .card-body { padding: 16px; overflow: visible; }
 
-
     /* ── Buttons ── */
     .btn {
       display: inline-flex; align-items: center; gap: 5px;
@@ -160,8 +159,8 @@
     .participant-row .select { flex: 1; }
     .participant-row .btn   { flex-shrink: 0; }
 
-/* ── Multi-Select Dropdown ── */
-    .ms                { position: relative; z-index: 100; }
+    /* ── Multi-Select Dropdown ── */
+    .ms                { position: relative; }
     .ms-btn {
       width: 100%; padding: 7px 30px 7px 10px;
       border: 1px solid var(--border); border-radius: var(--r-sm);
@@ -195,7 +194,7 @@
     .ms-item {
       display: flex; align-items: center; gap: 8px;
       padding: 6px 12px; cursor: pointer; font-size: 13px;
-      transition: background .1s; color: var(--text); white-space: nowrap;
+      transition: background .1s; color: var(--text);
     }
     .ms-item:hover     { background: var(--surface-lt); }
     .ms-item.on        { background: var(--tag-bg); }
@@ -216,7 +215,7 @@
     .prog-bar          { height: 5px; background: var(--border); border-radius: 999px; overflow: hidden; margin-top: 5px; transition: background .3s; }
     .prog-fill         { height: 100%; background: var(--green); border-radius: 999px; transition: width .35s; }
 
-/* ── Auto Summary ── */
+    /* ── Auto Summary ── */
     .summary-box {
       padding: 12px 14px; background: var(--surface-lt);
       border: 1px solid var(--border);
@@ -413,12 +412,6 @@
             <button type="button" class="ms-btn" onclick="msOpen('env')">
               <span class="ms-lbl">Select environment…</span>
             </button>
-            <div class="ms-drop" id="msd-env">
-              <div class="ms-search">
-                <input type="text" placeholder="Search…" oninput="msFilter('env', this.value)">
-              </div>
-              <div class="ms-list" id="msl-env"></div>
-            </div>
           </div>
         </div>
 
@@ -428,16 +421,6 @@
             <button type="button" class="ms-btn" onclick="msOpen('coarse')">
               <span class="ms-lbl">Select activities…</span>
             </button>
-            <div class="ms-drop" id="msd-coarse">
-              <div class="ms-search">
-                <input type="text" placeholder="Search activities…" oninput="msFilter('coarse', this.value)">
-              </div>
-              <div class="ms-list" id="msl-coarse"></div>
-              <div class="ms-foot">
-                <span class="ms-foot-count" id="msc-coarse">0 selected</span>
-                <button class="btn btn-sm btn-ghost" onclick="msClearAll('coarse')">Clear all</button>
-              </div>
-            </div>
           </div>
           <div class="tags" id="tg-coarse"></div>
         </div>
@@ -458,21 +441,12 @@
             <button type="button" class="ms-btn" onclick="msOpen('dog')">
               <span class="ms-lbl">Select dog activities…</span>
             </button>
-            <div class="ms-drop" id="msd-dog">
-              <div class="ms-search">
-                <input type="text" placeholder="Search e.g. sniff, tail, head, walk…" oninput="msFilter('dog', this.value)">
-              </div>
-              <div class="ms-list" id="msl-dog"></div>
-              <div class="ms-foot">
-                <span class="ms-foot-count" id="msc-dog">0 selected</span>
-                <button class="btn btn-sm btn-ghost" onclick="msClearAll('dog')">Clear all</button>
-              </div>
-            </div>
           </div>
           <div class="tags" id="tg-dog"></div>
         </div>
       </div>
     </div>
+
     <!-- ④ Navigation Context -->
     <div class="card">
       <div class="card-head">
@@ -486,16 +460,6 @@
             <button type="button" class="ms-btn" onclick="msOpen('nav')">
               <span class="ms-lbl">Select navigation context…</span>
             </button>
-            <div class="ms-drop" id="msd-nav">
-              <div class="ms-search">
-                <input type="text" placeholder="Search e.g. crosswalk, curb, obstacle…" oninput="msFilter('nav', this.value)">
-              </div>
-              <div class="ms-list" id="msl-nav"></div>
-              <div class="ms-foot">
-                <span class="ms-foot-count" id="msc-nav">0 selected</span>
-                <button class="btn btn-sm btn-ghost" onclick="msClearAll('nav')">Clear all</button>
-              </div>
-            </div>
           </div>
           <div class="tags" id="tg-nav"></div>
         </div>
@@ -583,6 +547,55 @@
 
 <!-- Toast -->
 <div class="toast" id="toast"></div>
+
+
+<!-- ═══════════════════════════════════════
+     DROPDOWN PORTALS
+═══════════════════════════════════════ -->
+
+<!-- Environment Portal -->
+<div id="ms-portal-env" class="ms-drop" style="display:none;">
+  <div class="ms-search">
+    <input type="text" placeholder="Search…" oninput="msFilter('env', this.value)">
+  </div>
+  <div class="ms-list" id="msl-env"></div>
+</div>
+
+<!-- Coarse Activity Portal -->
+<div id="ms-portal-coarse" class="ms-drop" style="display:none;">
+  <div class="ms-search">
+    <input type="text" placeholder="Search activities…" oninput="msFilter('coarse', this.value)">
+  </div>
+  <div class="ms-list" id="msl-coarse"></div>
+  <div class="ms-foot">
+    <span class="ms-foot-count" id="msc-coarse">0 selected</span>
+    <button class="btn btn-sm btn-ghost" onclick="msClearAll('coarse')">Clear all</button>
+  </div>
+</div>
+
+<!-- Dog Activity Portal -->
+<div id="ms-portal-dog" class="ms-drop" style="display:none;">
+  <div class="ms-search">
+    <input type="text" placeholder="Search e.g. sniff, tail, head, walk…" oninput="msFilter('dog', this.value)">
+  </div>
+  <div class="ms-list" id="msl-dog"></div>
+  <div class="ms-foot">
+    <span class="ms-foot-count" id="msc-dog">0 selected</span>
+    <button class="btn btn-sm btn-ghost" onclick="msClearAll('dog')">Clear all</button>
+  </div>
+</div>
+
+<!-- Navigation Context Portal -->
+<div id="ms-portal-nav" class="ms-drop" style="display:none;">
+  <div class="ms-search">
+    <input type="text" placeholder="Search e.g. crosswalk, curb, obstacle…" oninput="msFilter('nav', this.value)">
+  </div>
+  <div class="ms-list" id="msl-nav"></div>
+  <div class="ms-foot">
+    <span class="ms-foot-count" id="msc-nav">0 selected</span>
+    <button class="btn btn-sm btn-ghost" onclick="msClearAll('nav')">Clear all</button>
+  </div>
+</div>
 
 
 <!-- ═══════════════════════════════════════
@@ -860,7 +873,7 @@ function msOpen(k) {
     portal.style.width = Math.max(rect.width, 280) + 'px';
   }
 }
-  
+
 function closeMs(k) {
   const portal = document.getElementById(`ms-portal-${k}`);
   portal.classList.remove('open');
@@ -911,7 +924,7 @@ function refreshMs(k) {
     // Show the actual environment name
     label = [...S[k]][0];
   } else {
-    label = n ? `${n} item${n !== 1 ? 's' : ''} selected` : placeholders[k];
+    label = n ? `$${n} item$${n !== 1 ? 's' : ''} selected` : placeholders[k];
   }
   
   document.querySelector(`#ms-${k} .ms-lbl`).textContent = label;
@@ -1102,7 +1115,8 @@ function onUpdate() {
   document.getElementById('progFill').style.width = `${n / 6 * 100}%`;
   document.getElementById('hdrbadge').textContent = `${n} / 6 complete`;
 }
-  /* ─────────────────────────────────────
+
+/* ─────────────────────────────────────
    JSON BUILDER
 ───────────────────────────────────── */
 function padClipNum(num) {
@@ -1113,11 +1127,11 @@ function buildJSON() {
   const participant = document.getElementById('participantSel').value || 'UNKNOWN';
   const clipNumInput = document.getElementById('clipNum').value || '0';
   const clipNum = padClipNum(clipNumInput);
-  const baseId = `${participant}_${clipNum}`;
-  const videoPath = `${participant}/0/clip_${clipNum}.mp4`;
+  const baseId = `$${participant}_$${clipNum}`;
+  const videoPath = `$${participant}/0/clip_$${clipNum}.mp4`;
   const sumT = document.getElementById('summaryBox').value || '';
   const trT  = getTransTxt();
-
+  
   return [
     {
       id: `${baseId}_001`,
