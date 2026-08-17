@@ -1,575 +1,468 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dog Camera Annotation Tool</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dog Cam Annotation Tool</title>
+  <style>
+    /* ── Reset & Variables ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
+    :root {
+      --blue:       #3b82f6;
+      --blue-dk:    #1e40af;
+      --blue-lt:    #dbeafe;
+      --blue-ring:  rgba(59,130,246,.2);
+      --green:      #10b981;
+      --bg:         #0f172a;
+      --surface:    #1e293b;
+      --surface-lt: #334155;
+      --border:     #475569;
+      --border-lt:  #64748b;
+      --text:       #f1f5f9;
+      --muted:      #94a3b8;
+      --tag-bg:     #1e3a8a;
+      --tag-fg:     #93c5fd;
+      --r:          10px;
+      --r-sm:       6px;
+      --sh:         0 1px 3px rgba(0,0,0,.3), 0 1px 2px rgba(0,0,0,.2);
+      --sh-lg:      0 8px 24px rgba(0,0,0,.4);
+    }
 
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            overflow: hidden;
-        }
+    body {
+      font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+      font-size: 14px;
+      line-height: 1.5;
+      background: var(--bg);
+      color: var(--text);
+    }
 
-        header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 30px 20px;
-            text-align: center;
-        }
+    /* ── Top Bar ── */
+    .topbar {
+      position: sticky; top: 0; z-index: 300;
+      background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%);
+      color: #fff;
+      padding: 0 20px; height: 52px;
+      display: flex; align-items: center; gap: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,.3);
+    }
+    .topbar h1    { font-size: 15px; font-weight: 600; }
+    .topbar-badge {
+      margin-left: auto; font-size: 12px;
+      padding: 4px 14px; border-radius: 999px;
+      background: rgba(255,255,255,.15); backdrop-filter: blur(4px);
+    }
 
-        header h1 {
-            font-size: 28px;
-            margin-bottom: 8px;
-        }
+    /* ── Page Layout ── */
+    .page {
+      max-width: 1360px; margin: 0 auto; padding: 16px;
+      display: grid; grid-template-columns: 420px 1fr;
+      gap: 14px; align-items: start;
+    }
+    .left  { position: sticky; top: 66px; display: flex; flex-direction: column; gap: 14px; }
+    .right { display: flex; flex-direction: column; gap: 14px; }
 
-        header p {
-            font-size: 14px;
-            opacity: 0.9;
-        }
+    /* ── Cards ── */
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); box-shadow: var(--sh); overflow: hidden; }
+    .card-head { padding: 11px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px; }
+    .card-head h2 { font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+    .card-head .slot { margin-left: auto; display: flex; gap: 6px; }
+    .card-body { padding: 16px; }
 
-        .content {
-            padding: 30px;
-        }
+    /* ── Buttons ── */
+    .btn {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 6px 14px; border: none; border-radius: var(--r-sm);
+      font-size: 13px; font-weight: 500; cursor: pointer;
+      transition: filter .15s, transform .1s; white-space: nowrap;
+    }
+    .btn:active        { transform: scale(.97); }
+    .btn-blue          { background: var(--blue); color: #fff; }
+    .btn-blue:hover    { filter: brightness(1.15); }
+    .btn-green         { background: var(--green); color: #fff; }
+    .btn-green:hover   { filter: brightness(1.15); }
+    .btn-ghost         { background: var(--surface-lt); color: var(--text); border: 1px solid var(--border-lt); }
+    .btn-ghost:hover   { background: var(--border); }
+    .btn-sm            { padding: 4px 10px; font-size: 12px; }
+    .btn-lock          { background: #10b981; color: #fff; padding: 6px 12px; font-size: 12px; }
+    .btn-lock.locked   { background: #059669; opacity: .8; }
 
-        .video-section {
-            margin-bottom: 40px;
-            border-bottom: 2px solid #f0f0f0;
-            padding-bottom: 30px;
-        }
+    /* ── Form Controls ── */
+    .input {
+      width: 100%; padding: 7px 10px;
+      border: 1px solid var(--border); border-radius: var(--r-sm);
+      font-size: 13px; color: var(--text); background: var(--surface-lt);
+      transition: border-color .15s, box-shadow .15s;
+    }
+    .input:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px var(--blue-ring); }
+    .input::placeholder { color: var(--muted); }
 
-        video {
-            width: 100%;
-            max-height: 400px;
-            background: #000;
-            border-radius: 8px;
-            margin-bottom: 15px;
-        }
+    .select {
+      width: 100%; padding: 7px 30px 7px 10px;
+      border: 1px solid var(--border); border-radius: var(--r-sm);
+      font-size: 13px; color: var(--text);
+      background: var(--surface-lt) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") no-repeat right 9px center;
+      appearance: none; cursor: pointer;
+      transition: border-color .15s, box-shadow .15s;
+    }
+    .select:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px var(--blue-ring); }
 
-        .video-info {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            font-size: 14px;
-            color: #666;
-            margin-bottom: 20px;
-        }
+    /* ── Field Wrapper ── */
+    .field { margin-bottom: 14px; }
+    .field:last-child { margin-bottom: 0; }
+    .label { display: block; font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); margin-bottom: 6px; }
+    .hint  { font-size: 11px; color: var(--muted); margin-top: 5px; }
 
-        .video-info div {
-            display: flex;
-            gap: 10px;
-        }
+    /* ── Participant Selector ── */
+    .participant-row {
+      display: flex; gap: 8px; align-items: flex-end; margin-bottom: 14px;
+    }
+    .participant-row .input { flex: 1; }
+    .participant-row .btn   { flex-shrink: 0; }
 
-        .video-info label {
-            font-weight: 600;
-            color: #333;
-            min-width: 100px;
-        }
+    /* ── Multi-Select Dropdown ── */
+    .ms                { position: relative; }
+    .ms-btn {
+      width: 100%; padding: 7px 30px 7px 10px;
+      border: 1px solid var(--border); border-radius: var(--r-sm);
+      font-size: 13px; color: var(--text); text-align: left; cursor: pointer;
+      background: var(--surface-lt) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") no-repeat right 9px center;
+      transition: border-color .15s, box-shadow .15s;
+    }
+    .ms-btn:focus,
+    .ms-btn.open       { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px var(--blue-ring); }
 
-        .form-group {
-            margin-bottom: 25px;
-        }
+    .ms-drop {
+      display: none; position: absolute;
+      inset: 100% 0 auto; margin-top: 4px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--r); box-shadow: var(--sh-lg); z-index: 400; overflow: hidden;
+    }
+    .ms-drop.open      { display: block; }
 
-        label {
-            display: block;
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 8px;
-            font-size: 14px;
-        }
+    .ms-search         { padding: 8px; border-bottom: 1px solid var(--border-lt); }
+    .ms-search input   { width: 100%; padding: 5px 8px; border: 1px solid var(--border); border-radius: var(--r-sm); font-size: 12.5px; background: var(--surface-lt); color: var(--text); }
+    .ms-search input:focus { outline: none; border-color: var(--blue); }
+    .ms-search input::placeholder { color: var(--muted); }
 
-        .label-hint {
-            font-size: 12px;
-            color: #999;
-            margin-top: 4px;
-            font-weight: normal;
-        }
+    .ms-list           { max-height: 200px; overflow-y: auto; }
 
-        select, textarea {
-            width: 100%;
-            padding: 10px 12px;
-            border: 2px solid #e0e0e0;
-            border-radius: 6px;
-            font-family: inherit;
-            font-size: 14px;
-            transition: border-color 0.2s, box-shadow 0.2s;
-        }
+    .ms-item {
+      display: flex; align-items: center; gap: 8px;
+      padding: 6px 12px; cursor: pointer; font-size: 13px;
+      transition: background .1s; color: var(--text);
+    }
+    .ms-item:hover     { background: var(--surface-lt); }
+    .ms-item.on        { background: var(--tag-bg); }
+    .ms-item input[type="checkbox"] { pointer-events: none; accent-color: var(--blue); width: 14px; height: 14px; flex-shrink: 0; }
 
-        select:hover, textarea:hover {
-            border-color: #667eea;
-        }
+    .ms-foot           { padding: 6px 12px; border-top: 1px solid var(--border-lt); display: flex; justify-content: space-between; align-items: center; }
+    .ms-foot-count     { font-size: 11px; color: var(--muted); }
 
-        select:focus, textarea:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
+    /* ── Tags ── */
+    .tags              { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 7px; min-height: 22px; }
+    .tag               { display: inline-flex; align-items: center; gap: 3px; padding: 3px 9px; background: var(--tag-bg); color: var(--tag-fg); border-radius: 999px; font-size: 11.5px; font-weight: 500; max-width: 240px; }
+    .tag-txt           { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .tag-x             { background: none; border: none; cursor: pointer; color: var(--tag-fg); opacity: .7; padding: 0 2px; font-size: 15px; line-height: 1; flex-shrink: 0; }
+    .tag-x:hover       { opacity: 1; }
 
-        select[multiple] {
-            min-height: 120px;
-            padding: 8px;
-        }
+    /* ── Video Panel ── */
+    #vid               { width: 100%; display: block; max-height: 290px; border-radius: var(--r-sm); background: #000; }
+    .vid-row           { display: flex; gap: 8px; margin-top: 8px; }
+    .clip-info         { font-family: monospace; font-size: 11.5px; color: var(--muted); margin-top: 6px; min-height: 16px; }
 
-        select[multiple] option {
-            padding: 8px;
-        }
+    /* ── Progress Bar ── */
+    .prog-row          { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); font-weight: 500; }
+    .prog-bar          { height: 5px; background: var(--border); border-radius: 999px; overflow: hidden; margin-top: 5px; }
+    .prog-fill         { height: 100%; background: var(--green); border-radius: 999px; transition: width .35s; }
 
-        .preview-section {
-            background: #f8f9ff;
-            border: 2px dashed #667eea;
-            border-radius: 8px;
-            padding: 20px;
-            margin-top: 30px;
-        }
+    /* ── Auto Summary ── */
+    .summary-box {
+      padding: 12px 14px; background: var(--surface-lt);
+      border: 1px solid var(--border);
+      border-radius: var(--r-sm);
+      font-size: 13.5px; line-height: 1.8; color: var(--text); min-height: 80px;
+    }
+    .summary-box.empty { color: var(--muted); font-style: italic; }
 
-        .preview-title {
-            font-weight: 700;
-            color: #333;
-            margin-bottom: 12px;
-            font-size: 14px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
+    /* ── Transition ── */
+    .trans-toggle {
+      display: flex; align-items: center; gap: 8px;
+      padding: 9px 13px; background: var(--surface-lt);
+      border: 1px solid var(--border-lt); border-radius: var(--r-sm);
+      cursor: pointer; margin-bottom: 12px;
+    }
+    .trans-toggle input[type="checkbox"] { width: 14px; height: 14px; accent-color: var(--blue); cursor: pointer; flex-shrink: 0; }
+    .trans-toggle span { font-size: 13px; cursor: pointer; }
 
-        .preview-box {
-            background: white;
-            padding: 15px;
-            border-radius: 6px;
-            color: #555;
-            line-height: 1.6;
-            font-size: 14px;
-            min-height: 60px;
-        }
+    .trans-grid        { display: grid; grid-template-columns: 1fr 36px 1fr; gap: 8px; align-items: start; }
+    .trans-arrow       { display: flex; align-items: center; justify-content: center; padding-top: 24px; font-size: 20px; color: var(--muted); }
 
-        .empty-preview {
-            color: #ccc;
-            font-style: italic;
-        }
+    .trans-result      { margin-top: 10px; padding: 9px 13px; border-radius: var(--r-sm); font-size: 13px; line-height: 1.6; display: none; }
+    .trans-result.nc   { background: #7c2d12; border: 1px solid #ea580c; color: #fed7aa; }
+    .trans-result.ch   { background: #064e3b; border: 1px solid #10b981; color: #a7f3d0; }
 
-        .button-group {
-            display: flex;
-            gap: 12px;
-            margin-top: 30px;
-            justify-content: center;
-        }
+    /* ── Export / JSON ── */
+    .export-btns       { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
+    .json-out {
+      display: none; margin-top: 12px; padding: 14px;
+      background: #0f0f0f; color: #94a3b8;
+      border-radius: var(--r-sm); font-family: 'Courier New', monospace;
+      font-size: 12px; white-space: pre; overflow-x: auto;
+      max-height: 380px; overflow-y: auto;
+    }
 
-        button {
-            padding: 12px 28px;
-            font-size: 14px;
-            font-weight: 600;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
+    /* ── Toast Notification ── */
+    .toast {
+      position: fixed; bottom: 20px; right: 20px; z-index: 9999;
+      background: #1e293b; color: #fff; border: 1px solid var(--border-lt);
+      padding: 9px 16px; border-radius: var(--r); font-size: 13px;
+      box-shadow: var(--sh-lg); pointer-events: none;
+      opacity: 0; transform: translateY(8px);
+      transition: opacity .2s, transform .2s;
+    }
+    .toast.on          { opacity: 1; transform: none; }
 
-        .btn-export {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
+    /* ── Divider ── */
+    hr.div             { border: none; border-top: 1px solid var(--border-lt); margin: 12px 0; }
 
-        .btn-export:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
-        }
-
-        .btn-clear {
-            background: #f0f0f0;
-            color: #333;
-        }
-
-        .btn-clear:hover {
-            background: #e0e0e0;
-        }
-
-        .success-message {
-            background: #d4edda;
-            color: #155724;
-            padding: 12px 15px;
-            border-radius: 6px;
-            margin-top: 15px;
-            display: none;
-            font-size: 14px;
-        }
-
-        @media (max-width: 600px) {
-            .content {
-                padding: 20px;
-            }
-
-            .video-info {
-                grid-template-columns: 1fr;
-            }
-
-            header h1 {
-                font-size: 22px;
-            }
-        }
-    </style>
+    /* ── Responsive ── */
+    @media (max-width: 860px) {
+      .page            { grid-template-columns: 1fr; }
+      .left            { position: static; }
+      .trans-grid      { grid-template-columns: 1fr; }
+      .trans-arrow     { display: none; }
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>🐕 Dog Camera Annotation Tool</h1>
-            <p>Efficient research annotation with dropdown selections</p>
-        </header>
 
-        <div class="content">
-            <div class="video-section">
-                <video id="videoPlayer" controls>
-                    <source src="" type="video/mp4">
-                    Your browser does not support the video tag.
-                </video>
+<!-- ═══════════════════════════════════════
+     HEADER
+═══════════════════════════════════════ -->
+<header class="topbar">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+  </svg>
+  <h1>Dog Cam Research · Annotation Tool</h1>
+  <div class="topbar-badge" id="hdrbadge">0 / 6 complete</div>
+</header>
 
-                <div class="video-info">
-                    <div>
-                        <label>Video ID:</label>
-                        <span id="videoId">P001_0_0_0_001</span>
-                    </div>
-                    <div>
-                        <label>Video Path:</label>
-                        <span id="videoPath">P001/0/clip_000000.mp4</span>
-                    </div>
-                </div>
-            </div>
 
-            <form id="annotationForm">
-                <!-- 1. Environment Classification -->
-                <div class="form-group">
-                    <label for="environment">1. Environment Classification
-                        <div class="label-hint">Select exactly one label</div>
-                    </label>
-                    <select id="environment" required>
-                        <option value="">-- Select Environment --</option>
-                        <option value="Forest">Forest</option>
-                        <option value="Indoor">Indoor</option>
-                        <option value="Intersection">Intersection</option>
-                        <option value="None">None</option>
-                        <option value="Playground">Playground</option>
-                        <option value="Rural">Rural</option>
-                        <option value="Trail">Trail</option>
-                        <option value="Urban">Urban</option>
-                    </select>
-                </div>
+<!-- ═══════════════════════════════════════
+     PAGE
+═══════════════════════════════════════ -->
+<div class="page">
 
-                <!-- 2. Coarse Activity Classification -->
-                <div class="form-group">
-                    <label for="coarseActivity">2. Coarse Activity Classification
-                        <div class="label-hint">Select all that apply (Ctrl/Cmd+Click)</div>
-                    </label>
-                    <select id="coarseActivity" multiple>
-                        <option value="Crossing Street">Crossing Street</option>
-                        <option value="Crowd Present">Crowd Present</option>
-                        <option value="Distraction Event">Distraction Event</option>
-                        <option value="D Play Running">D Play Running</option>
-                        <option value="D Turning">D Turning</option>
-                        <option value="D Turning Right Body">D Turning Right Body</option>
-                        <option value="Environmental Monitoring">Environmental Monitoring</option>
-                        <option value="Human Dog Interaction">Human Dog Interaction</option>
-                        <option value="Indoor Navigation">Indoor Navigation</option>
-                        <option value="Investigation">Investigation</option>
-                        <option value="Navigating Obstacle">Navigating Obstacle</option>
-                        <option value="None">None</option>
-                        <option value="Object Interaction">Object Interaction</option>
-                        <option value="Person Passing Close">Person Passing Close</option>
-                        <option value="Running">Running</option>
-                        <option value="Social Encounter">Social Encounter</option>
-                        <option value="Stationary">Stationary</option>
-                        <option value="Trotting">Trotting</option>
-                        <option value="Turning">Turning</option>
-                        <option value="Walking">Walking</option>
-                    </select>
-                </div>
+  <!-- ─────────────────────────────────────
+       LEFT — Video + Progress
+  ───────────────────────────────────── -->
+  <aside class="left">
 
-                <!-- 3. Dog Fine-Grained Activity -->
-                <div class="form-group">
-                    <label for="dogActivity">3. Dog Fine-Grained Activity
-                        <div class="label-hint">Select all that apply (Ctrl/Cmd+Click)</div>
-                    </label>
-                    <select id="dogActivity" multiple>
-                        <option value="D_ASCENDING_STAIRS">D_ASCENDING_STAIRS</option>
-                        <option value="D_BACKING_UP">D_BACKING_UP</option>
-                        <option value="D_BODY_SHAKE">D_BODY_SHAKE</option>
-                        <option value="D_CARRYING_OBJECT">D_CARRYING_OBJECT</option>
-                        <option value="D_CROUCHING">D_CROUCHING</option>
-                        <option value="D_DESCENDING_STAIRS">D_DESCENDING_STAIRS</option>
-                        <option value="D_DRINKING">D_DRINKING</option>
-                        <option value="D_EAR_FLICK">D_EAR_FLICK</option>
-                        <option value="D_GRABBING_OBJECT">D_GRABBING_OBJECT</option>
-                        <option value="D_HEAD_LOOKING_DOWN">D_HEAD_LOOKING_DOWN</option>
-                        <option value="D_HEAD_LOOKING_FORWARD">D_HEAD_LOOKING_FORWARD</option>
-                        <option value="D_HEAD_LOOKING_LEFT">D_HEAD_LOOKING_LEFT</option>
-                        <option value="D_HEAD_LOOKING_RIGHT">D_HEAD_LOOKING_RIGHT</option>
-                        <option value="D_HEAD_LOOKING_UP">D_HEAD_LOOKING_UP</option>
-                        <option value="D_HEAD_SCANNING">D_HEAD_SCANNING</option>
-                        <option value="D_HEAD_SHAKE">D_HEAD_SHAKE</option>
-                        <option value="D_HEAD_TURNING_LEFT_BODY">D_HEAD_TURNING_LEFT_BODY</option>
-                        <option value="D_JUMPING_UP">D_JUMPING_UP</option>
-                        <option value="D_LEASH_SLACK">D_LEASH_SLACK</option>
-                        <option value="D_LEASH_TAUT">D_LEASH_TAUT</option>
-                        <option value="D_LICKING_OBJECT">D_LICKING_OBJECT</option>
-                        <option value="D_LICKING_SELF">D_LICKING_SELF</option>
-                        <option value="D_LYING_DOWN">D_LYING_DOWN</option>
-                        <option value="D_NUDGING">D_NUDGING</option>
-                        <option value="D_PLAY_JUMPING">D_PLAY_JUMPING</option>
-                        <option value="D_PLAY_ROLLING">D_PLAY_ROLLING</option>
-                        <option value="D_PLAY_RUNNING">D_PLAY_RUNNING</option>
-                        <option value="D_PULLING_FORWARD">D_PULLING_FORWARD</option>
-                        <option value="D_RESIST_BACKWARD">D_RESIST_BACKWARD</option>
-                        <option value="D_RUNNING">D_RUNNING</option>
-                        <option value="D_SITTING">D_SITTING</option>
-                        <option value="D_SNIFFING_GROUND">D_SNIFFING_GROUND</option>
-                        <option value="D_SNIFFING_OBJECT">D_SNIFFING_OBJECT</option>
-                        <option value="D_SOCIAL_APPROACH">D_SOCIAL_APPROACH</option>
-                        <option value="D_STOPPED">D_STOPPED</option>
-                        <option value="D_TAIL_LOWERED">D_TAIL_LOWERED</option>
-                        <option value="D_TAIL_RAISED">D_TAIL_RAISED</option>
-                        <option value="D_TAIL_WAGGING_FAST">D_TAIL_WAGGING_FAST</option>
-                        <option value="D_TAIL_WAGGING_SLOW">D_TAIL_WAGGING_SLOW</option>
-                        <option value="D_TROTTING">D_TROTTING</option>
-                        <option value="D_TURNING_LEFT_BODY">D_TURNING_LEFT_BODY</option>
-                        <option value="D_TURNING_RIGHT_BODY">D_TURNING_RIGHT_BODY</option>
-                        <option value="D_WALKING">D_WALKING</option>
-                        <option value="D_WALKING_FORWARD">D_WALKING_FORWARD</option>
-                    </select>
-                </div>
+    <!-- Video Card -->
+    <div class="card">
+      <div class="card-head">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+        <h2>Video Player</h2>
+      </div>
+      <div class="card-body">
+        <video id="vid" controls>
+          <source id="vidSrc" src="" type="video/mp4">
+          Your browser does not support video playback.
+        </video>
 
-                <!-- 4. Navigation Context -->
-                <div class="form-group">
-                    <label for="navigation">4. Navigation Context
-                        <div class="label-hint">Select all that apply (Ctrl/Cmd+Click)</div>
-                    </label>
-                    <select id="navigation" multiple>
-                        <option value="Crowd Present">Crowd Present</option>
-                        <option value="Door Opening">Door Opening</option>
-                        <option value="Indoor Navigation">Indoor Navigation</option>
-                        <option value="Intersection">Intersection</option>
-                        <option value="Narrow Passage Ahead">Narrow Passage Ahead</option>
-                        <option value="Nav At Crosswalk">Nav At Crosswalk</option>
-                        <option value="Nav At Curb">Nav At Curb</option>
-                        <option value="Nav Crossed Street">Nav Crossed Street</option>
-                        <option value="Nav Crossing Active">Nav Crossing Active</option>
-                        <option value="Nav Crosswalk">Nav Crosswalk</option>
-                        <option value="Nav Crosswalk Active">Nav Crosswalk Active</option>
-                        <option value="Nav Crosswalk Ahead">Nav Crosswalk Ahead</option>
-                        <option value="Nav Crosswalk Markings">Nav Crosswalk Markings</option>
-                        <option value="Nav Curb Ahead">Nav Curb Ahead</option>
-                        <option value="Nav Dog Arc Around">Nav Dog Arc Around</option>
-                        <option value="Nav Dog Stops At Edge">Nav Dog Stops At Edge</option>
-                        <option value="Nav Dog Stops At Obstacle">Nav Dog Stops At Obstacle</option>
-                        <option value="Nav Intersection">Nav Intersection</option>
-                        <option value="Nav Narrow Space">Nav Narrow Space</option>
-                        <option value="Nav Obstacle Present">Nav Obstacle Present</option>
-                        <option value="Nav Open Space">Nav Open Space</option>
-                        <option value="Nav Stairs Ahead">Nav Stairs Ahead</option>
-                        <option value="Nav Stepping Down">Nav Stepping Down</option>
-                        <option value="Nav Stepping Up">Nav Stepping Up</option>
-                        <option value="Nav Traffic Signal">Nav Traffic Signal</option>
-                        <option value="Nav Vehicle Waiting">Nav Vehicle Waiting</option>
-                        <option value="Nav Waiting To Cross">Nav Waiting To Cross</option>
-                        <option value="None">None</option>
-                        <option value="Obstacle In Path">Obstacle In Path</option>
-                        <option value="Vehicle Stopped Nearby">Vehicle Stopped Nearby</option>
-                        <option value="Vehicle Waiting">Vehicle Waiting</option>
-                    </select>
-                </div>
-
-                <!-- 5. Transition Description -->
-                <div class="form-group">
-                    <label for="transition">5. Transition Description
-                        <div class="label-hint">Select primary transition type</div>
-                    </label>
-                    <select id="transition" required>
-                        <option value="">-- Select Transition --</option>
-                        <option value="No major change occurs in the video.">No major change occurs in the video.</option>
-                        <option value="dog_position">Dog changes position</option>
-                        <option value="dog_direction">Dog changes direction</option>
-                        <option value="interaction_starts">Interaction begins</option>
-                        <option value="interaction_ends">Interaction ends</option>
-                        <option value="activity_transition">Activity transitions</option>
-                        <option value="obstacle_change">Obstacle appears or changes</option>
-                        <option value="custom">Custom description...</option>
-                    </select>
-                    <textarea id="transitionCustom" placeholder="Enter custom transition description (optional)" style="display:none; margin-top: 10px;"></textarea>
-                </div>
-            </form>
-
-            <!-- Preview Section -->
-            <div class="preview-section">
-                <div class="preview-title">📝 Generated Summary</div>
-                <div class="preview-box" id="summaryPreview">
-                    <span class="empty-preview">Select labels above to generate summary...</span>
-                </div>
-            </div>
-
-            <!-- Buttons -->
-            <div class="button-group">
-                <button type="button" class="btn-export" onclick="exportJSON()">📥 Export as JSON</button>
-                <button type="button" class="btn-clear" onclick="clearForm()">🗑️ Clear All</button>
-            </div>
-
-            <div class="success-message" id="successMessage">✓ JSON copied to clipboard!</div>
+        <!-- Base URL + Participant Selection -->
+        <div class="vid-row">
+          <input id="baseUrl" class="input" placeholder="Base URL  (e.g. https://your-cdn.com/videos)" style="flex:1">
         </div>
+
+        <div class="participant-row">
+          <select id="participantSel" class="select" onchange="onParticipantChange()" style="flex:1">
+            <option value="">— Select Participant —</option>
+            <option value="P001">P001</option>
+            <option value="P002">P002</option>
+            <option value="P003">P003</option>
+            <option value="P004">P004</option>
+            <option value="P005">P005</option>
+            <option value="P006">P006</option>
+            <option value="P007">P007</option>
+            <option value="P008">P008</option>
+            <option value="P009">P009</option>
+            <option value="P010">P010</option>
+            <option value="P011">P011</option>
+            <option value="P012">P012</option>
+            <option value="P013">P013</option>
+            <option value="P014">P014</option>
+            <option value="P015">P015</option>
+            <option value="P016">P016</option>
+            <option value="P017">P017</option>
+            <option value="P018">P018</option>
+            <option value="P019">P019</option>
+          </select>
+          <button id="lockBtn" class="btn btn-lock" onclick="toggleLock()" style="flex-shrink:0">🔓 Lock</button>
+        </div>
+
+        <div class="clip-info" id="clipInfo">No participant selected</div>
+
+        <hr class="div">
+
+        <div class="prog-row">
+          <span>Annotation progress</span>
+          <span id="progTxt">0 / 6</span>
+        </div>
+        <div class="prog-bar">
+          <div class="prog-fill" id="progFill" style="width:0%"></div>
+        </div>
+
+        <div style="display:flex; gap:8px; margin-top:12px;">
+          <button class="btn btn-ghost" style="flex:1" onclick="clearAll()">🗑 Clear All</button>
+          <button class="btn btn-blue"  style="flex:1" onclick="gotoExport()">↓ Export</button>
+        </div>
+      </div>
     </div>
 
-    <script>
-        // ============ EVENT LISTENERS ============
-        document.getElementById('coarseActivity').addEventListener('change', updateSummary);
-        document.getElementById('dogActivity').addEventListener('change', updateSummary);
-        document.getElementById('navigation').addEventListener('change', updateSummary);
-        document.getElementById('environment').addEventListener('change', updateSummary);
-        document.getElementById('transition').addEventListener('change', handleTransitionChange);
+    <!-- Tips Card -->
+    <div class="card">
+      <div class="card-head">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <h2>Quick Reference</h2>
+      </div>
+      <div class="card-body" style="font-size:12.5px; color:var(--muted); line-height:2.1;">
+        <b>Environment</b> — pick exactly one label<br>
+        <b>Coarse Activity</b> — tick all that apply<br>
+        <b>Dog Fine-Grained</b> — tick all that apply<br>
+        <b>Navigation Context</b> — tick all that apply<br>
+        <b>Summary</b> — auto-built; no typing needed<br>
+        <b>Transition</b> — choose start → end state<br>
+        <span style="opacity:.75;">💡 Use the search boxes to filter quickly.</span>
+      </div>
+    </div>
 
-        // ============ TRANSITION HANDLING ============
-        function handleTransitionChange() {
-            const select = document.getElementById('transition');
-            const customTextarea = document.getElementById('transitionCustom');
-            customTextarea.style.display = select.value === 'custom' ? 'block' : 'none';
-            updateSummary();
-        }
+  </aside>
 
-        // ============ SUMMARY GENERATION ============
-        function generateSummary() {
-            const environment = document.getElementById('environment').value;
-            const coarseActivities = getSelectedValues('coarseActivity');
-            const dogActivities = getSelectedValues('dogActivity');
-            const navigationContexts = getSelectedValues('navigation');
 
-            if (!environment && coarseActivities.length === 0 && dogActivities.length === 0) {
-                return '<span class="empty-preview">Select labels above to generate summary...</span>';
-            }
+  <!-- ─────────────────────────────────────
+       RIGHT — Annotation Form
+  ───────────────────────────────────── -->
+  <section class="right">
 
-            let summary = '';
+    <!-- ① Environment  +  ② Coarse Activity -->
+    <div class="card">
+      <div class="card-head">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h7"/></svg>
+        <h2>① Environment &amp; ② Coarse Activity</h2>
+      </div>
+      <div class="card-body">
 
-            // Generate opening based on environment
-            if (environment && environment !== 'None') {
-                summary += `In a ${environment.toLowerCase()} environment, `;
-            } else {
-                summary += 'The dog ';
-            }
+        <div class="field">
+          <label class="label" for="envSel">🌍 Environment Classification</label>
+          <div class="ms" id="ms-env">
+            <button type="button" class="ms-btn" onclick="msOpen('env')">
+              <span class="ms-lbl">Select environment…</span>
+            </button>
+            <div class="ms-drop" id="msd-env">
+              <div class="ms-search">
+                <input type="text" placeholder="Search…" oninput="msFilter('env', this.value)">
+              </div>
+              <div class="ms-list" id="msl-env"></div>
+            </div>
+          </div>
+        </div>
 
-            // Add dog activities and states
-            if (dogActivities.length > 0) {
-                const activities = dogActivities.map(a => formatActivityLabel(a)).join(', ');
-                summary += `the dog is ${activities}. `;
-            }
+        <div class="field">
+          <label class="label">🏃 Coarse Activity Classification</label>
+          <div class="ms" id="ms-coarse">
+            <button type="button" class="ms-btn" onclick="msOpen('coarse')">
+              <span class="ms-lbl">Select activities…</span>
+            </button>
+            <div class="ms-drop" id="msd-coarse">
+              <div class="ms-search">
+                <input type="text" placeholder="Search activities…" oninput="msFilter('coarse', this.value)">
+              </div>
+              <div class="ms-list" id="msl-coarse"></div>
+              <div class="ms-foot">
+                <span class="ms-foot-count" id="msc-coarse">0 selected</span>
+                <button class="btn btn-sm btn-ghost" onclick="msClearAll('coarse')">Clear all</button>
+              </div>
+            </div>
+          </div>
+          <div class="tags" id="tg-coarse"></div>
+        </div>
 
-            // Add coarse activities
-            if (coarseActivities.length > 0) {
-                const activities = coarseActivities.join(', ').toLowerCase();
-                summary += `Notable activities include ${activities}. `;
-            }
+      </div>
+    </div>
 
-            // Add navigation context
-            if (navigationContexts.length > 0 && navigationContexts[0] !== 'None') {
-                const navItems = navigationContexts.map(n => formatNavigationLabel(n)).join(', ');
-                summary += `Navigation context: ${navItems}.`;
-            }
+    <!-- ③ Dog Fine-Grained Activity -->
+    <div class="card">
+      <div class="card-head">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+        <h2>③ Dog Fine-Grained Activity  <span style="font-weight:400; text-transform:none; letter-spacing:0;">(D_ labels)</span></h2>
+      </div>
+      <div class="card-body">
+        <div class="field" style="margin-bottom:0">
+          <label class="label">🐕 Dog Activity Labels</label>
+          <div class="ms" id="ms-dog">
+            <button type="button" class="ms-btn" onclick="msOpen('dog')">
+              <span class="ms-lbl">Select dog activities…</span>
+            </button>
+            <div class="ms-drop" id="msd-dog">
+              <div class="ms-search">
+                <input type="text" placeholder="Search e.g. sniff, tail, head, walk…" oninput="msFilter('dog', this.value)">
+              </div>
+              <div class="ms-list" id="msl-dog"></div>
+              <div class="ms-foot">
+                <span class="ms-foot-count" id="msc-dog">0 selected</span>
+                <button class="btn btn-sm btn-ghost" onclick="msClearAll('dog')">Clear all</button>
+              </div>
+            </div>
+          </div>
+          <div class="tags" id="tg-dog"></div>
+        </div>
+      </div>
+    </div>
 
-            return summary.trim();
-        }
+    <!-- ④ Navigation Context -->
+    <div class="card">
+      <div class="card-head">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+        <h2>④ Navigation Context</h2>
+      </div>
+      <div class="card-body">
+        <div class="field" style="margin-bottom:0">
+          <label class="label">🗺️ Navigation Labels</label>
+          <div class="ms" id="ms-nav">
+            <button type="button" class="ms-btn" onclick="msOpen('nav')">
+              <span class="ms-lbl">Select navigation context…</span>
+            </button>
+            <div class="ms-drop" id="msd-nav">
+              <div class="ms-search">
+                <input type="text" placeholder="Search e.g. crosswalk, curb, obstacle…" oninput="msFilter('nav', this.value)">
+              </div>
+              <div class="ms-list" id="msl-nav"></div>
+              <div class="ms-foot">
+                <span class="ms-foot-count" id="msc-nav">0 selected</span>
+                <button class="btn btn-sm btn-ghost" onclick="msClearAll('nav')">Clear all</button>
+              </div>
+            </div>
+          </div>
+          <div class="tags" id="tg-nav"></div>
+        </div>
+      </div>
+    </div>
 
-        function formatActivityLabel(label) {
-            return label
-                .replace(/D_/g, '')
-                .replace(/_/g, ' ')
-                .toLowerCase();
-        }
-
-        function formatNavigationLabel(label) {
-            return label
-                .replace(/Nav /g, '')
-                .toLowerCase();
-        }
-
-        function updateSummary() {
-            const summary = generateSummary();
-            document.getElementById('summaryPreview').innerHTML = summary;
-        }
-
-        // ============ UTILITY FUNCTIONS ============
-        function getSelectedValues(selectId) {
-            const select = document.getElementById(selectId);
-            return Array.from(select.selectedOptions).map(option => option.value);
-        }
-
-        function exportJSON() {
-            const data = {
-                id: document.getElementById('videoId').textContent,
-                video: document.getElementById('videoPath').textContent,
-                annotations: {
-                    environment_classification: document.getElementById('environment').value,
-                    coarse_activity_classification: getSelectedValues('coarseActivity'),
-                    dog_finegrained_activity_classification: getSelectedValues('dogActivity'),
-                    navigation_context_classification: getSelectedValues('navigation'),
-                    video_summary: document.getElementById('summaryPreview').innerText,
-                    transition_description: getTransitionDescription()
-                },
-                timestamp: new Date().toISOString()
-            };
-
-            const jsonString = JSON.stringify(data, null, 2);
-            
-            // Copy to clipboard
-            navigator.clipboard.writeText(jsonString).then(() => {
-                showSuccessMessage();
-            });
-
-            // Also trigger download
-            const blob = new Blob([jsonString], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `${data.id}_annotation.json`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-        }
-
-        function getTransitionDescription() {
-            const select = document.getElementById('transition');
-            const value = select.value;
-
-            if (value === 'custom') {
-                return document.getElementById('transitionCustom').value || 'Custom transition noted.';
-            }
-            return value;
-        }
-
-        function clearForm() {
-            document.getElementById('annotationForm').reset();
-            document.getElementById('transitionCustom').style.display = 'none';
-            document.getElementById('transitionCustom').value = '';
-            updateSummary();
-        }
-
-        function showSuccessMessage() {
-            const msg = document.getElementById('successMessage');
-            msg.style.display = 'block';
-            setTimeout(() => {
-                msg.style.display = 'none';
-            }, 2000);
-        }
-
-        // ============ INITIALIZATION ============
-        updateSummary();
-    </script>
-</body>
-</html>
+    <!-- ⑤ Auto-Generated Summary -->
+    <div class="card">
+      <div class="card-head">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        <h2>⑤ Auto-Generated Video Summary</h2>
+        <div class="slot">
+          <button class="btn btn-sm btn-ghost" onclick="copySummary()">Copy</button>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="summary-box empty" id="summaryBox">
+          Select labels above to auto-generate a summary…
+        </div>
+        <p class="hint" style="margin-top:6px;">✨ Assembled automatically from your label selections — no typing required.</p>
+      </div>
+    </div
