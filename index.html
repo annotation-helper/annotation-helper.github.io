@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dog Cam Annotation Tool</title>
+  <title>Dog Cam Annotation Tool!</title>
   <style>
     /* ── Reset & Variables ── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -1182,6 +1182,19 @@ function buildJSON() {
    EXPORT ACTIONS
 ───────────────────────────────────── */
 function previewJSON() {
+  const participant = document.getElementById('participantSel').value;
+  const progTxt = document.getElementById('progTxt').textContent;
+  
+  if (!participant) {
+    toast('⚠ Please select a participant first');
+    return;
+  }
+  
+  if (progTxt !== '6 / 6') {
+    toast('⚠ All 6 fields must be completed (6/6)');
+    return;
+  }
+  
   const el = document.getElementById('jsonOut');
   el.textContent = JSON.stringify(buildJSON(), null, 2);
   el.style.display = 'block';
@@ -1189,6 +1202,19 @@ function previewJSON() {
 }
 
 function downloadJSON() {
+  const participant = document.getElementById('participantSel').value;
+  const progTxt = document.getElementById('progTxt').textContent;
+  
+  if (!participant) {
+    toast('⚠ Please select a participant first');
+    return;
+  }
+  
+  if (progTxt !== '6 / 6') {
+    toast('⚠ All 6 fields must be completed (6/6)');
+    return;
+  }
+  
   const clipNum = padClipNum(document.getElementById('clipNum').value || '0');
   const blob = new Blob([JSON.stringify(buildJSON(), null, 2)], { type: 'application/json' });
   const url  = URL.createObjectURL(blob);
@@ -1199,6 +1225,19 @@ function downloadJSON() {
 }
 
 function copyJSON() {
+  const participant = document.getElementById('participantSel').value;
+  const progTxt = document.getElementById('progTxt').textContent;
+  
+  if (!participant) {
+    toast('⚠ Please select a participant first');
+    return;
+  }
+  
+  if (progTxt !== '6 / 6') {
+    toast('⚠ All 6 fields must be completed (6/6)');
+    return;
+  }
+  
   navigator.clipboard
     .writeText(JSON.stringify(buildJSON(), null, 2))
     .then(() => toast('📋 JSON copied!'))
