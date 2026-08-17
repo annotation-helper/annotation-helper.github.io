@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dog Cam Annotation Tool!</title>
+  <title>Dog Cam Annotation Tool</title>
   <style>
     /* ── Reset & Variables ── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -513,7 +513,7 @@
           <p class="hint" style="margin-top:6px;">💡 Select the dog's dominant state at each end of the clip; the sentence is auto-generated below.</p>
         </div>
 
-        <div class="trans-result" id="transResult"></div>
+        <textarea id="transResult" class="summary-box" style="display:none;" placeholder="Transition description will appear here..."></textarea>
 
       </div>
     </div>
@@ -1038,8 +1038,7 @@ function onTransToggle() {
   bld.style.display = nc ? 'none' : 'block';
   if (nc) {
     res.style.display = 'block';
-    res.className     = 'trans-result nc';
-    res.textContent   = 'No major change occurs in the video.';
+    res.value = 'No major change occurs in the video.';
   } else {
     onTransChange();
   }
@@ -1054,18 +1053,19 @@ function onTransChange() {
   if (!f && !t) { res.style.display = 'none'; onUpdate(); return; }
 
   res.style.display = 'block';
-  res.className     = 'trans-result ch';
-
+  
+  let text = '';
   if (f && t) {
-    res.textContent = (f === t)
+    text = (f === t)
       ? `The dog remains ${f} throughout the clip with no significant behavioral change.`
-      : `The dog transitions from $${f} to $${t}.`;
+      : `The dog transitions from ${f} to ${t}.`;
   } else if (f) {
-    res.textContent = `At the start of the clip, the dog is ${f}.`;
+    text = `At the start of the clip, the dog is ${f}.`;
   } else {
-    res.textContent = `By the end of the clip, the dog is ${t}.`;
+    text = `By the end of the clip, the dog is ${t}.`;
   }
-
+  
+  res.value = text;
   onUpdate();
 }
 
@@ -1073,15 +1073,8 @@ function getTransTxt() {
   if (document.getElementById('noChg').checked)
     return 'No major change occurs in the video.';
 
-  const f = document.getElementById('tFrom').value;
-  const t = document.getElementById('tTo').value;
-  if (!f && !t) return '';
-
-  if (f && t) return (f === t)
-    ? `The dog remains ${f} throughout the clip with no significant behavioral change.`
-    : `The dog transitions from $${f} to $${t}.`;
-  if (f) return `At the start of the clip, the dog is ${f}.`;
-  return `By the end of the clip, the dog is ${t}.`;
+  const res = document.getElementById('transResult');
+  return res.value || '';
 }
 
 /* ─────────────────────────────────────
