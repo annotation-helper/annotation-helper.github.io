@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dog Cam Annotation Tool</title>
+  <title>Dog Camera Annotation Tool</title>
   <style>
     /* ── Reset & Variables ── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -173,16 +173,17 @@
     .ms-btn.open       { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px var(--blue-ring); }
 
     .ms-drop {
-      display: none; position: absolute;
-      inset: 100% 0 auto; margin-top: 4px;
+      position: fixed;
       background: var(--surface); border: 1px solid var(--border);
       border-radius: var(--r); box-shadow: var(--sh-lg); 
       z-index: 9999;
-      overflow: visible;
+      overflow-y: auto;
       transition: background .3s, border-color .3s;
       min-width: 280px;
+      max-width: 500px;
+      max-height: 300px;
     }
-    .ms-drop.open      { display: block; }
+    .ms-drop.open      { display: block !important; }
 
     .ms-search         { padding: 8px; border-bottom: 1px solid var(--border-lt); transition: border-color .3s; }
     .ms-search input   { width: 100%; padding: 5px 8px; border: 1px solid var(--border); border-radius: var(--r-sm); font-size: 12.5px; background: var(--surface-lt); color: var(--text); transition: background .3s, color .3s, border-color .3s; }
@@ -808,7 +809,10 @@ function init() {
   document.addEventListener('click', e => {
     Object.keys(DATA).forEach(k => {
       const wrap = document.getElementById(`ms-${k}`);
-      if (wrap && !wrap.contains(e.target)) closeMs(k);
+      const portal = document.getElementById(`ms-portal-${k}`);
+      if ((wrap && !wrap.contains(e.target)) && (portal && !portal.contains(e.target))) {
+        closeMs(k);
+      }
     });
   });
 }
@@ -838,32 +842,30 @@ function buildList(k) {
 }
 
 function msOpen(k) {
-  const drop = document.getElementById(`msd-${k}`);
-  const btn  = document.querySelector(`#ms-${k} .ms-btn`);
-  const was  = drop.classList.contains('open');
+  const portal = document.getElementById(`ms-portal-${k}`);
+  const btn    = document.querySelector(`#ms-${k} .ms-btn`);
+  const was    = portal.classList.contains('open');
   
-  // Close all, then open the clicked one (if it was closed)
-  Object.keys(DATA).forEach(j => {
-    const d = document.getElementById(`msd-${j}`);
-    d.classList.remove('open');
-    const b = document.querySelector(`#ms-${j} .ms-btn`);
-    if (b) b.classList.remove('open');
-  });
+  // Close all
+  Object.keys(DATA).forEach(j => closeMs(j));
   
-  if (!was) { 
-    drop.classList.add('open'); 
+  if (!was) {
+    portal.classList.add('open');
     btn.classList.add('open');
-    // Set z-index higher to appear on top
-    drop.style.zIndex = '10000';
+    
+    // Position the portal dropdown below the button
+    const rect = btn.getBoundingClientRect();
+    portal.style.top = (rect.bottom + 4) + 'px';
+    portal.style.left = rect.left + 'px';
+    portal.style.width = Math.max(rect.width, 280) + 'px';
   }
 }
   
 function closeMs(k) {
-  const drop = document.getElementById(`msd-${k}`);
-  drop.classList.remove('open');
-  drop.style.zIndex = '9999';
-  const b = document.querySelector(`#ms-${k} .ms-btn`);
-  if (b) b.classList.remove('open');
+  const portal = document.getElementById(`ms-portal-${k}`);
+  portal.classList.remove('open');
+  const btn = document.querySelector(`#ms-${k} .ms-btn`);
+  if (btn) btn.classList.remove('open');
 }
 
 function msTogItem(k, lbl, row, cb) {
