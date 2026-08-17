@@ -1036,12 +1036,15 @@ function onTransToggle() {
   const bld = document.getElementById('transBuilder');
   const res = document.getElementById('transResult');
   bld.style.display = nc ? 'none' : 'block';
+  
   if (nc) {
     res.style.display = 'block';
     res.value = 'No major change occurs in the video.';
   } else {
-    onTransChange();
+    res.style.display = 'none';
+    res.value = '';
   }
+  
   onUpdate();
 }
 
@@ -1092,8 +1095,10 @@ function onUpdate() {
   const nc      = document.getElementById('noChg').checked;
   const tf      = document.getElementById('tFrom').value;
   const tt      = document.getElementById('tTo').value;
-  const transOk = nc || tf || tt;
-  const sum_ok  = sb.value !== 'Select labels above to auto-generate a summary…' && sb.value.trim() !== '';
+  const res     = document.getElementById('transResult');
+  const transOk = nc || tf || tt;  // Transition is checked if any option is selected
+  const sum_ok  = sb.value && sb.value !== 'Select labels above to auto-generate a summary…' && sb.value.trim() !== '';
+  const trans_txt_ok = res.value && res.value.trim() !== '';  // Transition text must not be empty
 
   const n = [
     env,
@@ -1101,7 +1106,7 @@ function onUpdate() {
     S.dog.size    > 0,
     S.nav.size    > 0,
     sum_ok,
-    !!transOk,
+    (transOk && trans_txt_ok),  // Both: selected AND has text
   ].filter(Boolean).length;
 
   document.getElementById('progTxt').textContent  = `${n} / 6`;
