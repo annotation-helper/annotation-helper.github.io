@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dog Camera Annotation Tool</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .video-section {
+            margin-bottom: 40px;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 30px;
+        }
+
+        video {
+            width: 100%;
+            max-height: 400px;
+            background: #000;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .video-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .video-info div {
+            display: flex;
+            gap: 10px;
+        }
+
+        .video-info label {
+            font-weight: 600;
+            color: #333;
+            min-width: 100px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .label-hint {
+            font-size: 12px;
+            color: #999;
+            margin-top: 4px;
+            font-weight: normal;
+        }
+
+        select, textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 14px;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        select:hover, textarea:hover {
+            border-color: #667eea;
+        }
+
+        select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        select[multiple] {
+            min-height: 120px;
+            padding: 8px;
+        }
+
+        select[multiple] option {
+            padding: 8px;
+        }
+
+        .preview-section {
+            background: #f8f9ff;
+            border: 2px dashed #667eea;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 30px;
+        }
+
+        .preview-title {
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 12px;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .preview-box {
+            background: white;
+            padding: 15px;
+            border-radius: 6px;
+            color: #555;
+            line-height: 1.6;
+            font-size: 14px;
+            min-height: 60px;
+        }
+
+        .empty-preview {
+            color: #ccc;
+            font-style: italic;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 30px;
+            justify-content: center;
+        }
+
+        button {
+            padding: 12px 28px;
+            font-size: 14px;
+            font-weight: 600;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-export {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-export:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-clear {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .btn-clear:hover {
+            background: #e0e0e0;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 12px 15px;
+            border-radius: 6px;
+            margin-top: 15px;
+            display: none;
+            font-size: 14px;
+        }
+
+        @media (max-width: 600px) {
+            .content {
+                padding: 20px;
+            }
+
+            .video-info {
+                grid-template-columns: 1fr;
+            }
+
+            header h1 {
+                font-size: 22px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🐕 Dog Camera Annotation Tool</h1>
+            <p>Efficient research annotation with dropdown selections</p>
+        </header>
+
+        <div class="content">
+            <div class="video-section">
+                <video id="videoPlayer" controls>
+                    <source src="" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+
+                <div class="video-info">
+                    <div>
+                        <label>Video ID:</label>
+                        <span id="videoId">P001_0_0_0_001</span>
+                    </div>
+                    <div>
+                        <label>Video Path:</label>
+                        <span id="videoPath">P001/0/clip_000000.mp4</span>
+                    </div>
+                </div>
+            </div>
+
+            <form id="annotationForm">
+                <!-- 1. Environment Classification -->
+                <div class="form-group">
+                    <label for="environment">1. Environment Classification
+                        <div class="label-hint">Select exactly one label</div>
+                    </label>
+                    <select id="environment" required>
+                        <option value="">-- Select Environment --</option>
+                        <option value="Forest">Forest</option>
+                        <option value="Indoor">Indoor</option>
+                        <option value="Intersection">Intersection</option>
+                        <option value="None">None</option>
+                        <option value="Playground">Playground</option>
+                        <option value="Rural">Rural</option>
+                        <option value="Trail">Trail</option>
+                        <option value="Urban">Urban</option>
+                    </select>
+                </div>
+
+                <!-- 2. Coarse Activity Classification -->
+                <div class="form-group">
+                    <label for="coarseActivity">2. Coarse Activity Classification
+                        <div class="label-hint">Select all that apply (Ctrl/Cmd+Click)</div>
+                    </label>
+                    <select id="coarseActivity" multiple>
+                        <option value="Crossing Street">Crossing Street</option>
+                        <option value="Crowd Present">Crowd Present</option>
+                        <option value="Distraction Event">Distraction Event</option>
+                        <option value="D Play Running">D Play Running</option>
+                        <option value="D Turning">D Turning</option>
+                        <option value="D Turning Right Body">D Turning Right Body</option>
+                        <option value="Environmental Monitoring">Environmental Monitoring</option>
+                        <option value="Human Dog Interaction">Human Dog Interaction</option>
+                        <option value="Indoor Navigation">Indoor Navigation</option>
+                        <option value="Investigation">Investigation</option>
+                        <option value="Navigating Obstacle">Navigating Obstacle</option>
+                        <option value="None">None</option>
+                        <option value="Object Interaction">Object Interaction</option>
+                        <option value="Person Passing Close">Person Passing Close</option>
+                        <option value="Running">Running</option>
+                        <option value="Social Encounter">Social Encounter</option>
+                        <option value="Stationary">Stationary</option>
+                        <option value="Trotting">Trotting</option>
+                        <option value="Turning">Turning</option>
+                        <option value="Walking">Walking</option>
+                    </select>
+                </div>
+
+                <!-- 3. Dog Fine-Grained Activity -->
+                <div class="form-group">
+                    <label for="dogActivity">3. Dog Fine-Grained Activity
+                        <div class="label-hint">Select all that apply (Ctrl/Cmd+Click)</div>
+                    </label>
+                    <select id="dogActivity" multiple>
+                        <option value="D_ASCENDING_STAIRS">D_ASCENDING_STAIRS</option>
+                        <option value="D_BACKING_UP">D_BACKING_UP</option>
+                        <option value="D_BODY_SHAKE">D_BODY_SHAKE</option>
+                        <option value="D_CARRYING_OBJECT">D_CARRYING_OBJECT</option>
+                        <option value="D_CROUCHING">D_CROUCHING</option>
+                        <option value="D_DESCENDING_STAIRS">D_DESCENDING_STAIRS</option>
+                        <option value="D_DRINKING">D_DRINKING</option>
+                        <option value="D_EAR_FLICK">D_EAR_FLICK</option>
+                        <option value="D_GRABBING_OBJECT">D_GRABBING_OBJECT</option>
+                        <option value="D_HEAD_LOOKING_DOWN">D_HEAD_LOOKING_DOWN</option>
+                        <option value="D_HEAD_LOOKING_FORWARD">D_HEAD_LOOKING_FORWARD</option>
+                        <option value="D_HEAD_LOOKING_LEFT">D_HEAD_LOOKING_LEFT</option>
+                        <option value="D_HEAD_LOOKING_RIGHT">D_HEAD_LOOKING_RIGHT</option>
+                        <option value="D_HEAD_LOOKING_UP">D_HEAD_LOOKING_UP</option>
+                        <option value="D_HEAD_SCANNING">D_HEAD_SCANNING</option>
+                        <option value="D_HEAD_SHAKE">D_HEAD_SHAKE</option>
+                        <option value="D_HEAD_TURNING_LEFT_BODY">D_HEAD_TURNING_LEFT_BODY</option>
+                        <option value="D_JUMPING_UP">D_JUMPING_UP</option>
+                        <option value="D_LEASH_SLACK">D_LEASH_SLACK</option>
+                        <option value="D_LEASH_TAUT">D_LEASH_TAUT</option>
+                        <option value="D_LICKING_OBJECT">D_LICKING_OBJECT</option>
+                        <option value="D_LICKING_SELF">D_LICKING_SELF</option>
+                        <option value="D_LYING_DOWN">D_LYING_DOWN</option>
+                        <option value="D_NUDGING">D_NUDGING</option>
+                        <option value="D_PLAY_JUMPING">D_PLAY_JUMPING</option>
+                        <option value="D_PLAY_ROLLING">D_PLAY_ROLLING</option>
+                        <option value="D_PLAY_RUNNING">D_PLAY_RUNNING</option>
+                        <option value="D_PULLING_FORWARD">D_PULLING_FORWARD</option>
+                        <option value="D_RESIST_BACKWARD">D_RESIST_BACKWARD</option>
+                        <option value="D_RUNNING">D_RUNNING</option>
+                        <option value="D_SITTING">D_SITTING</option>
+                        <option value="D_SNIFFING_GROUND">D_SNIFFING_GROUND</option>
+                        <option value="D_SNIFFING_OBJECT">D_SNIFFING_OBJECT</option>
+                        <option value="D_SOCIAL_APPROACH">D_SOCIAL_APPROACH</option>
+                        <option value="D_STOPPED">D_STOPPED</option>
+                        <option value="D_TAIL_LOWERED">D_TAIL_LOWERED</option>
+                        <option value="D_TAIL_RAISED">D_TAIL_RAISED</option>
+                        <option value="D_TAIL_WAGGING_FAST">D_TAIL_WAGGING_FAST</option>
+                        <option value="D_TAIL_WAGGING_SLOW">D_TAIL_WAGGING_SLOW</option>
+                        <option value="D_TROTTING">D_TROTTING</option>
+                        <option value="D_TURNING_LEFT_BODY">D_TURNING_LEFT_BODY</option>
+                        <option value="D_TURNING_RIGHT_BODY">D_TURNING_RIGHT_BODY</option>
+                        <option value="D_WALKING">D_WALKING</option>
+                        <option value="D_WALKING_FORWARD">D_WALKING_FORWARD</option>
+                    </select>
+                </div>
+
+                <!-- 4. Navigation Context -->
+                <div class="form-group">
+                    <label for="navigation">4. Navigation Context
+                        <div class="label-hint">Select all that apply (Ctrl/Cmd+Click)</div>
+                    </label>
+                    <select id="navigation" multiple>
+                        <option value="Crowd Present">Crowd Present</option>
+                        <option value="Door Opening">Door Opening</option>
+                        <option value="Indoor Navigation">Indoor Navigation</option>
+                        <option value="Intersection">Intersection</option>
+                        <option value="Narrow Passage Ahead">Narrow Passage Ahead</option>
+                        <option value="Nav At Crosswalk">Nav At Crosswalk</option>
+                        <option value="Nav At Curb">Nav At Curb</option>
+                        <option value="Nav Crossed Street">Nav Crossed Street</option>
+                        <option value="Nav Crossing Active">Nav Crossing Active</option>
+                        <option value="Nav Crosswalk">Nav Crosswalk</option>
+                        <option value="Nav Crosswalk Active">Nav Crosswalk Active</option>
+                        <option value="Nav Crosswalk Ahead">Nav Crosswalk Ahead</option>
+                        <option value="Nav Crosswalk Markings">Nav Crosswalk Markings</option>
+                        <option value="Nav Curb Ahead">Nav Curb Ahead</option>
+                        <option value="Nav Dog Arc Around">Nav Dog Arc Around</option>
+                        <option value="Nav Dog Stops At Edge">Nav Dog Stops At Edge</option>
+                        <option value="Nav Dog Stops At Obstacle">Nav Dog Stops At Obstacle</option>
+                        <option value="Nav Intersection">Nav Intersection</option>
+                        <option value="Nav Narrow Space">Nav Narrow Space</option>
+                        <option value="Nav Obstacle Present">Nav Obstacle Present</option>
+                        <option value="Nav Open Space">Nav Open Space</option>
+                        <option value="Nav Stairs Ahead">Nav Stairs Ahead</option>
+                        <option value="Nav Stepping Down">Nav Stepping Down</option>
+                        <option value="Nav Stepping Up">Nav Stepping Up</option>
+                        <option value="Nav Traffic Signal">Nav Traffic Signal</option>
+                        <option value="Nav Vehicle Waiting">Nav Vehicle Waiting</option>
+                        <option value="Nav Waiting To Cross">Nav Waiting To Cross</option>
+                        <option value="None">None</option>
+                        <option value="Obstacle In Path">Obstacle In Path</option>
+                        <option value="Vehicle Stopped Nearby">Vehicle Stopped Nearby</option>
+                        <option value="Vehicle Waiting">Vehicle Waiting</option>
+                    </select>
+                </div>
+
+                <!-- 5. Transition Description -->
+                <div class="form-group">
+                    <label for="transition">5. Transition Description
+                        <div class="label-hint">Select primary transition type</div>
+                    </label>
+                    <select id="transition" required>
+                        <option value="">-- Select Transition --</option>
+                        <option value="No major change occurs in the video.">No major change occurs in the video.</option>
+                        <option value="dog_position">Dog changes position</option>
+                        <option value="dog_direction">Dog changes direction</option>
+                        <option value="interaction_starts">Interaction begins</option>
+                        <option value="interaction_ends">Interaction ends</option>
+                        <option value="activity_transition">Activity transitions</option>
+                        <option value="obstacle_change">Obstacle appears or changes</option>
+                        <option value="custom">Custom description...</option>
+                    </select>
+                    <textarea id="transitionCustom" placeholder="Enter custom transition description (optional)" style="display:none; margin-top: 10px;"></textarea>
+                </div>
+            </form>
+
+            <!-- Preview Section -->
+            <div class="preview-section">
+                <div class="preview-title">📝 Generated Summary</div>
+                <div class="preview-box" id="summaryPreview">
+                    <span class="empty-preview">Select labels above to generate summary...</span>
+                </div>
+            </div>
+
+            <!-- Buttons -->
+            <div class="button-group">
+                <button type="button" class="btn-export" onclick="exportJSON()">📥 Export as JSON</button>
+                <button type="button" class="btn-clear" onclick="clearForm()">🗑️ Clear All</button>
+            </div>
+
+            <div class="success-message" id="successMessage">✓ JSON copied to clipboard!</div>
+        </div>
+    </div>
+
+    <script>
+        // ============ EVENT LISTENERS ============
+        document.getElementById('coarseActivity').addEventListener('change', updateSummary);
+        document.getElementById('dogActivity').addEventListener('change', updateSummary);
+        document.getElementById('navigation').addEventListener('change', updateSummary);
+        document.getElementById('environment').addEventListener('change', updateSummary);
+        document.getElementById('transition').addEventListener('change', handleTransitionChange);
+
+        // ============ TRANSITION HANDLING ============
+        function handleTransitionChange() {
+            const select = document.getElementById('transition');
+            const customTextarea = document.getElementById('transitionCustom');
+            customTextarea.style.display = select.value === 'custom' ? 'block' : 'none';
+            updateSummary();
+        }
+
+        // ============ SUMMARY GENERATION ============
+        function generateSummary() {
+            const environment = document.getElementById('environment').value;
+            const coarseActivities = getSelectedValues('coarseActivity');
+            const dogActivities = getSelectedValues('dogActivity');
+            const navigationContexts = getSelectedValues('navigation');
+
+            if (!environment && coarseActivities.length === 0 && dogActivities.length === 0) {
+                return '<span class="empty-preview">Select labels above to generate summary...</span>';
+            }
+
+            let summary = '';
+
+            // Generate opening based on environment
+            if (environment && environment !== 'None') {
+                summary += `In a ${environment.toLowerCase()} environment, `;
+            } else {
+                summary += 'The dog ';
+            }
+
+            // Add dog activities and states
+            if (dogActivities.length > 0) {
+                const activities = dogActivities.map(a => formatActivityLabel(a)).join(', ');
+                summary += `the dog is ${activities}. `;
+            }
+
+            // Add coarse activities
+            if (coarseActivities.length > 0) {
+                const activities = coarseActivities.join(', ').toLowerCase();
+                summary += `Notable activities include ${activities}. `;
+            }
+
+            // Add navigation context
+            if (navigationContexts.length > 0 && navigationContexts[0] !== 'None') {
+                const navItems = navigationContexts.map(n => formatNavigationLabel(n)).join(', ');
+                summary += `Navigation context: ${navItems}.`;
+            }
+
+            return summary.trim();
+        }
+
+        function formatActivityLabel(label) {
+            return label
+                .replace(/D_/g, '')
+                .replace(/_/g, ' ')
+                .toLowerCase();
+        }
+
+        function formatNavigationLabel(label) {
+            return label
+                .replace(/Nav /g, '')
+                .toLowerCase();
+        }
+
+        function updateSummary() {
+            const summary = generateSummary();
+            document.getElementById('summaryPreview').innerHTML = summary;
+        }
+
+        // ============ UTILITY FUNCTIONS ============
+        function getSelectedValues(selectId) {
+            const select = document.getElementById(selectId);
+            return Array.from(select.selectedOptions).map(option => option.value);
+        }
+
+        function exportJSON() {
+            const data = {
+                id: document.getElementById('videoId').textContent,
+                video: document.getElementById('videoPath').textContent,
+                annotations: {
+                    environment_classification: document.getElementById('environment').value,
+                    coarse_activity_classification: getSelectedValues('coarseActivity'),
+                    dog_finegrained_activity_classification: getSelectedValues('dogActivity'),
+                    navigation_context_classification: getSelectedValues('navigation'),
+                    video_summary: document.getElementById('summaryPreview').innerText,
+                    transition_description: getTransitionDescription()
+                },
+                timestamp: new Date().toISOString()
+            };
+
+            const jsonString = JSON.stringify(data, null, 2);
+            
+            // Copy to clipboard
+            navigator.clipboard.writeText(jsonString).then(() => {
+                showSuccessMessage();
+            });
+
+            // Also trigger download
+            const blob = new Blob([jsonString], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${data.id}_annotation.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function getTransitionDescription() {
+            const select = document.getElementById('transition');
+            const value = select.value;
+
+            if (value === 'custom') {
+                return document.getElementById('transitionCustom').value || 'Custom transition noted.';
+            }
+            return value;
+        }
+
+        function clearForm() {
+            document.getElementById('annotationForm').reset();
+            document.getElementById('transitionCustom').style.display = 'none';
+            document.getElementById('transitionCustom').value = '';
+            updateSummary();
+        }
+
+        function showSuccessMessage() {
+            const msg = document.getElementById('successMessage');
+            msg.style.display = 'block';
+            setTimeout(() => {
+                msg.style.display = 'none';
+            }, 2000);
+        }
+
+        // ============ INITIALIZATION ============
+        updateSummary();
+    </script>
+</body>
+</html>
