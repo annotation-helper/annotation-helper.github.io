@@ -463,7 +463,6 @@
         </div>
       </div>
     </div>
-
     <!-- ④ Navigation Context -->
     <div class="card">
       <div class="card-head">
@@ -482,4 +481,719 @@
                 <input type="text" placeholder="Search e.g. crosswalk, curb, obstacle…" oninput="msFilter('nav', this.value)">
               </div>
               <div class="ms-list" id="msl-nav"></div>
-              <div class="ms-foot
+              <div class="ms-foot">
+                <span class="ms-foot-count" id="msc-nav">0 selected</span>
+                <button class="btn btn-sm btn-ghost" onclick="msClearAll('nav')">Clear all</button>
+              </div>
+            </div>
+          </div>
+          <div class="tags" id="tg-nav"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ⑤ Auto-Generated Summary -->
+    <div class="card">
+      <div class="card-head">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        <h2>⑤ Auto-Generated Video Summary</h2>
+        <div class="slot">
+          <button class="btn btn-sm btn-ghost" onclick="copySummary()">Copy</button>
+        </div>
+      </div>
+      <div class="card-body">
+        <textarea id="summaryBox" class="summary-box empty" placeholder="Select labels above to auto-generate a summary…">Select labels above to auto-generate a summary…</textarea>
+        <p class="hint" style="margin-top:6px;">✨ Assembled automatically from your label selections — fully editable.</p>
+      </div>
+    </div>
+
+    <!-- ⑥ Transition Description -->
+    <div class="card">
+      <div class="card-head">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        <h2>⑥ Transition Description</h2>
+      </div>
+      <div class="card-body">
+
+        <label class="trans-toggle">
+          <input type="checkbox" id="noChg" onchange="onTransToggle()">
+          <span>No major change occurs in this video</span>
+        </label>
+
+        <div id="transBuilder">
+          <div class="trans-grid">
+            <div>
+              <label class="label" for="tFrom">At the START, the dog was…</label>
+              <select id="tFrom" class="select" onchange="onTransChange()">
+                <option value="">— Select start state —</option>
+              </select>
+            </div>
+            <div class="trans-arrow">→</div>
+            <div>
+              <label class="label" for="tTo">At the END, the dog was…</label>
+              <select id="tTo" class="select" onchange="onTransChange()">
+                <option value="">— Select end state —</option>
+              </select>
+            </div>
+          </div>
+          <p class="hint" style="margin-top:6px;">💡 Select the dog's dominant state at each end of the clip; the sentence is auto-generated below.</p>
+        </div>
+
+        <div class="trans-result" id="transResult"></div>
+
+      </div>
+    </div>
+
+    <!-- Export -->
+    <div class="card" id="exportCard">
+      <div class="card-head">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        <h2>💾 Export Annotation</h2>
+      </div>
+      <div class="card-body">
+
+        <div class="field">
+          <label class="label" for="clipNum">Clip Number</label>
+          <input id="clipNum" class="input" type="text" placeholder="Enter 6-digit number (e.g. 123456 or just 1 for 000001)" maxlength="6">
+          <p class="hint">Enter a number; it will automatically be padded to 6 digits (e.g., 5 → 000005)</p>
+        </div>
+
+        <div class="export-btns">
+          <button class="btn btn-ghost"  onclick="previewJSON()">👁 Preview JSON</button>
+          <button class="btn btn-green"  onclick="downloadJSON()">⬇ Download JSON</button>
+          <button class="btn btn-ghost"  onclick="copyJSON()">📋 Copy JSON</button>
+        </div>
+
+        <pre class="json-out" id="jsonOut"></pre>
+      </div>
+    </div>
+
+  </section>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+
+<!-- ═══════════════════════════════════════
+     JAVASCRIPT
+═══════════════════════════════════════ -->
+<script>
+/* ─────────────────────────────────────
+   THEME MANAGEMENT
+───────────────────────────────────── */
+function toggleTheme() {
+  const isDark = document.body.classList.toggle('light-mode');
+  const btn = document.getElementById('themeToggle');
+  btn.textContent = isDark ? '☀️' : '🌙';
+  localStorage.setItem('theme', isDark ? 'light' : 'dark');
+}
+
+function initTheme() {
+  const saved = localStorage.getItem('theme');
+  if (saved === 'light') {
+    document.body.classList.add('light-mode');
+    document.getElementById('themeToggle').textContent = '☀️';
+  }
+}
+
+/* ─────────────────────────────────────
+   LOCK FUNCTIONALITY
+───────────────────────────────────── */
+let participantLocked = false;
+
+function toggleLock() {
+  const sel = document.getElementById('participantSel');
+  const btn = document.getElementById('lockBtn');
+  
+  participantLocked = !participantLocked;
+  sel.disabled = participantLocked;
+  btn.classList.toggle('locked', participantLocked);
+  btn.textContent = participantLocked ? '🔒 Locked' : '🔓 Lock';
+  
+  if (!participantLocked) {
+    sel.focus();
+  }
+}
+
+function onParticipantChange() {
+  const p = document.getElementById('participantSel').value;
+  const info = document.getElementById('clipInfo');
+  if (p) {
+    info.textContent = `✓ Participant: ${p} selected`;
+  } else {
+    info.textContent = 'No participant selected';
+  }
+}
+
+/* ─────────────────────────────────────
+   LABEL DATA
+───────────────────────────────────── */
+const DATA = {
+  env: [
+    'Forest', 'Indoor', 'Intersection', 'None', 'Playground', 'Rural', 'Trail', 'Urban'
+  ],
+  coarse: [
+    'Crossing Street','Crowd Present','Distraction Event','D Play Running',
+    'D Turning','D Turning Right Body','Environmental Monitoring',
+    'Human Dog Interaction','Indoor Navigation','Investigation',
+    'Navigating Obstacle','None','Object Interaction','Person Passing Close',
+    'Running','Social Encounter','Stationary','Trotting','Turning','Walking'
+  ],
+  dog: [
+    'D_ASCENDING_STAIRS','D_BACKING_UP','D_BODY_SHAKE','D_CARRYING_OBJECT',
+    'D_CROUCHING','D_DESCENDING_STAIRS','D_DRINKING','D_EAR_FLICK',
+    'D_GRABBING_OBJECT','D_HEAD_LOOKING_DOWN','D_HEAD_LOOKING_FORWARD',
+    'D_HEAD_LOOKING_LEFT','D_HEAD_LOOKING_RIGHT','D_HEAD_LOOKING_UP',
+    'D_HEAD_SCANNING','D_HEAD_SHAKE','D_HEAD_TURNING_LEFT_BODY',
+    'D_JUMPING_UP','D_LEASH_SLACK','D_LEASH_TAUT','D_LICKING_OBJECT',
+    'D_LICKING_SELF','D_LYING_DOWN','D_NUDGING','D_PLAY_JUMPING',
+    'D_PLAY_ROLLING','D_PLAY_RUNNING','D_PULLING_FORWARD','D_RESIST_BACKWARD',
+    'D_RUNNING','D_SITTING','D_SNIFFING_GROUND','D_SNIFFING_OBJECT',
+    'D_SOCIAL_APPROACH','D_STOPPED','D_TAIL_LOWERED','D_TAIL_RAISED',
+    'D_TAIL_WAGGING_FAST','D_TAIL_WAGGING_SLOW','D_TROTTING',
+    'D_TURNING_LEFT_BODY','D_TURNING_RIGHT_BODY','D_WALKING','D_WALKING_FORWARD'
+  ],
+  nav: [
+    'Crowd Present','Door Opening','Indoor Navigation','Intersection',
+    'Narrow Passage Ahead','Nav At Crosswalk','Nav At Curb','Nav Crossed Street',
+    'Nav Crossing Active','Nav Crosswalk','Nav Crosswalk Active',
+    'Nav Crosswalk Ahead','Nav Crosswalk Markings','Nav Curb Ahead',
+    'Nav Dog Arc Around','Nav Dog Stops At Edge','Nav Dog Stops At Obstacle',
+    'Nav Intersection','Nav Narrow Space','Nav Obstacle Present','Nav Open Space',
+    'Nav Stairs Ahead','Nav Stepping Down','Nav Stepping Up','Nav Traffic Signal',
+    'Nav Vehicle Waiting','Nav Waiting To Cross','None','Obstacle In Path',
+    'Vehicle Stopped Nearby','Vehicle Waiting'
+  ]
+};
+
+/* ─────────────────────────────────────
+   LABEL → PLAIN ENGLISH MAPS (for summary)
+───────────────────────────────────── */
+const DOG_TXT = {
+  D_ASCENDING_STAIRS:       'ascending stairs',
+  D_BACKING_UP:             'backing up',
+  D_BODY_SHAKE:             'shaking its body',
+  D_CARRYING_OBJECT:        'carrying an object',
+  D_CROUCHING:              'crouching',
+  D_DESCENDING_STAIRS:      'descending stairs',
+  D_DRINKING:               'drinking',
+  D_EAR_FLICK:              'flicking its ears',
+  D_GRABBING_OBJECT:        'grabbing an object',
+  D_HEAD_LOOKING_DOWN:      'looking down',
+  D_HEAD_LOOKING_FORWARD:   'looking forward',
+  D_HEAD_LOOKING_LEFT:      'looking left',
+  D_HEAD_LOOKING_RIGHT:     'looking right',
+  D_HEAD_LOOKING_UP:        'looking up',
+  D_HEAD_SCANNING:          'scanning the environment',
+  D_HEAD_SHAKE:             'shaking its head',
+  D_HEAD_TURNING_LEFT_BODY: 'turning its head to the left',
+  D_JUMPING_UP:             'jumping up',
+  D_LEASH_SLACK:            'walking with a slack leash',
+  D_LEASH_TAUT:             'pulling on a taut leash',
+  D_LICKING_OBJECT:         'licking an object',
+  D_LICKING_SELF:           'licking itself',
+  D_LYING_DOWN:             'lying down',
+  D_NUDGING:                'nudging something',
+  D_PLAY_JUMPING:           'jumping playfully',
+  D_PLAY_ROLLING:           'rolling playfully',
+  D_PLAY_RUNNING:           'running playfully',
+  D_PULLING_FORWARD:        'pulling forward on the leash',
+  D_RESIST_BACKWARD:        'resisting backward',
+  D_RUNNING:                'running',
+  D_SITTING:                'sitting',
+  D_SNIFFING_GROUND:        'sniffing the ground',
+  D_SNIFFING_OBJECT:        'sniffing an object',
+  D_SOCIAL_APPROACH:        'approaching socially',
+  D_STOPPED:                'stopped',
+  D_TAIL_LOWERED:           'tail lowered',
+  D_TAIL_RAISED:            'tail raised',
+  D_TAIL_WAGGING_FAST:      'wagging its tail quickly',
+  D_TAIL_WAGGING_SLOW:      'wagging its tail slowly',
+  D_TROTTING:               'trotting',
+  D_TURNING_LEFT_BODY:      'turning left',
+  D_TURNING_RIGHT_BODY:     'turning right',
+  D_WALKING:                'walking',
+  D_WALKING_FORWARD:        'walking forward',
+};
+
+const COARSE_TXT = {
+  'Crossing Street':          'crossing a street',
+  'Crowd Present':            'navigating through a crowd',
+  'Distraction Event':        'encountering a distraction',
+  'D Play Running':           'play-running',
+  'D Turning':                'turning',
+  'D Turning Right Body':     'turning right',
+  'Environmental Monitoring': 'monitoring the environment',
+  'Human Dog Interaction':    'interacting with a human',
+  'Indoor Navigation':        'navigating indoors',
+  'Investigation':            'investigating something',
+  'Navigating Obstacle':      'navigating an obstacle',
+  'None':                     null,
+  'Object Interaction':       'interacting with an object',
+  'Person Passing Close':     'a person passing close by',
+  'Running':                  'running',
+  'Social Encounter':         'engaged in a social encounter',
+  'Stationary':               'stationary',
+  'Trotting':                 'trotting',
+  'Turning':                  'turning',
+  'Walking':                  'walking',
+};
+
+const ENV_TXT = {
+  Forest: 'a forest', Indoor: 'an indoor space', Intersection: 'an intersection',
+  None: 'an unspecified area', Playground: 'a playground', Rural: 'a rural area',
+  Trail: 'a trail', Urban: 'an urban area',
+};
+
+/* Transition state options — plain English, covers the fine-grained label space */
+const TRANS_OPTS = [
+  ['walking',                     'Walking'],
+  ['trotting',                    'Trotting'],
+  ['running',                     'Running'],
+  ['play-running',                'Play Running'],
+  ['stopped / stationary',        'Stopped / Stationary'],
+  ['sitting',                     'Sitting'],
+  ['lying down',                  'Lying Down'],
+  ['sniffing the ground',         'Sniffing the Ground'],
+  ['sniffing an object',          'Sniffing an Object'],
+  ['scanning the environment',    'Scanning the Environment'],
+  ['looking left',                'Looking Left'],
+  ['looking right',               'Looking Right'],
+  ['looking up',                  'Looking Up'],
+  ['looking down',                'Looking Down'],
+  ['ascending stairs',            'Ascending Stairs'],
+  ['descending stairs',           'Descending Stairs'],
+  ['turning left',                'Turning Left'],
+  ['turning right',               'Turning Right'],
+  ['pulling forward on the leash','Pulling Forward on Leash'],
+  ['backing up',                  'Backing Up'],
+  ['interacting with a person',   'Interacting with a Person'],
+  ['navigating an obstacle',      'Navigating an Obstacle'],
+  ['crossing the street',         'Crossing the Street'],
+  ['approaching something',       'Approaching Something'],
+  ['playing',                     'Playing'],
+];
+
+/* ─────────────────────────────────────
+   STATE  (selected labels per category)
+───────────────────────────────────── */
+const S = { env: new Set(), coarse: new Set(), dog: new Set(), nav: new Set() };
+
+/* ─────────────────────────────────────
+   INITIALISE
+───────────────────────────────────── */
+function init() {
+  initTheme();
+  
+  Object.keys(DATA).forEach(k => buildList(k));
+
+  const tF = document.getElementById('tFrom');
+  const tT = document.getElementById('tTo');
+  TRANS_OPTS.forEach(([v, l]) => {
+    tF.add(new Option(l, v));
+    tT.add(new Option(l, v));
+  });
+
+  // Close dropdowns when clicking outside them
+  document.addEventListener('click', e => {
+    Object.keys(DATA).forEach(k => {
+      const wrap = document.getElementById(`ms-${k}`);
+      if (wrap && !wrap.contains(e.target)) closeMs(k);
+    });
+  });
+}
+
+/* ─────────────────────────────────────
+   MULTI-SELECT  —  core functions
+───────────────────────────────────── */
+function buildList(k) {
+  const el = document.getElementById(`msl-${k}`);
+  el.innerHTML = '';
+  DATA[k].forEach(lbl => {
+    const row = document.createElement('div');
+    row.className = 'ms-item' + (S[k].has(lbl) ? ' on' : '');
+    row.dataset.v = lbl;
+
+    const cb = document.createElement('input');
+    cb.type = 'checkbox';
+    cb.checked = S[k].has(lbl);
+
+    const sp = document.createElement('span');
+    sp.textContent = lbl;
+
+    row.append(cb, sp);
+    row.addEventListener('click', () => msTogItem(k, lbl, row, cb));
+    el.appendChild(row);
+  });
+}
+
+function msOpen(k) {
+  const drop = document.getElementById(`msd-${k}`);
+  const btn  = document.querySelector(`#ms-${k} .ms-btn`);
+  const was  = drop.classList.contains('open');
+  // Close all, then open the clicked one (if it was closed)
+  Object.keys(DATA).forEach(j => closeMs(j));
+  if (!was) { drop.classList.add('open'); btn.classList.add('open'); }
+}
+
+function closeMs(k) {
+  document.getElementById(`msd-${k}`).classList.remove('open');
+  const b = document.querySelector(`#ms-${k} .ms-btn`);
+  if (b) b.classList.remove('open');
+}
+
+function msTogItem(k, lbl, row, cb) {
+  if (S[k].has(lbl)) { S[k].delete(lbl); row.classList.remove('on'); cb.checked = false; }
+  else               { S[k].add(lbl);    row.classList.add('on');    cb.checked = true;  }
+  refreshMs(k);
+  onUpdate();
+}
+
+function msFilter(k, q) {
+  const lo = q.toLowerCase();
+  document.querySelectorAll(`#msl-${k} .ms-item`).forEach(i => {
+    i.style.display = i.dataset.v.toLowerCase().includes(lo) ? '' : 'none';
+  });
+}
+
+function msClearAll(k) {
+  S[k].clear();
+  buildList(k);
+  refreshMs(k);
+  onUpdate();
+}
+
+function refreshMs(k) {
+  const n = S[k].size;
+  const placeholders = {
+    env:    'Select environment…',
+    coarse: 'Select activities…',
+    dog:    'Select dog activities…',
+    nav:    'Select navigation context…',
+  };
+  document.querySelector(`#ms-${k} .ms-lbl`).textContent =
+    n ? `$${n} item$${n !== 1 ? 's' : ''} selected` : placeholders[k];
+  if (document.getElementById(`msc-${k}`)) {
+    document.getElementById(`msc-${k}`).textContent = `${n} selected`;
+  }
+  renderTags(k);
+}
+
+function renderTags(k) {
+  const c = document.getElementById(`tg-${k}`);
+  c.innerHTML = '';
+  S[k].forEach(lbl => {
+    const t  = document.createElement('span');
+    t.className = 'tag';
+
+    const tx = document.createElement('span');
+    tx.className = 'tag-txt';
+    tx.title = lbl;
+    tx.textContent = lbl;
+
+    const xb = document.createElement('button');
+    xb.className = 'tag-x';
+    xb.textContent = '×';
+    xb.addEventListener('click', e => { e.stopPropagation(); rmTag(k, lbl); });
+
+    t.append(tx, xb);
+    c.appendChild(t);
+  });
+}
+
+function rmTag(k, lbl) {
+  S[k].delete(lbl);
+  buildList(k);
+  refreshMs(k);
+  onUpdate();
+}
+
+/* ─────────────────────────────────────
+   SUMMARY BUILDER
+───────────────────────────────────── */
+const PRIMARY_MOVE = new Set(['Walking','Trotting','Running','Stationary','D Play Running','Turning']);
+
+function buildSummary() {
+  const env    = S.env.size > 0 ? [...S.env][0] : '';
+  const coarseA = [...S.coarse].filter(x => x !== 'None');
+  const dogA    = [...S.dog];
+  const navA    = [...S.nav].filter(x => x !== 'None');
+
+  if (!env && !coarseA.length && !dogA.length) return null;
+
+  const sentences = [];
+
+  /* Sentence 1 — Setting + primary movement + other coarse activities */
+  const prim  = coarseA.find(c => PRIMARY_MOVE.has(c));
+  const other = coarseA.filter(c => !PRIMARY_MOVE.has(c));
+
+  let s1 = (env && env !== 'None')
+    ? `In ${ENV_TXT[env] || env}, the dog `
+    : 'The dog ';
+
+  s1 += prim
+    ? `is ${COARSE_TXT[prim]}`
+    : (dogA.length ? 'is present in the scene' : 'is visible in the scene');
+
+  const otherTxts = other.map(c => COARSE_TXT[c]).filter(Boolean);
+  if (otherTxts.length) s1 += ` while ${joinList(otherTxts)}`;
+  sentences.push(s1 + '.');
+
+  /* Sentence 2 — Fine-grained dog actions */
+  if (dogA.length) {
+    const MOVE_SET = new Set([
+      'D_WALKING','D_WALKING_FORWARD','D_TROTTING','D_RUNNING','D_PLAY_RUNNING',
+      'D_STOPPED','D_SITTING','D_LYING_DOWN','D_CROUCHING',
+      'D_ASCENDING_STAIRS','D_DESCENDING_STAIRS',
+      'D_TURNING_LEFT_BODY','D_TURNING_RIGHT_BODY',
+      'D_PULLING_FORWARD','D_BACKING_UP','D_RESIST_BACKWARD',
+      'D_SOCIAL_APPROACH','D_PLAY_JUMPING','D_PLAY_ROLLING','D_JUMPING_UP'
+    ]);
+    const mv = dogA.filter(d =>  MOVE_SET.has(d)).map(d => DOG_TXT[d]).filter(Boolean);
+    const sx = dogA.filter(d => !MOVE_SET.has(d)).map(d => DOG_TXT[d]).filter(Boolean);
+    const all = [...mv, ...sx];
+    if (all.length) sentences.push(`The dog is observed ${joinList(all)}.`);
+  }
+
+  /* Sentence 3 — Navigation context (if any non-None labels) */
+  if (navA.length) {
+    const nTxts = navA.map(n => n.replace(/^Nav /i, '').toLowerCase());
+    sentences.push(`Navigation context includes ${joinList(nTxts)}.`);
+  }
+
+  return sentences.join(' ');
+}
+
+/* Oxford-comma list joiner */
+function joinList(a) {
+  if (!a.length) return '';
+  if (a.length === 1) return a[0];
+  if (a.length === 2) return `$${a[0]} and $${a[1]}`;
+  return `$${a.slice(0, -1).join(', ')}, and $${a[a.length - 1]}`;
+}
+
+/* ─────────────────────────────────────
+   TRANSITION
+───────────────────────────────────── */
+function onTransToggle() {
+  const nc  = document.getElementById('noChg').checked;
+  const bld = document.getElementById('transBuilder');
+  const res = document.getElementById('transResult');
+  bld.style.display = nc ? 'none' : 'block';
+  if (nc) {
+    res.style.display = 'block';
+    res.className     = 'trans-result nc';
+    res.textContent   = 'No major change occurs in the video.';
+  } else {
+    onTransChange();
+  }
+  onUpdate();
+}
+
+function onTransChange() {
+  const f   = document.getElementById('tFrom').value;
+  const t   = document.getElementById('tTo').value;
+  const res = document.getElementById('transResult');
+
+  if (!f && !t) { res.style.display = 'none'; onUpdate(); return; }
+
+  res.style.display = 'block';
+  res.className     = 'trans-result ch';
+
+  if (f && t) {
+    res.textContent = (f === t)
+      ? `The dog remains ${f} throughout the clip with no significant behavioral change.`
+      : `The dog transitions from $${f} to $${t}.`;
+  } else if (f) {
+    res.textContent = `At the start of the clip, the dog is ${f}.`;
+  } else {
+    res.textContent = `By the end of the clip, the dog is ${t}.`;
+  }
+
+  onUpdate();
+}
+
+function getTransTxt() {
+  if (document.getElementById('noChg').checked)
+    return 'No major change occurs in the video.';
+
+  const f = document.getElementById('tFrom').value;
+  const t = document.getElementById('tTo').value;
+  if (!f && !t) return '';
+
+  if (f && t) return (f === t)
+    ? `The dog remains ${f} throughout the clip with no significant behavioral change.`
+    : `The dog transitions from $${f} to $${t}.`;
+  if (f) return `At the start of the clip, the dog is ${f}.`;
+  return `By the end of the clip, the dog is ${t}.`;
+}
+
+/* ─────────────────────────────────────
+   PROGRESS + CENTRAL UPDATE
+───────────────────────────────────── */
+function onUpdate() {
+  /* Rebuild summary display */
+  const sum = buildSummary();
+  const sb  = document.getElementById('summaryBox');
+  if (sum) { sb.value = sum; sb.classList.remove('empty'); }
+  else     { sb.value = 'Select labels above to auto-generate a summary…'; sb.classList.add('empty'); }
+
+  /* Progress bar */
+  const env     = S.env.size > 0;
+  const nc      = document.getElementById('noChg').checked;
+  const tf      = document.getElementById('tFrom').value;
+  const tt      = document.getElementById('tTo').value;
+  const transOk = nc || tf || tt;
+  const sum_ok  = sb.value !== 'Select labels above to auto-generate a summary…' && sb.value.trim() !== '';
+
+  const n = [
+    env,
+    S.coarse.size > 0,
+    S.dog.size    > 0,
+    S.nav.size    > 0,
+    sum_ok,
+    !!transOk,
+  ].filter(Boolean).length;
+
+  document.getElementById('progTxt').textContent  = `${n} / 6`;
+  document.getElementById('progFill').style.width = `${n / 6 * 100}%`;
+  document.getElementById('hdrbadge').textContent = `${n} / 6 complete`;
+}
+  /* ─────────────────────────────────────
+   JSON BUILDER
+───────────────────────────────────── */
+function padClipNum(num) {
+  return String(num).padStart(6, '0');
+}
+
+function buildJSON() {
+  const participant = document.getElementById('participantSel').value || 'UNKNOWN';
+  const clipNumInput = document.getElementById('clipNum').value || '0';
+  const clipNum = padClipNum(clipNumInput);
+  const baseId = `${participant}_${clipNum}`;
+  const videoPath = `${participant}/0/clip_${clipNum}.mp4`;
+  const sumT = document.getElementById('summaryBox').value || '';
+  const trT  = getTransTxt();
+
+  return [
+    {
+      id: `${baseId}_001`,
+      video: videoPath,
+      type: 'environment_classification',
+      question: "Which environment label best matches this video? Choose exactly one label from: ['Forest', 'Indoor', 'Intersection', 'None', 'Playground', 'Rural', 'Trail', 'Urban']. Return only one label.",
+      answer: [...S.env][0] || ''
+    },
+    {
+      id: `${baseId}_002`,
+      video: videoPath,
+      type: 'coarse_activity_classification',
+      question: "Which coarse activity labels are present in this video? Choose all applicable labels only from: ['Crossing Street', 'Crowd Present', 'Distraction Event', 'D Play Running', 'D Turning', 'D Turning Right Body', 'Environmental Monitoring', 'Human Dog Interaction', 'Indoor Navigation', 'Investigation', 'Navigating Obstacle', 'None', 'Object Interaction', 'Person Passing Close', 'Running', 'Social Encounter', 'Stationary', 'Trotting', 'Turning', 'Walking']. Return the answer as a list. If none apply, return an empty list.",
+      answer: [...S.coarse]
+    },
+    {
+      id: `${baseId}_003`,
+      video: videoPath,
+      type: 'dog_finegrained_activity_classification',
+      question: "Which dog fine-grained activity labels are present in this video? Consider only dog labels that start with D_. Choose all applicable labels only from: ['D_ASCENDING_STAIRS', 'D_BACKING_UP', 'D_BODY_SHAKE', 'D_CARRYING_OBJECT', 'D_CROUCHING', 'D_DESCENDING_STAIRS', 'D_DRINKING', 'D_EAR_FLICK', 'D_GRABBING_OBJECT', 'D_HEAD_LOOKING_DOWN', 'D_HEAD_LOOKING_FORWARD', 'D_HEAD_LOOKING_LEFT', 'D_HEAD_LOOKING_RIGHT', 'D_HEAD_LOOKING_UP', 'D_HEAD_SCANNING', 'D_HEAD_SHAKE', 'D_HEAD_TURNING_LEFT_BODY', 'D_JUMPING_UP', 'D_LEASH_SLACK', 'D_LEASH_TAUT', 'D_LICKING_OBJECT', 'D_LICKING_SELF', 'D_LYING_DOWN', 'D_NUDGING', 'D_PLAY_JUMPING', 'D_PLAY_ROLLING', 'D_PLAY_RUNNING', 'D_PULLING_FORWARD', 'D_RESIST_BACKWARD', 'D_RUNNING', 'D_SITTING', 'D_SNIFFING_GROUND', 'D_SNIFFING_OBJECT', 'D_SOCIAL_APPROACH', 'D_STOPPED', 'D_TAIL_LOWERED', 'D_TAIL_RAISED', 'D_TAIL_WAGGING_FAST', 'D_TAIL_WAGGING_SLOW', 'D_TROTTING', 'D_TURNING_LEFT_BODY', 'D_TURNING_RIGHT_BODY', 'D_WALKING', 'D_WALKING_FORWARD']. Return the answer as a list. If none apply, return an empty list.",
+      answer: [...S.dog]
+    },
+    {
+      id: `${baseId}_004`,
+      video: videoPath,
+      type: 'navigation_context_classification',
+      question: "Which navigation context labels are present in this video? Choose all applicable labels only from: ['Crowd Present', 'Door Opening', 'Indoor Navigation', 'Intersection', 'Narrow Passage Ahead', 'Nav At Crosswalk', 'Nav At Curb', 'Nav Crossed Street', 'Nav Crossing Active', 'Nav Crosswalk', 'Nav Crosswalk Active', 'Nav Crosswalk Ahead', 'Nav Crosswalk Markings', 'Nav Curb Ahead', 'Nav Dog Arc Around', 'Nav Dog Stops At Edge', 'Nav Dog Stops At Obstacle', 'Nav Intersection', 'Nav Narrow Space', 'Nav Obstacle Present', 'Nav Open Space', 'Nav Stairs Ahead', 'Nav Stepping Down', 'Nav Stepping Up', 'Nav Traffic Signal', 'Nav Vehicle Waiting', 'Nav Waiting To Cross', 'None', 'Obstacle In Path', 'Vehicle Stopped Nearby', 'Vehicle Waiting']. Return the answer as a list. If none apply, return an empty list.",
+      answer: [...S.nav]
+    },
+    {
+      id: `${baseId}_005`,
+      video: videoPath,
+      type: 'video_summary',
+      question: "Summarize this video in 2 to 4 sentences.",
+      answer: sumT
+    },
+    {
+      id: `${baseId}_006`,
+      video: videoPath,
+      type: 'transition_description',
+      question: "Describe the main change, if any, that happens from the beginning to the end of the video in one sentence. If there is no important change, answer: 'No major change occurs in the video.'",
+      answer: trT
+    },
+  ];
+}
+
+/* ─────────────────────────────────────
+   EXPORT ACTIONS
+───────────────────────────────────── */
+function previewJSON() {
+  const el = document.getElementById('jsonOut');
+  el.textContent = JSON.stringify(buildJSON(), null, 2);
+  el.style.display = 'block';
+  toast('👁 JSON preview ready');
+}
+
+function downloadJSON() {
+  const clipNum = padClipNum(document.getElementById('clipNum').value || '0');
+  const blob = new Blob([JSON.stringify(buildJSON(), null, 2)], { type: 'application/json' });
+  const url  = URL.createObjectURL(blob);
+  const a    = Object.assign(document.createElement('a'), { href: url, download: `clip${clipNum}.json` });
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('⬇ Download started');
+}
+
+function copyJSON() {
+  navigator.clipboard
+    .writeText(JSON.stringify(buildJSON(), null, 2))
+    .then(() => toast('📋 JSON copied!'))
+    .catch(() => toast('❌ Copy failed — try Preview instead'));
+}
+
+function copySummary() {
+  const sb = document.getElementById('summaryBox');
+  if (sb.value === 'Select labels above to auto-generate a summary…' || sb.value.trim() === '') {
+    toast('⚠ No summary generated yet');
+    return;
+  }
+  navigator.clipboard.writeText(sb.value)
+    .then(() => toast('📋 Summary copied!'))
+    .catch(() => toast('❌ Copy failed'));
+}
+
+/* ─────────────────────────────────────
+   UTILITY
+───────────────────────────────────── */
+function clearAll() {
+  if (!confirm('Clear all annotation data for this clip?')) return;
+  Object.keys(S).forEach(k => { S[k].clear(); buildList(k); refreshMs(k); });
+  document.getElementById('noChg').checked      = false;
+  document.getElementById('tFrom').value         = '';
+  document.getElementById('tTo').value           = '';
+  document.getElementById('transResult').style.display  = 'none';
+  document.getElementById('transBuilder').style.display = 'block';
+  document.getElementById('jsonOut').style.display      = 'none';
+  document.getElementById('summaryBox').value = 'Select labels above to auto-generate a summary…';
+  onUpdate();
+  toast('🗑 All cleared');
+}
+
+function gotoExport() {
+  document.getElementById('exportCard').scrollIntoView({ behavior: 'smooth' });
+}
+
+let _toastTimer;
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('on');
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(() => el.classList.remove('on'), 2600);
+}
+
+/* ─────────────────────────────────────
+   BOOT
+───────────────────────────────────── */
+init();
+</script>
+</body>
+</html>
