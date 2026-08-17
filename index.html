@@ -159,7 +159,7 @@
     .participant-row .btn   { flex-shrink: 0; }
 
     /* ── Multi-Select Dropdown ── */
-    .ms                { position: relative; }
+    .ms                { position: relative; z-index: 100; }
     .ms-btn {
       width: 100%; padding: 7px 30px 7px 10px;
       border: 1px solid var(--border); border-radius: var(--r-sm);
@@ -171,11 +171,12 @@
     .ms-btn.open       { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px var(--blue-ring); }
 
     .ms-drop {
-      display: none; position: absolute;
-      inset: 100% 0 auto; margin-top: 4px;
+      display: none; position: fixed;
       background: var(--surface); border: 1px solid var(--border);
-      border-radius: var(--r); box-shadow: var(--sh-lg); z-index: 400; overflow: hidden;
+      border-radius: var(--r); box-shadow: var(--sh-lg); z-index: 9998; overflow: visible;
       transition: background .3s, border-color .3s;
+      min-width: 250px;
+      max-width: 400px;
     }
     .ms-drop.open      { display: block; }
 
@@ -184,12 +185,12 @@
     .ms-search input:focus { outline: none; border-color: var(--blue); }
     .ms-search input::placeholder { color: var(--muted); }
 
-    .ms-list           { max-height: 200px; overflow-y: auto; }
+    .ms-list           { max-height: 250px; overflow-y: auto; }
 
     .ms-item {
       display: flex; align-items: center; gap: 8px;
       padding: 6px 12px; cursor: pointer; font-size: 13px;
-      transition: background .1s; color: var(--text);
+      transition: background .1s; color: var(--text); white-space: nowrap;
     }
     .ms-item:hover     { background: var(--surface-lt); }
     .ms-item.on        { background: var(--tag-bg); }
@@ -832,9 +833,20 @@ function msOpen(k) {
   const drop = document.getElementById(`msd-${k}`);
   const btn  = document.querySelector(`#ms-${k} .ms-btn`);
   const was  = drop.classList.contains('open');
+  
   // Close all, then open the clicked one (if it was closed)
   Object.keys(DATA).forEach(j => closeMs(j));
-  if (!was) { drop.classList.add('open'); btn.classList.add('open'); }
+  
+  if (!was) { 
+    drop.classList.add('open'); 
+    btn.classList.add('open');
+    
+    // Position dropdown below the button
+    const rect = btn.getBoundingClientRect();
+    drop.style.top = (rect.bottom + 4) + 'px';
+    drop.style.left = rect.left + 'px';
+    drop.style.width = rect.width + 'px';
+  }
 }
 
 function closeMs(k) {
