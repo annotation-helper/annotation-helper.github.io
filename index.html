@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dog Cam Annotation Tool!</title>
+  <title>Dog Cam Annotation Tool</title>
   <style>
     /* ── Reset & Variables ── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -809,6 +809,13 @@ const S = { env: new Set(), coarse: new Set(), dog: new Set(), nav: new Set() };
 function init() {
   initTheme();
   
+  // Restore participant if it was saved
+  const savedParticipant = localStorage.getItem('savedParticipant');
+  if (savedParticipant) {
+    document.getElementById('participantSel').value = savedParticipant;
+    onParticipantChange();
+  }
+  
   Object.keys(DATA).forEach(k => buildList(k));
 
   const tF = document.getElementById('tFrom');
@@ -1259,55 +1266,14 @@ function copySummary() {
 function clearAll() {
   if (!confirm('Clear all annotation data for this clip?')) return;
   
-  // Close any open dropdowns
-  Object.keys(DATA).forEach(k => closeMs(k));
+  // Save participant to localStorage before refresh
+  const participant = document.getElementById('participantSel').value;
+  if (participant) {
+    localStorage.setItem('savedParticipant', participant);
+  }
   
-  // Clear all label selections
-  S.env.clear();
-  S.coarse.clear();
-  S.dog.clear();
-  S.nav.clear();
-  
-  // Rebuild all lists
-  Object.keys(DATA).forEach(k => {
-    buildList(k);
-    renderTags(k);
-  });
-  
-  // Reset all button labels to placeholders
-  document.querySelector('#ms-env .ms-lbl').textContent = 'Select environment…';
-  document.querySelector('#ms-coarse .ms-lbl').textContent = 'Select activities…';
-  document.querySelector('#ms-dog .ms-lbl').textContent = 'Select dog activities…';
-  document.querySelector('#ms-nav .ms-lbl').textContent = 'Select navigation context…';
-  
-  // Reset foot counts
-  document.getElementById('msc-coarse').textContent = '0 selected';
-  document.getElementById('msc-dog').textContent = '0 selected';
-  document.getElementById('msc-nav').textContent = '0 selected';
-  
-  // Clear tags
-  document.getElementById('tg-coarse').innerHTML = '';
-  document.getElementById('tg-dog').innerHTML = '';
-  document.getElementById('tg-nav').innerHTML = '';
-  
-  // Reset transition section
-  document.getElementById('noChg').checked = false;
-  document.getElementById('tFrom').value = '';
-  document.getElementById('tTo').value = '';
-  document.getElementById('transResult').value = '';
-  document.getElementById('transResult').style.display = 'none';
-  document.getElementById('transBuilder').style.display = 'block';
-  
-  // Reset summary
-  document.getElementById('summaryBox').value = 'Select labels above to auto-generate a summary…';
-  document.getElementById('summaryBox').classList.add('empty');
-  
-  // Hide JSON output
-  document.getElementById('jsonOut').style.display = 'none';
-  
-  // Update progress - this should now show 0/6
-  onUpdate();
-  toast('🗑 All cleared');
+  // Reload the page
+  location.reload();
 }
 
 function gotoExport() {
