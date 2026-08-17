@@ -97,7 +97,8 @@
       gap: 14px; align-items: start;
     }
     .left  { position: sticky; top: 66px; display: flex; flex-direction: column; gap: 14px; }
-    .right { display: flex; flex-direction: column; gap: 14px; }
+    .right { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+
 
     /* ── Cards ── */
     .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); box-shadow: var(--sh); overflow: hidden; transition: background .3s, border-color .3s; }
@@ -175,8 +176,9 @@
       background: var(--surface); border: 1px solid var(--border);
       border-radius: var(--r); box-shadow: var(--sh-lg); z-index: 9998; overflow: visible;
       transition: background .3s, border-color .3s;
-      min-width: 250px;
-      max-width: 400px;
+      min-width: 280px;
+      max-width: 500px;
+      max-height: 300px;
     }
     .ms-drop.open      { display: block; }
 
@@ -211,15 +213,19 @@
     .prog-bar          { height: 5px; background: var(--border); border-radius: 999px; overflow: hidden; margin-top: 5px; transition: background .3s; }
     .prog-fill         { height: 100%; background: var(--green); border-radius: 999px; transition: width .35s; }
 
-    /* ── Auto Summary ── */
+/* ── Auto Summary ── */
     .summary-box {
       padding: 12px 14px; background: var(--surface-lt);
       border: 1px solid var(--border);
       border-radius: var(--r-sm);
-      font-size: 13.5px; line-height: 1.8; color: var(--text); min-height: 80px;
+      font-size: 13.5px; line-height: 1.8; color: var(--text);
+      min-height: 140px;
+      max-height: 300px;
       font-family: inherit;
       resize: vertical;
       transition: background .3s, border-color .3s, color .3s;
+      width: 100%;
+      box-sizing: border-box;
     }
     .summary-box.empty { color: var(--muted); font-style: italic; }
     .summary-box:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px var(--blue-ring); }
@@ -845,10 +851,21 @@ function msOpen(k) {
     const rect = btn.getBoundingClientRect();
     drop.style.top = (rect.bottom + 4) + 'px';
     drop.style.left = rect.left + 'px';
-    drop.style.width = rect.width + 'px';
+    drop.style.width = Math.max(rect.width, 280) + 'px';
+    
+    // Ensure it stays visible and doesn't go off-screen
+    const dropRect = drop.getBoundingClientRect();
+    if (dropRect.right > window.innerWidth) {
+      drop.style.left = (window.innerWidth - dropRect.width - 10) + 'px';
+    }
+    if (dropRect.bottom > window.innerHeight) {
+      drop.style.top = (rect.top - dropRect.height - 4) + 'px';
+    }
+    
+    // Increment z-index so newest dropdown is on top
+    drop.style.zIndex = 9998 + Object.keys(DATA).indexOf(k);
   }
 }
-
 function closeMs(k) {
   document.getElementById(`msd-${k}`).classList.remove('open');
   const b = document.querySelector(`#ms-${k} .ms-btn`);
@@ -856,8 +873,16 @@ function closeMs(k) {
 }
 
 function msTogItem(k, lbl, row, cb) {
-  if (S[k].has(lbl)) { S[k].delete(lbl); row.classList.remove('on'); cb.checked = false; }
-  else               { S[k].add(lbl);    row.classList.add('on');    cb.checked = true;  }
+  // Environment can only have ONE selection
+  if (k === 'env') {
+    S[k].clear();
+    S[k].add(lbl);
+    buildList(k);
+  } else {
+    // Other dropdowns allow multiple selections
+    if (S[k].has(lbl)) { S[k].delete(lbl); row.classList.remove('on'); cb.checked = false; }
+    else               { S[k].add(lbl);    row.classList.add('on');    cb.checked = true;  }
+  }
   refreshMs(k);
   onUpdate();
 }
