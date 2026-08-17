@@ -29,12 +29,32 @@
       --sh-lg:      0 8px 24px rgba(0,0,0,.4);
     }
 
+    body.light-mode {
+      --blue:       #2563eb;
+      --blue-dk:    #1d4ed8;
+      --blue-lt:    #eff6ff;
+      --blue-ring:  rgba(37,99,235,.15);
+      --green:      #16a34a;
+      --bg:         #f1f5f9;
+      --surface:    #ffffff;
+      --surface-lt: #f8fafc;
+      --border:     #cbd5e1;
+      --border-lt:  #e2e8f0;
+      --text:       #0f172a;
+      --muted:      #64748b;
+      --tag-bg:     #dbeafe;
+      --tag-fg:     #1d4ed8;
+      --sh:         0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.04);
+      --sh-lg:      0 8px 24px rgba(0,0,0,.12);
+    }
+
     body {
       font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
       font-size: 14px;
       line-height: 1.5;
       background: var(--bg);
       color: var(--text);
+      transition: background .3s, color .3s;
     }
 
     /* ── Top Bar ── */
@@ -45,7 +65,13 @@
       padding: 0 20px; height: 52px;
       display: flex; align-items: center; gap: 12px;
       box-shadow: 0 4px 12px rgba(0,0,0,.3);
+      transition: background .3s;
     }
+
+    body.light-mode .topbar {
+      background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    }
+
     .topbar h1    { font-size: 15px; font-weight: 600; }
     .topbar-badge {
       margin-left: auto; font-size: 12px;
@@ -53,18 +79,29 @@
       background: rgba(255,255,255,.15); backdrop-filter: blur(4px);
     }
 
+    .theme-toggle {
+      background: rgba(255,255,255,.15); border: none;
+      color: #fff; width: 36px; height: 36px;
+      border-radius: 6px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; transition: background .2s;
+    }
+    .theme-toggle:hover {
+      background: rgba(255,255,255,.25);
+    }
+
     /* ── Page Layout ── */
     .page {
       max-width: 1360px; margin: 0 auto; padding: 16px;
-      display: grid; grid-template-columns: 420px 1fr;
+      display: grid; grid-template-columns: 380px 1fr;
       gap: 14px; align-items: start;
     }
     .left  { position: sticky; top: 66px; display: flex; flex-direction: column; gap: 14px; }
     .right { display: flex; flex-direction: column; gap: 14px; }
 
     /* ── Cards ── */
-    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); box-shadow: var(--sh); overflow: hidden; }
-    .card-head { padding: 11px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px; }
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); box-shadow: var(--sh); overflow: hidden; transition: background .3s, border-color .3s; }
+    .card-head { padding: 11px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px; transition: border-color .3s; }
     .card-head h2 { font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
     .card-head .slot { margin-left: auto; display: flex; gap: 6px; }
     .card-body { padding: 16px; }
@@ -81,18 +118,19 @@
     .btn-blue:hover    { filter: brightness(1.15); }
     .btn-green         { background: var(--green); color: #fff; }
     .btn-green:hover   { filter: brightness(1.15); }
-    .btn-ghost         { background: var(--surface-lt); color: var(--text); border: 1px solid var(--border-lt); }
+    .btn-ghost         { background: var(--surface-lt); color: var(--text); border: 1px solid var(--border-lt); transition: background .2s; }
     .btn-ghost:hover   { background: var(--border); }
     .btn-sm            { padding: 4px 10px; font-size: 12px; }
-    .btn-lock          { background: #10b981; color: #fff; padding: 6px 12px; font-size: 12px; }
-    .btn-lock.locked   { background: #059669; opacity: .8; }
+    .btn-lock          { background: #10b981; color: #fff; padding: 6px 12px; font-size: 12px; transition: all .2s; }
+    .btn-lock:hover    { filter: brightness(1.1); }
+    .btn-lock.locked   { background: #059669; opacity: 1; }
 
     /* ── Form Controls ── */
     .input {
       width: 100%; padding: 7px 10px;
       border: 1px solid var(--border); border-radius: var(--r-sm);
       font-size: 13px; color: var(--text); background: var(--surface-lt);
-      transition: border-color .15s, box-shadow .15s;
+      transition: border-color .15s, box-shadow .15s, background .3s, color .3s;
     }
     .input:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px var(--blue-ring); }
     .input::placeholder { color: var(--muted); }
@@ -103,21 +141,21 @@
       font-size: 13px; color: var(--text);
       background: var(--surface-lt) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") no-repeat right 9px center;
       appearance: none; cursor: pointer;
-      transition: border-color .15s, box-shadow .15s;
+      transition: border-color .15s, box-shadow .15s, background .3s, color .3s;
     }
     .select:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px var(--blue-ring); }
 
     /* ── Field Wrapper ── */
     .field { margin-bottom: 14px; }
     .field:last-child { margin-bottom: 0; }
-    .label { display: block; font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); margin-bottom: 6px; }
-    .hint  { font-size: 11px; color: var(--muted); margin-top: 5px; }
+    .label { display: block; font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); margin-bottom: 6px; transition: color .3s; }
+    .hint  { font-size: 11px; color: var(--muted); margin-top: 5px; transition: color .3s; }
 
     /* ── Participant Selector ── */
     .participant-row {
       display: flex; gap: 8px; align-items: flex-end; margin-bottom: 14px;
     }
-    .participant-row .input { flex: 1; }
+    .participant-row .select { flex: 1; }
     .participant-row .btn   { flex-shrink: 0; }
 
     /* ── Multi-Select Dropdown ── */
@@ -127,7 +165,7 @@
       border: 1px solid var(--border); border-radius: var(--r-sm);
       font-size: 13px; color: var(--text); text-align: left; cursor: pointer;
       background: var(--surface-lt) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") no-repeat right 9px center;
-      transition: border-color .15s, box-shadow .15s;
+      transition: border-color .15s, box-shadow .15s, background .3s, color .3s;
     }
     .ms-btn:focus,
     .ms-btn.open       { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px var(--blue-ring); }
@@ -137,11 +175,12 @@
       inset: 100% 0 auto; margin-top: 4px;
       background: var(--surface); border: 1px solid var(--border);
       border-radius: var(--r); box-shadow: var(--sh-lg); z-index: 400; overflow: hidden;
+      transition: background .3s, border-color .3s;
     }
     .ms-drop.open      { display: block; }
 
-    .ms-search         { padding: 8px; border-bottom: 1px solid var(--border-lt); }
-    .ms-search input   { width: 100%; padding: 5px 8px; border: 1px solid var(--border); border-radius: var(--r-sm); font-size: 12.5px; background: var(--surface-lt); color: var(--text); }
+    .ms-search         { padding: 8px; border-bottom: 1px solid var(--border-lt); transition: border-color .3s; }
+    .ms-search input   { width: 100%; padding: 5px 8px; border: 1px solid var(--border); border-radius: var(--r-sm); font-size: 12.5px; background: var(--surface-lt); color: var(--text); transition: background .3s, color .3s, border-color .3s; }
     .ms-search input:focus { outline: none; border-color: var(--blue); }
     .ms-search input::placeholder { color: var(--muted); }
 
@@ -156,24 +195,19 @@
     .ms-item.on        { background: var(--tag-bg); }
     .ms-item input[type="checkbox"] { pointer-events: none; accent-color: var(--blue); width: 14px; height: 14px; flex-shrink: 0; }
 
-    .ms-foot           { padding: 6px 12px; border-top: 1px solid var(--border-lt); display: flex; justify-content: space-between; align-items: center; }
+    .ms-foot           { padding: 6px 12px; border-top: 1px solid var(--border-lt); display: flex; justify-content: space-between; align-items: center; transition: border-color .3s; }
     .ms-foot-count     { font-size: 11px; color: var(--muted); }
 
     /* ── Tags ── */
     .tags              { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 7px; min-height: 22px; }
-    .tag               { display: inline-flex; align-items: center; gap: 3px; padding: 3px 9px; background: var(--tag-bg); color: var(--tag-fg); border-radius: 999px; font-size: 11.5px; font-weight: 500; max-width: 240px; }
+    .tag               { display: inline-flex; align-items: center; gap: 3px; padding: 3px 9px; background: var(--tag-bg); color: var(--tag-fg); border-radius: 999px; font-size: 11.5px; font-weight: 500; max-width: 240px; transition: background .3s, color .3s; }
     .tag-txt           { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .tag-x             { background: none; border: none; cursor: pointer; color: var(--tag-fg); opacity: .7; padding: 0 2px; font-size: 15px; line-height: 1; flex-shrink: 0; }
     .tag-x:hover       { opacity: 1; }
 
-    /* ── Video Panel ── */
-    #vid               { width: 100%; display: block; max-height: 290px; border-radius: var(--r-sm); background: #000; }
-    .vid-row           { display: flex; gap: 8px; margin-top: 8px; }
-    .clip-info         { font-family: monospace; font-size: 11.5px; color: var(--muted); margin-top: 6px; min-height: 16px; }
-
     /* ── Progress Bar ── */
-    .prog-row          { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); font-weight: 500; }
-    .prog-bar          { height: 5px; background: var(--border); border-radius: 999px; overflow: hidden; margin-top: 5px; }
+    .prog-row          { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); font-weight: 500; transition: color .3s; }
+    .prog-bar          { height: 5px; background: var(--border); border-radius: 999px; overflow: hidden; margin-top: 5px; transition: background .3s; }
     .prog-fill         { height: 100%; background: var(--green); border-radius: 999px; transition: width .35s; }
 
     /* ── Auto Summary ── */
@@ -182,8 +216,12 @@
       border: 1px solid var(--border);
       border-radius: var(--r-sm);
       font-size: 13.5px; line-height: 1.8; color: var(--text); min-height: 80px;
+      font-family: inherit;
+      resize: vertical;
+      transition: background .3s, border-color .3s, color .3s;
     }
     .summary-box.empty { color: var(--muted); font-style: italic; }
+    .summary-box:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px var(--blue-ring); }
 
     /* ── Transition ── */
     .trans-toggle {
@@ -191,6 +229,7 @@
       padding: 9px 13px; background: var(--surface-lt);
       border: 1px solid var(--border-lt); border-radius: var(--r-sm);
       cursor: pointer; margin-bottom: 12px;
+      transition: background .3s, border-color .3s;
     }
     .trans-toggle input[type="checkbox"] { width: 14px; height: 14px; accent-color: var(--blue); cursor: pointer; flex-shrink: 0; }
     .trans-toggle span { font-size: 13px; cursor: pointer; }
@@ -198,9 +237,12 @@
     .trans-grid        { display: grid; grid-template-columns: 1fr 36px 1fr; gap: 8px; align-items: start; }
     .trans-arrow       { display: flex; align-items: center; justify-content: center; padding-top: 24px; font-size: 20px; color: var(--muted); }
 
-    .trans-result      { margin-top: 10px; padding: 9px 13px; border-radius: var(--r-sm); font-size: 13px; line-height: 1.6; display: none; }
+    .trans-result      { margin-top: 10px; padding: 9px 13px; border-radius: var(--r-sm); font-size: 13px; line-height: 1.6; display: none; transition: all .3s; }
     .trans-result.nc   { background: #7c2d12; border: 1px solid #ea580c; color: #fed7aa; }
     .trans-result.ch   { background: #064e3b; border: 1px solid #10b981; color: #a7f3d0; }
+
+    body.light-mode .trans-result.nc   { background: #fefce8; border: 1px solid #fde047; color: #713f12; }
+    body.light-mode .trans-result.ch   { background: #f0fdf4; border: 1px solid #86efac; color: #14532d; }
 
     /* ── Export / JSON ── */
     .export-btns       { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
@@ -210,6 +252,10 @@
       border-radius: var(--r-sm); font-family: 'Courier New', monospace;
       font-size: 12px; white-space: pre; overflow-x: auto;
       max-height: 380px; overflow-y: auto;
+    }
+
+    body.light-mode .json-out {
+      background: #1a1a1a;
     }
 
     /* ── Toast Notification ── */
@@ -224,7 +270,7 @@
     .toast.on          { opacity: 1; transform: none; }
 
     /* ── Divider ── */
-    hr.div             { border: none; border-top: 1px solid var(--border-lt); margin: 12px 0; }
+    hr.div             { border: none; border-top: 1px solid var(--border-lt); margin: 12px 0; transition: border-color .3s; }
 
     /* ── Responsive ── */
     @media (max-width: 860px) {
@@ -246,6 +292,7 @@
   </svg>
   <h1>Dog Cam Research · Annotation Tool</h1>
   <div class="topbar-badge" id="hdrbadge">0 / 6 complete</div>
+  <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Toggle dark/light mode">🌙</button>
 </header>
 
 
@@ -255,29 +302,19 @@
 <div class="page">
 
   <!-- ─────────────────────────────────────
-       LEFT — Video + Progress
+       LEFT — Participant + Progress
   ───────────────────────────────────── -->
   <aside class="left">
 
-    <!-- Video Card -->
+    <!-- Participant Selection Card -->
     <div class="card">
       <div class="card-head">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
-        <h2>Video Player</h2>
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <h2>Participant Selection</h2>
       </div>
       <div class="card-body">
-        <video id="vid" controls>
-          <source id="vidSrc" src="" type="video/mp4">
-          Your browser does not support video playback.
-        </video>
-
-        <!-- Base URL + Participant Selection -->
-        <div class="vid-row">
-          <input id="baseUrl" class="input" placeholder="Base URL  (e.g. https://your-cdn.com/videos)" style="flex:1">
-        </div>
-
         <div class="participant-row">
-          <select id="participantSel" class="select" onchange="onParticipantChange()" style="flex:1">
+          <select id="participantSel" class="select" onchange="onParticipantChange()">
             <option value="">— Select Participant —</option>
             <option value="P001">P001</option>
             <option value="P002">P002</option>
@@ -299,13 +336,19 @@
             <option value="P018">P018</option>
             <option value="P019">P019</option>
           </select>
-          <button id="lockBtn" class="btn btn-lock" onclick="toggleLock()" style="flex-shrink:0">🔓 Lock</button>
+          <button id="lockBtn" class="btn btn-lock" onclick="toggleLock()" title="Lock/unlock participant selection">🔓 Lock</button>
         </div>
-
         <div class="clip-info" id="clipInfo">No participant selected</div>
+      </div>
+    </div>
 
-        <hr class="div">
-
+    <!-- Progress Card -->
+    <div class="card">
+      <div class="card-head">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="2" x2="12" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        <h2>Progress</h2>
+      </div>
+      <div class="card-body">
         <div class="prog-row">
           <span>Annotation progress</span>
           <span id="progTxt">0 / 6</span>
@@ -332,7 +375,7 @@
         <b>Coarse Activity</b> — tick all that apply<br>
         <b>Dog Fine-Grained</b> — tick all that apply<br>
         <b>Navigation Context</b> — tick all that apply<br>
-        <b>Summary</b> — auto-built; no typing needed<br>
+        <b>Summary</b> — auto-built & editable<br>
         <b>Transition</b> — choose start → end state<br>
         <span style="opacity:.75;">💡 Use the search boxes to filter quickly.</span>
       </div>
@@ -439,30 +482,4 @@
                 <input type="text" placeholder="Search e.g. crosswalk, curb, obstacle…" oninput="msFilter('nav', this.value)">
               </div>
               <div class="ms-list" id="msl-nav"></div>
-              <div class="ms-foot">
-                <span class="ms-foot-count" id="msc-nav">0 selected</span>
-                <button class="btn btn-sm btn-ghost" onclick="msClearAll('nav')">Clear all</button>
-              </div>
-            </div>
-          </div>
-          <div class="tags" id="tg-nav"></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ⑤ Auto-Generated Summary -->
-    <div class="card">
-      <div class="card-head">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-        <h2>⑤ Auto-Generated Video Summary</h2>
-        <div class="slot">
-          <button class="btn btn-sm btn-ghost" onclick="copySummary()">Copy</button>
-        </div>
-      </div>
-      <div class="card-body">
-        <div class="summary-box empty" id="summaryBox">
-          Select labels above to auto-generate a summary…
-        </div>
-        <p class="hint" style="margin-top:6px;">✨ Assembled automatically from your label selections — no typing required.</p>
-      </div>
-    </div
+              <div class="ms-foot
