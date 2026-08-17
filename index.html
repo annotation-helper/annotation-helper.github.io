@@ -1258,14 +1258,29 @@ function copySummary() {
 ───────────────────────────────────── */
 function clearAll() {
   if (!confirm('Clear all annotation data for this clip?')) return;
+  
+  // Clear all selections
   Object.keys(S).forEach(k => { S[k].clear(); buildList(k); refreshMs(k); });
-  document.getElementById('noChg').checked      = false;
-  document.getElementById('tFrom').value         = '';
-  document.getElementById('tTo').value           = '';
-  document.getElementById('transResult').style.display  = 'none';
+  
+  // Reset environment display
+  document.querySelector('#ms-env .ms-lbl').textContent = 'Select environment…';
+  
+  // Reset transition section
+  document.getElementById('noChg').checked = false;
+  document.getElementById('tFrom').value = '';
+  document.getElementById('tTo').value = '';
+  document.getElementById('transResult').value = '';
+  document.getElementById('transResult').style.display = 'none';
   document.getElementById('transBuilder').style.display = 'block';
-  document.getElementById('jsonOut').style.display      = 'none';
+  
+  // Reset summary
   document.getElementById('summaryBox').value = 'Select labels above to auto-generate a summary…';
+  document.getElementById('summaryBox').classList.add('empty');
+  
+  // Hide JSON output
+  document.getElementById('jsonOut').style.display = 'none';
+  
+  // Update progress
   onUpdate();
   toast('🗑 All cleared');
 }
