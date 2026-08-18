@@ -1,0 +1,62 @@
+[
+  {
+    "id": "P003_1_592",
+    "video": "P003/1/clip_000592.mp4",
+    "type": "environment_classification",
+    "question": "Which environment label best matches this video? Choose exactly one label from: ['Forest', 'Indoor', 'Intersection', 'None', 'Playground', 'Rural', 'Trail', 'Urban']. Return only one label.",
+    "answer": "Trail"
+  },
+  {
+    "id": "P003_1_592",
+    "video": "P003/1/clip_000592.mp4",
+    "type": "coarse_activity_classification",
+    "question": "Which coarse activity labels are present in this video? Choose all applicable labels only from: ['Crossing Street', 'Crowd Present', 'Distraction Event', 'Environmental Monitoring', 'Human Dog Interaction', 'Indoor Navigation', 'Investigation', 'Navigating Obstacle', 'None', 'Object Interaction', 'Person Passing Close', 'Playing', 'Running', 'Social Encounter', 'Stationary', 'Trotting', 'Turning', 'Walking']. Return the answer as a list. If none apply, return an empty list.",
+    "answer": [
+      "Stationary",
+      "Environmental Monitoring",
+      "Walking"
+    ]
+  },
+  {
+    "id": "P003_1_592",
+    "video": "P003/1/clip_000592.mp4",
+    "type": "dog_finegrained_activity_classification",
+    "question": "Which dog fine-grained activity labels are present in this video? Consider only dog fine-grained activity labels. Choose all applicable labels only from: ['Ascending Stairs', 'Backing Up', 'Carrying Object', 'Crouching', 'Descending Stairs', 'Drinking', 'Grabbing Object', 'Head Looking Down', 'Head Looking Forward', 'Head Looking Left', 'Head Looking Right', 'Head Looking Up', 'Head Scanning', 'Head Shake', 'Jumping Up', 'Licking Object', 'Lying Down', 'Nudging', 'Jumping', 'Rolling', 'Running', 'Pulling Forward', 'Resist Backward', 'Sitting', 'Sniffing Ground', 'Sniffing Object', 'Social Approach', 'Stopped', 'Trotting', 'Walking Forward']. Return the answer as a list. If none apply, return an empty list.",
+    "answer": [
+      "Stopped",
+      "Head Looking Up",
+      "Walking Forward"
+    ]
+  },
+  {
+    "id": "P003_1_592",
+    "video": "P003/1/clip_000592.mp4",
+    "type": "navigation_context_classification",
+    "question": "Which navigation context labels are present in this video? Choose all applicable labels only from: ['Nav At Crossing Street', 'Nav At Crosswalk', 'Nav At Curb', 'Nav At Door', 'Nav At Indoor Space', 'Nav At Intersection', 'Nav At Narrow Space', 'Nav At Obstacle', 'Nav At Open Space', 'Nav At Stairs', 'Nav At Traffic Signal', 'Nav At Vehicle Nearby', 'None']. Return the answer as a list. If none apply, return an empty list.",
+    "answer": [
+      "Nav At Open Space"
+    ]
+  },
+  {
+    "id": "P003_1_592",
+    "video": "P003/1/clip_000592.mp4",
+    "type": "video_summary",
+    "question": "Which ordered summary labels describe this video? Return a list of readable labels.",
+    "answer": [
+      "Surface: Dirt",
+      "Weather: Cloudy",
+      "Object: Person At Left",
+      "Object: Person At Top Left",
+      "Object: Fence At Top Left"
+    ]
+  },
+  {
+    "id": "P003_1_592",
+    "video": "P003/1/clip_000592.mp4",
+    "type": "transition_description",
+    "question": "Which main dog activity transition describes this video? Return a list with one readable transition, such as 'Stopped To Walking' or 'Walking To Turning To Walking'. If no important activity change occurs, return ['No Major Change'].",
+    "answer": [
+      "Stopped To Walking"
+    ]
+  }
+]
