@@ -42,20 +42,28 @@
   {
     "id": "P012_3_30",
     "video": "P012/3/clip_000030.mp4",
+    "type": "object_context",
+    "question": "Which important visible objects and image locations are present in this video? Return a list of readable labels such as 'Person At Top Left'. If none apply, return an empty list.",
+    "answer": [
+      "Person At Top Left",
+      "Dog At Left",
+      "Person At Center",
+      "Dog At Bottom",
+      "Dog At Top Left",
+      "Person At Left",
+      "Dog At Center",
+      "Dog At Top"
+    ]
+  },
+  {
+    "id": "P012_3_30",
+    "video": "P012/3/clip_000030.mp4",
     "type": "video_summary",
     "question": "Which ordered summary labels describe this video? Return a list of readable labels.",
     "answer": [
       "Surface: Grass",
       "Weather: Clear",
-      "Time: Daytime",
-      "Object: Person At Top Left",
-      "Object: Dog At Left",
-      "Object: Person At Center",
-      "Object: Dog At Bottom",
-      "Object: Dog At Top Left",
-      "Object: Person At Left",
-      "Object: Dog At Center",
-      "Object: Dog At Top"
+      "Time: Daytime"
     ]
   },
   {

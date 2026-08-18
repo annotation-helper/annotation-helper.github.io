@@ -41,18 +41,26 @@
   {
     "id": "P009_0_98",
     "video": "P009/0/clip_000098.mp4",
+    "type": "object_context",
+    "question": "Which important visible objects and image locations are present in this video? Return a list of readable labels such as 'Person At Top Left'. If none apply, return an empty list.",
+    "answer": [
+      "Door At Top Left",
+      "Vehicle At Bottom Left",
+      "Pole At Bottom Left",
+      "Vehicle At Left",
+      "Pole At Left",
+      "Traffic Signal At Bottom Left"
+    ]
+  },
+  {
+    "id": "P009_0_98",
+    "video": "P009/0/clip_000098.mp4",
     "type": "video_summary",
     "question": "Which ordered summary labels describe this video? Return a list of readable labels.",
     "answer": [
       "Surface: Concrete",
       "Weather: Clear",
-      "Time: Daytime",
-      "Object: Door At Top Left",
-      "Object: Vehicle At Bottom Left",
-      "Object: Pole At Bottom Left",
-      "Object: Vehicle At Left",
-      "Object: Pole At Left",
-      "Object: Traffic Signal At Bottom Left"
+      "Time: Daytime"
     ]
   },
   {

@@ -39,18 +39,26 @@
   {
     "id": "P001_3_259",
     "video": "P001/3/clip_000259.mp4",
+    "type": "object_context",
+    "question": "Which important visible objects and image locations are present in this video? Return a list of readable labels such as 'Person At Top Left'. If none apply, return an empty list.",
+    "answer": [
+      "Obstacle At Left",
+      "Dog At Left",
+      "Person At Bottom",
+      "Dog At Top Left",
+      "Pole At Left",
+      "Pole At Top Left"
+    ]
+  },
+  {
+    "id": "P001_3_259",
+    "video": "P001/3/clip_000259.mp4",
     "type": "video_summary",
     "question": "Which ordered summary labels describe this video? Return a list of readable labels.",
     "answer": [
       "Surface: Grass",
       "Weather: Cloudy",
-      "Time: Daytime",
-      "Object: Obstacle At Left",
-      "Object: Dog At Left",
-      "Object: Person At Bottom",
-      "Object: Dog At Top Left",
-      "Object: Pole At Left",
-      "Object: Pole At Top Left"
+      "Time: Daytime"
     ]
   },
   {

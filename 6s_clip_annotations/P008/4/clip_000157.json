@@ -46,22 +46,30 @@
   {
     "id": "P008_4_157",
     "video": "P008/4/clip_000157.mp4",
+    "type": "object_context",
+    "question": "Which important visible objects and image locations are present in this video? Return a list of readable labels such as 'Person At Top Left'. If none apply, return an empty list.",
+    "answer": [
+      "Sign At Left",
+      "Vehicle At Bottom",
+      "Person At Center",
+      "Curb At Bottom Left",
+      "Person At Bottom",
+      "Crosswalk At Left",
+      "Person At Bottom Left",
+      "Curb At Left",
+      "Crosswalk At Top Left",
+      "Person At Left",
+      "Person At Top Left",
+      "Vehicle At Center"
+    ]
+  },
+  {
+    "id": "P008_4_157",
+    "video": "P008/4/clip_000157.mp4",
     "type": "video_summary",
     "question": "Which ordered summary labels describe this video? Return a list of readable labels.",
     "answer": [
-      "Surface: Concrete",
-      "Object: Sign At Left",
-      "Object: Vehicle At Bottom",
-      "Object: Person At Center",
-      "Object: Curb At Bottom Left",
-      "Object: Person At Bottom",
-      "Object: Crosswalk At Left",
-      "Object: Person At Bottom Left",
-      "Object: Curb At Left",
-      "Object: Crosswalk At Top Left",
-      "Object: Person At Left",
-      "Object: Person At Top Left",
-      "Object: Vehicle At Center"
+      "Surface: Concrete"
     ]
   },
   {

@@ -1026,7 +1026,7 @@
             </div>
           </div>
           <textarea id="summaryBox" class="summary-box empty" readonly
-            placeholder="Select surface, weather, time, and objects…">Select surface, weather, time, and objects…</textarea>
+            placeholder="Select surface, weather, and time…">Select surface, weather, and time…</textarea>
           <p class="hint" style="margin-top:6px;">✨ These selected labels are saved as the video_summary answer list.
           </p>
         </div>
@@ -1600,7 +1600,7 @@
         // Show the actual environment name
         label = [...S[k]][0];
       } else {
-        label = n ? `$${n} item$${n !== 1 ? 's' : ''} selected` : placeholders[k];
+        label = n ? `${n} item${n !== 1 ? 's' : ''} selected` : placeholders[k];
       }
 
       const labelEl = document.querySelector(`#ms-${k} .ms-lbl`);
@@ -1652,7 +1652,7 @@
         return;
       }
 
-      const label = `Object: ${object} At ${direction} ${distance}`;
+      const label = `${object} At ${direction} ${distance}`;
       if (!summaryObjects.includes(label)) {
         summaryObjects.push(label);
       }
@@ -1704,7 +1704,6 @@
         selectedOptionText('summarySurface'),
         selectedOptionText('summaryWeather'),
         selectedOptionText('summaryTime'),
-        ...summaryObjects,
       ].filter(Boolean);
     }
 
@@ -1922,6 +1921,8 @@
       setMultiSelection('dog', answerForType('dog_finegrained_activity_classification'));
       setMultiSelection('nav', answerForType('navigation_context_classification'));
       applySummaryAnswer(answerForType('video_summary'));
+      const objectAnswer = answerForType('object_context');
+      if (objectAnswer !== null) applyObjectAnswer(objectAnswer);
       applyTransitionAnswer(answerForType('transition_description'));
 
       const clip = clipNumberFromPath(currentJsonPath);
@@ -1957,8 +1958,28 @@
       setSelectByText('summaryTime', values.find(value => value.startsWith('Time: ')));
       summaryObjects.length = 0;
       values
-        .filter(value => value.startsWith('Object: '))
-        .forEach(value => summaryObjects.push(value));
+        .filter(value => String(value).startsWith('Object: '))
+        .map(normalizeObjectContextLabel)
+        .forEach(value => {
+          if (value && !summaryObjects.includes(value)) summaryObjects.push(value);
+        });
+      renderSummaryObjectTags();
+    }
+
+    function normalizeObjectContextLabel(value) {
+      if (!value) return '';
+      return String(value).replace(/^Object:\s*/i, '').trim();
+    }
+
+    function applyObjectAnswer(answer) {
+      const values = Array.isArray(answer) ? answer : [];
+      summaryObjects.length = 0;
+      values
+        .map(normalizeObjectContextLabel)
+        .filter(Boolean)
+        .forEach(value => {
+          if (!summaryObjects.includes(value)) summaryObjects.push(value);
+        });
       renderSummaryObjectTags();
     }
 
@@ -2067,7 +2088,11 @@
       const sb = document.getElementById('summaryBox');
       if (sb) {
         if (sum.length) { sb.value = sum.join('\n'); sb.classList.remove('empty'); }
+<<<<<<< HEAD
         else { sb.value = 'Select surface, weather, time, and objects…'; sb.classList.add('empty'); }
+=======
+        else { sb.value = 'Select surface, weather, and time…'; sb.classList.add('empty'); }
+>>>>>>> 4db5ce0f (update)
       }
 
       /* Progress bar */
@@ -2148,6 +2173,13 @@
         {
           id: baseId,
           video: videoPath,
+          type: 'object_context',
+          question: "Which important visible objects and image locations are present in this video? Return a list of readable labels such as 'Person At Top Left'. If none apply, return an empty list.",
+          answer: [...summaryObjects]
+        },
+        {
+          id: baseId,
+          video: videoPath,
           type: 'video_summary',
           question: "Which ordered summary labels describe this video? Return a list of readable labels.",
           answer: sumT
@@ -2211,7 +2243,7 @@
 
     function copySummary() {
       const sb = document.getElementById('summaryBox');
-      if (sb.value === 'Select surface, weather, time, and objects…' || sb.value.trim() === '') {
+      if (sb.value === 'Select surface, weather, and time…' || sb.value.trim() === '') {
         toast('⚠ No summary generated yet');
         return;
       }

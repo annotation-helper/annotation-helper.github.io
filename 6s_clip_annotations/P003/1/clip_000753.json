@@ -40,14 +40,22 @@
   {
     "id": "P003_1_753",
     "video": "P003/1/clip_000753.mp4",
+    "type": "object_context",
+    "question": "Which important visible objects and image locations are present in this video? Return a list of readable labels such as 'Person At Top Left'. If none apply, return an empty list.",
+    "answer": [
+      "Person At Top Left",
+      "Person At Left"
+    ]
+  },
+  {
+    "id": "P003_1_753",
+    "video": "P003/1/clip_000753.mp4",
     "type": "video_summary",
     "question": "Which ordered summary labels describe this video? Return a list of readable labels.",
     "answer": [
       "Surface: Tile",
       "Weather: Clear",
-      "Time: Daytime",
-      "Object: Person At Top Left",
-      "Object: Person At Left"
+      "Time: Daytime"
     ]
   },
   {
