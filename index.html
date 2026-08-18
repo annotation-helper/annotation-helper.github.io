@@ -950,7 +950,8 @@
           </div>
           <button class="btn btn-blue btn-sm" onclick="addSummaryObject()">Add Object</button>
           <div class="tags" id="tg-summary-objects"></div>
-          <p class="hint" style="margin-top:6px;">Add each important visible object with its image position and distance bucket.</p>
+          <p class="hint" style="margin-top:6px;">Add each important visible object with its image position and distance
+            bucket.</p>
         </div>
       </div>
 
@@ -991,7 +992,8 @@
           </div>
           <textarea id="summaryBox" class="summary-box empty" readonly
             placeholder="Select surface, weather, time, and objects…">Select surface, weather, time, and objects…</textarea>
-          <p class="hint" style="margin-top:6px;">✨ These selected labels are saved as the video_summary answer list.</p>
+          <p class="hint" style="margin-top:6px;">✨ These selected labels are saved as the video_summary answer list.
+          </p>
         </div>
       </div>
 
@@ -1034,7 +1036,8 @@
                 </select>
               </div>
             </div>
-            <p class="hint" style="margin-top:6px;">💡 Use the main activity states only. Leave later boxes empty if the clip has only one or two states.</p>
+            <p class="hint" style="margin-top:6px;">💡 Use the main activity states only. Leave later boxes empty if the
+              clip has only one or two states.</p>
           </div>
 
           <textarea id="transResult" class="summary-box" style="display:none;"
@@ -1187,64 +1190,62 @@
         'Forest', 'Indoor', 'Intersection', 'None', 'Playground', 'Rural', 'Trail', 'Urban'
       ],
       coarse: [
-        'Crossing Street', 'Crowd Present', 'Distraction Event', 'D Play Running',
-        'D Turning', 'D Turning Right Body', 'Environmental Monitoring',
+        'Crossing Street', 'Crowd Present', 'Distraction Event', 'Environmental Monitoring',
         'Human Dog Interaction', 'Indoor Navigation', 'Investigation',
         'Navigating Obstacle', 'None', 'Object Interaction', 'Person Passing Close',
-        'Running', 'Social Encounter', 'Stationary', 'Trotting', 'Turning', 'Walking'
+        'Playing', 'Running', 'Social Encounter', 'Stationary', 'Trotting', 'Turning', 'Walking'
       ],
-      dog: [
-        'D_ASCENDING_STAIRS', 'D_BACKING_UP', 'D_BODY_SHAKE', 'D_CARRYING_OBJECT',
-        'D_CROUCHING', 'D_DESCENDING_STAIRS', 'D_DRINKING', 'D_EAR_FLICK',
-        'D_GRABBING_OBJECT', 'D_HEAD_LOOKING_DOWN', 'D_HEAD_LOOKING_FORWARD',
-        'D_HEAD_LOOKING_LEFT', 'D_HEAD_LOOKING_RIGHT', 'D_HEAD_LOOKING_UP',
-        'D_HEAD_SCANNING', 'D_HEAD_SHAKE', 'D_HEAD_TURNING_LEFT_BODY',
-        'D_JUMPING_UP', 'D_LEASH_SLACK', 'D_LEASH_TAUT', 'D_LICKING_OBJECT',
-        'D_LICKING_SELF', 'D_LYING_DOWN', 'D_NUDGING', 'D_PLAY_JUMPING',
-        'D_PLAY_ROLLING', 'D_PLAY_RUNNING', 'D_PULLING_FORWARD', 'D_RESIST_BACKWARD',
-        'D_RUNNING', 'D_SITTING', 'D_SNIFFING_GROUND', 'D_SNIFFING_OBJECT',
-        'D_SOCIAL_APPROACH', 'D_STOPPED', 'D_TAIL_LOWERED', 'D_TAIL_RAISED',
-        'D_TAIL_WAGGING_FAST', 'D_TAIL_WAGGING_SLOW', 'D_TROTTING',
-        'D_TURNING_LEFT_BODY', 'D_TURNING_RIGHT_BODY', 'D_WALKING', 'D_WALKING_FORWARD'
+      dog: ['Ascending Stairs', 'Backing Up', 'Carrying Object',
+        'Crouching', 'Descending Stairs', 'Drinking', 'Grabbing Object',
+        'Head Looking Down', 'Head Looking Forward', 'Head Looking Left',
+        'Head Looking Right', 'Head Looking Up', 'Head Scanning', 'Head Shake',
+        'Jumping Up', 'Licking Object', 'Lying Down', 'Nudging', 'Jumping',
+        'Rolling', 'Running', 'Pulling Forward', 'Resist Backward',
+        'Sitting', 'Sniffing Ground', 'Sniffing Object',
+        'Social Approach', 'Stopped', 'Trotting', 'Walking Forward'
       ],
       nav: [
-        'Crowd Present', 'Door Opening', 'Indoor Navigation', 'Intersection',
-        'Narrow Passage Ahead', 'Nav At Crosswalk', 'Nav At Curb', 'Nav Crossed Street',
-        'Nav Crossing Active', 'Nav Crosswalk', 'Nav Crosswalk Active',
-        'Nav Crosswalk Ahead', 'Nav Crosswalk Markings', 'Nav Curb Ahead',
-        'Nav Dog Arc Around', 'Nav Dog Stops At Edge', 'Nav Dog Stops At Obstacle',
-        'Nav Intersection', 'Nav Narrow Space', 'Nav Obstacle Present', 'Nav Open Space',
-        'Nav Stairs Ahead', 'Nav Stepping Down', 'Nav Stepping Up', 'Nav Traffic Signal',
-        'Nav Vehicle Waiting', 'Nav Waiting To Cross', 'None', 'Obstacle In Path',
-        'Vehicle Stopped Nearby', 'Vehicle Waiting'
+        'Nav At Open Space',
+        'Nav At Obstacle',
+        'Nav At Narrow Space',
+        'Nav At Stairs',
+        'Nav At Curb',
+        'Nav At Crosswalk',
+        'Nav At Traffic Signal',
+        'Nav At Crossing Street',
+        'Nav At Indoor Space',
+        'Nav At Door',
+        'Nav At Intersection',
+        'Nav At Vehicle Nearby',
+        'None'
       ]
     };
 
     const SUMMARY_SURFACES = [
-      ['SURFACE_GRASS', 'Surface: Grass'],
-      ['SURFACE_DIRT', 'Surface: Dirt'],
-      ['SURFACE_CONCRETE', 'Surface: Concrete'],
-      ['SURFACE_ASPHALT', 'Surface: Asphalt'],
-      ['SURFACE_SAND', 'Surface: Sand'],
-      ['SURFACE_CARPET', 'Surface: Carpet'],
-      ['SURFACE_TILE', 'Surface: Tile'],
-      ['SURFACE_WOOD', 'Surface: Wood'],
-      ['SURFACE_SNOW', 'Surface: Snow'],
-      ['SURFACE_MUD', 'Surface: Mud'],
-      ['SURFACE_GRAVEL', 'Surface: Gravel'],
-      ['SURFACE_UNKNOWN', 'Surface: Unknown'],
+      ['SURFACE_GRASS', 'Grass'],
+      ['SURFACE_DIRT', 'Dirt'],
+      ['SURFACE_CONCRETE', 'Concrete'],
+      ['SURFACE_ASPHALT', 'Asphalt'],
+      ['SURFACE_SAND', 'Sand'],
+      ['SURFACE_CARPET', 'Carpet'],
+      ['SURFACE_TILE', 'Tile'],
+      ['SURFACE_WOOD', 'Wood'],
+      ['SURFACE_SNOW', 'Snow'],
+      ['SURFACE_MUD', 'Mud'],
+      ['SURFACE_GRAVEL', 'Gravel'],
+      ['SURFACE_UNKNOWN', 'Unknown'],
     ];
 
     const SUMMARY_WEATHER = [
-      ['WEATHER_CLEAR', 'Weather: Clear'],
-      ['WEATHER_CLOUDY', 'Weather: Cloudy'],
-      ['WEATHER_RAINY', 'Weather: Rainy'],
-      ['WEATHER_UNKNOWN', 'Weather: Unknown'],
+      ['WEATHER_CLEAR', 'Clear'],
+      ['WEATHER_CLOUDY', 'Cloudy'],
+      ['WEATHER_RAINY', 'Rainy'],
+      ['WEATHER_UNKNOWN', 'Unknown'],
     ];
 
     const SUMMARY_TIME = [
-      ['TIME_DAYTIME', 'Time: Daytime'],
-      ['TIME_NIGHT', 'Time: Night'],
+      ['TIME_DAYTIME', 'Daytime'],
+      ['TIME_NIGHT', 'Night'],
     ];
 
     const SUMMARY_OBJECTS = [
@@ -1783,7 +1784,7 @@
           id: `${baseId}_004`,
           video: videoPath,
           type: 'navigation_context_classification',
-          question: "Which navigation context labels are present in this video? Choose all applicable labels only from: ['Crowd Present', 'Door Opening', 'Indoor Navigation', 'Intersection', 'Narrow Passage Ahead', 'Nav At Crosswalk', 'Nav At Curb', 'Nav Crossed Street', 'Nav Crossing Active', 'Nav Crosswalk', 'Nav Crosswalk Active', 'Nav Crosswalk Ahead', 'Nav Crosswalk Markings', 'Nav Curb Ahead', 'Nav Dog Arc Around', 'Nav Dog Stops At Edge', 'Nav Dog Stops At Obstacle', 'Nav Intersection', 'Nav Narrow Space', 'Nav Obstacle Present', 'Nav Open Space', 'Nav Stairs Ahead', 'Nav Stepping Down', 'Nav Stepping Up', 'Nav Traffic Signal', 'Nav Vehicle Waiting', 'Nav Waiting To Cross', 'None', 'Obstacle In Path', 'Vehicle Stopped Nearby', 'Vehicle Waiting']. Return the answer as a list. If none apply, return an empty list.",
+          question: "Which navigation context labels are present in this video? Choose all applicable labels only from: ['Nav At Open Space', 'Nav At Obstacle', 'Nav At Narrow Space', 'Nav At Stairs', 'Nav At Curb', 'Nav At Crosswalk', 'Nav At Traffic Signal', 'Nav At Crossing Street', 'Nav At Indoor Space', 'Nav At Door', 'Nav At Intersection', 'Nav At Vehicle Nearby', 'None']. Return the answer as a list. If none apply, return an empty list.",
           answer: [...S.nav]
         },
         {
