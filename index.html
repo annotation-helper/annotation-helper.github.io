@@ -171,6 +171,17 @@
       text-transform: uppercase;
       letter-spacing: .06em;
       color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .label-hint {
+      font-size: 10px;
+      font-weight: 500;
+      text-transform: none;
+      letter-spacing: 0;
+      color: var(--muted);
+      opacity: .9;
+      overflow-wrap: anywhere;
     }
 
     .card-head .slot {
@@ -841,8 +852,7 @@
           </div>
 
           <div style="display:flex; gap:8px; margin-top:12px;">
-            <button class="btn btn-ghost" style="flex:1" onclick="clearAll()">🗑 Clear All</button>
-            <button class="btn btn-blue" style="flex:1" onclick="gotoExport()">↓ Export</button>
+            <button class="btn btn-green" style="flex:1" onclick="downloadJSON()">⬇ Download JSON</button>
           </div>
         </div>
       </div>
@@ -883,7 +893,7 @@
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M4 6h16M4 12h16M4 18h7" />
           </svg>
-          <h2>① Environment &amp; ② Coarse Activity</h2>
+          <h2>① Environment &amp; ② Coarse Activity <span class="label-hint" id="coarseTitleHint"></span></h2>
         </div>
         <div class="card-body">
 
@@ -916,8 +926,7 @@
             <circle cx="11" cy="11" r="8" />
             <path d="M21 21l-4.35-4.35" />
           </svg>
-          <h2>③ Dog Fine-Grained Activity <span style="font-weight:400; text-transform:none; letter-spacing:0;">(D_
-              labels)</span></h2>
+          <h2>③ Dog Fine-Grained Activity <span class="label-hint" id="dogTitleHint"></span></h2>
         </div>
         <div class="card-body">
           <div class="field" style="margin-bottom:0">
@@ -938,7 +947,7 @@
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <polygon points="3 11 22 2 13 21 11 13 3 11" />
           </svg>
-          <h2>④ Navigation Context</h2>
+          <h2>④ Navigation Context <span class="label-hint" id="navTitleHint"></span></h2>
         </div>
         <div class="card-body">
           <div class="field" style="margin-bottom:0">
@@ -1073,34 +1082,6 @@
           <textarea id="transResult" class="summary-box" style="display:none;"
             placeholder="Transition description will appear here..."></textarea>
 
-        </div>
-      </div>
-
-      <!-- Export -->
-      <div class="card" id="exportCard">
-        <div class="card-head">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-            <polyline points="7 10 12 15 17 10" />
-            <line x1="12" y1="15" x2="12" y2="3" />
-          </svg>
-          <h2>💾 Export Annotation</h2>
-        </div>
-        <div class="card-body">
-
-          <div class="field">
-            <label class="label" for="clipNum">Clip Number</label>
-            <input id="clipNum" class="input" type="text"
-              placeholder="Enter 6-digit number (e.g. 123456 or just 1 for 000001)" maxlength="6">
-            <p class="hint">Enter a number; it will automatically be padded to 6 digits (e.g., 5 → 000005)</p>
-          </div>
-
-          <div class="export-btns">
-            <button class="btn btn-ghost" onclick="previewJSON()">👁 Preview JSON</button>
-            <button class="btn btn-green" onclick="downloadJSON()">⬇ Download JSON</button>
-          </div>
-
-          <pre class="json-out" id="jsonOut"></pre>
         </div>
       </div>
 
@@ -1452,6 +1433,7 @@
       Object.keys(DATA).forEach(k => buildList(k));
       buildSummarySelectors();
       buildObjectSelectors();
+      buildTitleHints();
 
       const transitionSelects = [
         document.getElementById('tState1'),
@@ -1495,6 +1477,25 @@
         const select = document.getElementById(id);
         if (!select) return;
         options.forEach(label => select.add(new Option(label, label)));
+      });
+    }
+
+    function compactTitleLabels(labels, stripPrefix = '') {
+      return labels
+        .map(label => stripPrefix && label.startsWith(stripPrefix) ? label.slice(stripPrefix.length) : label)
+        .join(', ');
+    }
+
+    function buildTitleHints() {
+      const hints = [
+        ['coarseTitleHint', DATA.coarse],
+        ['dogTitleHint', DATA.dog],
+        ['navTitleHint', DATA.nav, 'Nav At '],
+      ];
+      hints.forEach(([id, labels, stripPrefix]) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.textContent = `(${compactTitleLabels(labels, stripPrefix || '')})`;
       });
     }
 
@@ -1920,8 +1921,6 @@
       if (objectAnswer !== null) applyObjectAnswer(objectAnswer);
       applyTransitionAnswer(answerForType('transition_description'));
 
-      const clip = clipNumberFromPath(currentJsonPath);
-      document.getElementById('clipNum').value = String(clip);
       onUpdate();
     }
 
@@ -2116,8 +2115,7 @@
     function buildJSON() {
       const participant = document.getElementById('participantSel').value || 'UNKNOWN';
       const segment = document.getElementById('segmentSel').value || '0';
-      const clipNumInput = document.getElementById('clipNum').value || '0';
-      const clipNum = padClipNum(clipNumInput);
+      const clipNum = padClipNum(clipNumberFromPath(currentJsonPath || currentJsonFileName));
       const clipIndex = Number(clipNum);
       const baseId = loadedItemsByType.environment_classification?.id || `${participant}_${segment}_${clipIndex}`;
       const videoPath = loadedItemsByType.environment_classification?.video || `${participant}/${segment}/clip_${clipNum}.mp4`;
@@ -2180,26 +2178,6 @@
     /* ─────────────────────────────────────
        EXPORT ACTIONS
     ───────────────────────────────────── */
-    function previewJSON() {
-      const participant = document.getElementById('participantSel').value;
-      const progTxt = document.getElementById('progTxt').textContent;
-
-      if (!participant) {
-        toast('⚠ Please select a participant first');
-        return;
-      }
-
-      if (progTxt !== '7 / 7') {
-        toast('All 7 fields must be completed (7/7)');
-        return;
-      }
-
-      const el = document.getElementById('jsonOut');
-      el.textContent = JSON.stringify(buildJSON(), null, 2);
-      el.style.display = 'block';
-      toast('👁 JSON preview ready');
-    }
-
     function downloadJSON() {
       const participant = document.getElementById('participantSel').value;
       const progTxt = document.getElementById('progTxt').textContent;
@@ -2214,34 +2192,13 @@
         return;
       }
 
-      const clipNum = padClipNum(document.getElementById('clipNum').value || '0');
-      const fileName = currentJsonFileName || `clip_${clipNum}.json`;
+      const fileName = currentJsonFileName || 'annotation.json';
       const blob = new Blob([JSON.stringify(buildJSON(), null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
       const a = Object.assign(document.createElement('a'), { href: url, download: fileName });
       a.click();
       URL.revokeObjectURL(url);
       toast('⬇ Download started');
-    }
-
-    /* ─────────────────────────────────────
-       UTILITY
-    ───────────────────────────────────── */
-    function clearAll() {
-      if (!confirm('Clear all annotation data for this clip?')) return;
-
-      // Save participant to localStorage before refresh
-      const participant = document.getElementById('participantSel').value;
-      if (participant) {
-        localStorage.setItem('savedParticipant', participant);
-      }
-
-      // Reload the page
-      location.reload();
-    }
-
-    function gotoExport() {
-      document.getElementById('exportCard').scrollIntoView({ behavior: 'smooth' });
     }
 
     let _toastTimer;
