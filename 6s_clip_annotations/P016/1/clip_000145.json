@@ -43,13 +43,13 @@
     "id": "P016_1_145",
     "video": "P016/1/clip_000145.mp4",
     "type": "object_context",
-    "question": "Which important visible objects and image locations are present in this video? Return a list of readable labels such as 'Person At Top Left'. If none apply, return an empty list.",
+    "question": "Which important visible objects and image locations are present in this video? Return a list of readable labels such as 'Person At Left Top Close (0m-2m)'. If none apply, return an empty list.",
     "answer": [
-      "Pole At Left",
-      "Person At Bottom",
-      "Sign At Left",
-      "Sign At Bottom",
-      "Curb At Center"
+      "Pole At Left Mid Faraway (10m+)",
+      "Person At Center Bottom Near (2m-10m)",
+      "Sign At Left Mid Faraway (10m+)",
+      "Sign At Center Bottom Close (0m-2m)",
+      "Curb At Center Mid Close (0m-2m)"
     ]
   },
   {

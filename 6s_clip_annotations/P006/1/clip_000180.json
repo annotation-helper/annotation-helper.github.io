@@ -44,16 +44,16 @@
     "id": "P006_1_180",
     "video": "P006/1/clip_000180.mp4",
     "type": "object_context",
-    "question": "Which important visible objects and image locations are present in this video? Return a list of readable labels such as 'Person At Top Left'. If none apply, return an empty list.",
+    "question": "Which important visible objects and image locations are present in this video? Return a list of readable labels such as 'Person At Left Top Close (0m-2m)'. If none apply, return an empty list.",
     "answer": [
-      "Person At Left",
-      "Bicycle At Left",
-      "Bicycle At Bottom",
-      "Bicycle At Center",
-      "Person At Center",
-      "Person At Bottom",
-      "Bicycle At Top Left",
-      "Door At Center"
+      "Person At Left Mid Near (2m-10m)",
+      "Bicycle At Left Mid Near (2m-10m)",
+      "Bicycle At Center Bottom Close (0m-2m)",
+      "Bicycle At Center Mid Near (2m-10m)",
+      "Person At Center Mid Close (0m-2m)",
+      "Person At Center Bottom Close (0m-2m)",
+      "Bicycle At Left Top Near (2m-10m)",
+      "Door At Center Mid Near (2m-10m)"
     ]
   },
   {

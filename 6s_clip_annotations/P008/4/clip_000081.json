@@ -43,17 +43,18 @@
     "id": "P008_4_81",
     "video": "P008/4/clip_000081.mp4",
     "type": "object_context",
-    "question": "Which important visible objects and image locations are present in this video? Return a list of readable labels such as 'Person At Top Left'. If none apply, return an empty list.",
+    "question": "Which important visible objects and image locations are present in this video? Return a list of readable labels such as 'Person At Left Top Close (0m-2m)'. If none apply, return an empty list.",
     "answer": [
-      "Person At Bottom Left",
-      "Vehicle At Top Left",
-      "Traffic Signal At Top Left",
-      "Person At Left",
-      "Crosswalk At Top Left",
-      "Curb At Bottom Left",
-      "Person At Top Left",
-      "Obstacle At Bottom Left",
-      "Obstacle At Left"
+      "Person At Left Bottom Close (0m-2m)",
+      "Vehicle At Left Top Near (2m-10m)",
+      "Vehicle At Left Top Faraway (10m+)",
+      "Traffic Signal At Left Top Faraway (10m+)",
+      "Person At Left Mid Close (0m-2m)",
+      "Crosswalk At Left Top Near (2m-10m)",
+      "Curb At Left Bottom Close (0m-2m)",
+      "Person At Left Top Close (0m-2m)",
+      "Obstacle At Left Bottom Near (2m-10m)",
+      "Obstacle At Left Mid Near (2m-10m)"
     ]
   },
   {

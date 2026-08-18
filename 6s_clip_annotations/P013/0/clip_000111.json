@@ -43,16 +43,16 @@
     "id": "P013_0_111",
     "video": "P013/0/clip_000111.mp4",
     "type": "object_context",
-    "question": "Which important visible objects and image locations are present in this video? Return a list of readable labels such as 'Person At Top Left'. If none apply, return an empty list.",
+    "question": "Which important visible objects and image locations are present in this video? Return a list of readable labels such as 'Person At Left Top Close (0m-2m)'. If none apply, return an empty list.",
     "answer": [
-      "Person At Bottom Left",
-      "Dog At Center",
-      "Traffic Signal At Top Left",
-      "Pole At Top Left",
-      "Crosswalk At Top Left",
-      "Curb At Left",
-      "Dog At Left",
-      "Curb At Center"
+      "Person At Left Bottom Close (0m-2m)",
+      "Dog At Center Mid Close (0m-2m)",
+      "Traffic Signal At Left Top Faraway (10m+)",
+      "Pole At Left Top Faraway (10m+)",
+      "Crosswalk At Left Top Near (2m-10m)",
+      "Curb At Left Mid Close (0m-2m)",
+      "Dog At Left Mid Close (0m-2m)",
+      "Curb At Center Mid Close (0m-2m)"
     ]
   },
   {

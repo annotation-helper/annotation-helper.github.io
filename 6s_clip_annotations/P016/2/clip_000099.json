@@ -45,13 +45,14 @@
     "id": "P016_2_99",
     "video": "P016/2/clip_000099.mp4",
     "type": "object_context",
-    "question": "Which important visible objects and image locations are present in this video? Return a list of readable labels such as 'Person At Top Left'. If none apply, return an empty list.",
+    "question": "Which important visible objects and image locations are present in this video? Return a list of readable labels such as 'Person At Left Top Close (0m-2m)'. If none apply, return an empty list.",
     "answer": [
-      "Vehicle At Top Left",
-      "Crosswalk At Left",
-      "Vehicle At Left",
-      "Traffic Signal At Top Left",
-      "Curb At Left"
+      "Vehicle At Left Top Near (2m-10m)",
+      "Vehicle At Left Top Faraway (10m+)",
+      "Crosswalk At Left Mid Close (0m-2m)",
+      "Vehicle At Left Mid Near (2m-10m)",
+      "Traffic Signal At Left Top Faraway (10m+)",
+      "Curb At Left Mid Close (0m-2m)"
     ]
   },
   {

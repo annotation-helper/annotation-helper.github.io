@@ -41,13 +41,14 @@
     "id": "P003_1_169",
     "video": "P003/1/clip_000169.mp4",
     "type": "object_context",
-    "question": "Which important visible objects and image locations are present in this video? Return a list of readable labels such as 'Person At Top Left'. If none apply, return an empty list.",
+    "question": "Which important visible objects and image locations are present in this video? Return a list of readable labels such as 'Person At Left Top Close (0m-2m)'. If none apply, return an empty list.",
     "answer": [
-      "Person At Top Left",
-      "Vehicle At Left",
-      "Pole At Left",
-      "Sign At Left",
-      "Vehicle At Bottom Left"
+      "Person At Left Top Close (0m-2m)",
+      "Vehicle At Left Mid Near (2m-10m)",
+      "Pole At Left Mid Near (2m-10m)",
+      "Sign At Left Mid Near (2m-10m)",
+      "Vehicle At Left Bottom Faraway (10m+)",
+      "Pole At Left Mid Close (0m-2m)"
     ]
   },
   {

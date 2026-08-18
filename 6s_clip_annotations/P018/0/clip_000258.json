@@ -44,18 +44,21 @@
     "id": "P018_0_258",
     "video": "P018/0/clip_000258.mp4",
     "type": "object_context",
-    "question": "Which important visible objects and image locations are present in this video? Return a list of readable labels such as 'Person At Top Left'. If none apply, return an empty list.",
+    "question": "Which important visible objects and image locations are present in this video? Return a list of readable labels such as 'Person At Left Top Close (0m-2m)'. If none apply, return an empty list.",
     "answer": [
-      "Scooter At Left",
-      "Person At Bottom",
-      "Traffic Signal At Center",
-      "Person At Right",
-      "Person At Bottom Right",
-      "Obstacle At Bottom",
-      "Curb At Bottom",
-      "Vehicle At Center",
-      "Vehicle At Left",
-      "Obstacle At Bottom Right"
+      "Scooter At Left Mid Near (2m-10m)",
+      "Person At Center Bottom Near (2m-10m)",
+      "Traffic Signal At Center Mid Faraway (10m+)",
+      "Person At Right Mid Close (0m-2m)",
+      "Person At Right Bottom Close (0m-2m)",
+      "Obstacle At Center Bottom Near (2m-10m)",
+      "Curb At Center Bottom Near (2m-10m)",
+      "Vehicle At Center Mid Faraway (10m+)",
+      "Person At Right Bottom Near (2m-10m)",
+      "Vehicle At Left Mid Near (2m-10m)",
+      "Vehicle At Left Mid Faraway (10m+)",
+      "Person At Right Mid Near (2m-10m)",
+      "Obstacle At Right Bottom Near (2m-10m)"
     ]
   },
   {

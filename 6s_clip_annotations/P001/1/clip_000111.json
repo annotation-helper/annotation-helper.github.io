@@ -45,15 +45,16 @@
     "id": "P001_1_111",
     "video": "P001/1/clip_000111.mp4",
     "type": "object_context",
-    "question": "Which important visible objects and image locations are present in this video? Return a list of readable labels such as 'Person At Top Left'. If none apply, return an empty list.",
+    "question": "Which important visible objects and image locations are present in this video? Return a list of readable labels such as 'Person At Left Top Close (0m-2m)'. If none apply, return an empty list.",
     "answer": [
-      "Dog At Bottom Left",
-      "Vehicle At Left",
-      "Dog At Top Left",
-      "Dog At Left",
-      "Curb At Bottom Left",
-      "Vehicle At Bottom Left",
-      "Dog At Top"
+      "Dog At Left Bottom Close (0m-2m)",
+      "Vehicle At Left Mid Faraway (10m+)",
+      "Dog At Left Top Close (0m-2m)",
+      "Dog At Left Mid Close (0m-2m)",
+      "Curb At Left Bottom Close (0m-2m)",
+      "Vehicle At Left Bottom Faraway (10m+)",
+      "Dog At Center Top Close (0m-2m)",
+      "Vehicle At Left Bottom Near (2m-10m)"
     ]
   },
   {

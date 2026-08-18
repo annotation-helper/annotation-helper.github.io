@@ -39,13 +39,14 @@
     "id": "P004_1_154",
     "video": "P004/1/clip_000154.mp4",
     "type": "object_context",
-    "question": "Which important visible objects and image locations are present in this video? Return a list of readable labels such as 'Person At Top Left'. If none apply, return an empty list.",
+    "question": "Which important visible objects and image locations are present in this video? Return a list of readable labels such as 'Person At Left Top Close (0m-2m)'. If none apply, return an empty list.",
     "answer": [
-      "Vehicle At Left",
-      "Fence At Top Left",
-      "Guardrail At Left",
-      "Fence At Left",
-      "Fence At Center"
+      "Vehicle At Left Mid Faraway (10m+)",
+      "Fence At Left Top Near (2m-10m)",
+      "Guardrail At Left Mid Near (2m-10m)",
+      "Guardrail At Left Mid Close (0m-2m)",
+      "Fence At Left Mid Near (2m-10m)",
+      "Fence At Center Mid Near (2m-10m)"
     ]
   },
   {

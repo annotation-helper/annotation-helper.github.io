@@ -38,9 +38,9 @@
     "id": "P002_1_33",
     "video": "P002/1/clip_000033.mp4",
     "type": "object_context",
-    "question": "Which important visible objects and image locations are present in this video? Return a list of readable labels such as 'Person At Top Left'. If none apply, return an empty list.",
+    "question": "Which important visible objects and image locations are present in this video? Return a list of readable labels such as 'Person At Left Top Close (0m-2m)'. If none apply, return an empty list.",
     "answer": [
-      "Person At Left"
+      "Person At Left Mid Close (0m-2m)"
     ]
   },
   {

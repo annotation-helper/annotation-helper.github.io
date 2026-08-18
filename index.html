@@ -972,7 +972,13 @@
           <h2>⑤ Objects</h2>
         </div>
         <div class="card-body">
-          <div class="summary-grid">
+          <label class="trans-toggle">
+            <input type="checkbox" id="noObj" onchange="onObjectNoneToggle()">
+            <span>There is no important object in this video</span>
+          </label>
+
+          <div id="objectBuilder">
+            <div class="summary-grid">
             <div>
               <label class="label" for="objectSel">Object</label>
               <select id="objectSel" class="select">
@@ -991,11 +997,12 @@
                 <option value="">— Select distance —</option>
               </select>
             </div>
+            </div>
+            <button class="btn btn-blue btn-sm" onclick="addSummaryObject()">Add Object</button>
+            <div class="tags" id="tg-summary-objects"></div>
+            <p class="hint" style="margin-top:6px;">Add each important visible object with its image position and distance
+              bucket.</p>
           </div>
-          <button class="btn btn-blue btn-sm" onclick="addSummaryObject()">Add Object</button>
-          <div class="tags" id="tg-summary-objects"></div>
-          <p class="hint" style="margin-top:6px;">Add each important visible object with its image position and distance
-            bucket.</p>
         </div>
       </div>
 
@@ -1410,6 +1417,7 @@
     ───────────────────────────────────── */
     const S = { env: new Set(), coarse: new Set(), dog: new Set(), nav: new Set() };
     const summaryObjects = [];
+    let noImportantObject = false;
     let annotationManifest = [];
     let currentFileList = [];
     let currentFileIndex = -1;
@@ -1639,6 +1647,11 @@
     }
 
     function addSummaryObject() {
+      if (noImportantObject) {
+        toast('Uncheck "No important object" before adding objects');
+        return;
+      }
+
       const object = document.getElementById('objectSel').value;
       const direction = document.getElementById('objectDirectionSel').value;
       const distance = document.getElementById('objectDistanceSel').value;
@@ -1657,6 +1670,24 @@
       document.getElementById('objectDirectionSel').value = '';
       document.getElementById('objectDistanceSel').value = '';
       renderSummaryObjectTags();
+      onUpdate();
+    }
+
+    function onObjectNoneToggle() {
+      const checkbox = document.getElementById('noObj');
+      const builder = document.getElementById('objectBuilder');
+      noImportantObject = checkbox ? checkbox.checked : false;
+
+      if (noImportantObject) {
+        summaryObjects.length = 0;
+        ['objectSel', 'objectDirectionSel', 'objectDistanceSel'].forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.value = '';
+        });
+        renderSummaryObjectTags();
+      }
+
+      if (builder) builder.style.display = noImportantObject ? 'none' : 'block';
       onUpdate();
     }
 
@@ -1886,11 +1917,16 @@
         refreshMs(k);
       });
       summaryObjects.length = 0;
+      noImportantObject = false;
       renderSummaryObjectTags();
       ['summarySurface', 'summaryWeather', 'summaryTime', 'objectSel', 'objectDirectionSel', 'objectDistanceSel', 'tState1', 'tState2', 'tState3'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.value = '';
       });
+      const noObj = document.getElementById('noObj');
+      if (noObj) noObj.checked = false;
+      const objectBuilder = document.getElementById('objectBuilder');
+      if (objectBuilder) objectBuilder.style.display = 'block';
       const noChg = document.getElementById('noChg');
       if (noChg) noChg.checked = false;
       const transBuilder = document.getElementById('transBuilder');
@@ -1957,6 +1993,11 @@
         .forEach(value => {
           if (value && !summaryObjects.includes(value)) summaryObjects.push(value);
         });
+      noImportantObject = false;
+      const noObj = document.getElementById('noObj');
+      if (noObj) noObj.checked = noImportantObject;
+      const objectBuilder = document.getElementById('objectBuilder');
+      if (objectBuilder) objectBuilder.style.display = 'block';
       renderSummaryObjectTags();
     }
 
@@ -1974,6 +2015,11 @@
         .forEach(value => {
           if (!summaryObjects.includes(value)) summaryObjects.push(value);
         });
+      noImportantObject = summaryObjects.length === 0;
+      const noObj = document.getElementById('noObj');
+      if (noObj) noObj.checked = noImportantObject;
+      const objectBuilder = document.getElementById('objectBuilder');
+      if (objectBuilder) objectBuilder.style.display = noImportantObject ? 'none' : 'block';
       renderSummaryObjectTags();
     }
 
@@ -2083,7 +2129,7 @@
       const transitionSelected = getTransitionSequence().length > 0;
       const res = document.getElementById('transResult');
       const transOk = nc || transitionSelected;  // Transition is checked if any option is selected
-      const object_ok = summaryObjects.length > 0;
+      const object_ok = noImportantObject || summaryObjects.length > 0;
       const sum_ok = selectedOptionText('summarySurface') && selectedOptionText('summaryWeather') && selectedOptionText('summaryTime');
       const trans_txt_ok = res && res.value && res.value.trim() !== '';  // Transition text must not be empty
 
@@ -2155,8 +2201,8 @@
           id: baseId,
           video: videoPath,
           type: 'object_context',
-          question: "Which important visible objects and image locations are present in this video? Return a list of readable labels such as 'Person At Top Left'. If none apply, return an empty list.",
-          answer: [...summaryObjects]
+          question: "Which important visible objects and image locations are present in this video? Return a list of readable labels such as 'Person At Left Top Close (0m-2m)'. If none apply, return an empty list.",
+          answer: noImportantObject ? [] : [...summaryObjects]
         },
         {
           id: baseId,

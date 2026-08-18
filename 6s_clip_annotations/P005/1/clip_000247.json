@@ -43,17 +43,18 @@
     "id": "P005_1_247",
     "video": "P005/1/clip_000247.mp4",
     "type": "object_context",
-    "question": "Which important visible objects and image locations are present in this video? Return a list of readable labels such as 'Person At Top Left'. If none apply, return an empty list.",
+    "question": "Which important visible objects and image locations are present in this video? Return a list of readable labels such as 'Person At Left Top Close (0m-2m)'. If none apply, return an empty list.",
     "answer": [
-      "Sign At Left",
-      "Fence At Left",
-      "Dog At Center",
-      "Door At Top Left",
-      "Dog At Top Left",
-      "Sign At Bottom",
-      "Dog At Left",
-      "Person At Bottom",
-      "Person At Center"
+      "Sign At Left Mid Close (0m-2m)",
+      "Fence At Left Mid Close (0m-2m)",
+      "Dog At Center Mid Close (0m-2m)",
+      "Door At Left Top Close (0m-2m)",
+      "Fence At Left Mid Near (2m-10m)",
+      "Dog At Left Top Close (0m-2m)",
+      "Sign At Center Bottom Close (0m-2m)",
+      "Dog At Left Mid Close (0m-2m)",
+      "Person At Center Bottom Close (0m-2m)",
+      "Person At Center Mid Close (0m-2m)"
     ]
   },
   {

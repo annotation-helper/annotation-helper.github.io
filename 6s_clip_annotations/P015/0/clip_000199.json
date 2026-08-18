@@ -47,13 +47,14 @@
     "id": "P015_0_199",
     "video": "P015/0/clip_000199.mp4",
     "type": "object_context",
-    "question": "Which important visible objects and image locations are present in this video? Return a list of readable labels such as 'Person At Top Left'. If none apply, return an empty list.",
+    "question": "Which important visible objects and image locations are present in this video? Return a list of readable labels such as 'Person At Left Top Close (0m-2m)'. If none apply, return an empty list.",
     "answer": [
-      "Door At Left",
-      "Sign At Left",
-      "Person At Top Left",
-      "Bicycle At Top Left",
-      "Vehicle At Top Left"
+      "Door At Left Mid Close (0m-2m)",
+      "Sign At Left Mid Near (2m-10m)",
+      "Person At Left Top Close (0m-2m)",
+      "Bicycle At Left Top Close (0m-2m)",
+      "Sign At Left Mid Close (0m-2m)",
+      "Vehicle At Left Top Near (2m-10m)"
     ]
   },
   {

@@ -42,18 +42,20 @@
     "id": "P006_1_344",
     "video": "P006/1/clip_000344.mp4",
     "type": "object_context",
-    "question": "Which important visible objects and image locations are present in this video? Return a list of readable labels such as 'Person At Top Left'. If none apply, return an empty list.",
+    "question": "Which important visible objects and image locations are present in this video? Return a list of readable labels such as 'Person At Left Top Close (0m-2m)'. If none apply, return an empty list.",
     "answer": [
-      "Pole At Top Left",
-      "Person At Top Left",
-      "Person At Left",
-      "Obstacle At Left",
-      "Pole At Bottom Left",
-      "Obstacle At Bottom Left",
-      "Person At Bottom Left",
-      "Obstacle At Bottom",
-      "Pole At Left",
-      "Sign At Top Left"
+      "Pole At Left Top Faraway (10m+)",
+      "Person At Left Top Near (2m-10m)",
+      "Person At Left Mid Near (2m-10m)",
+      "Obstacle At Left Mid Near (2m-10m)",
+      "Pole At Left Bottom Near (2m-10m)",
+      "Obstacle At Left Bottom Near (2m-10m)",
+      "Person At Left Bottom Close (0m-2m)",
+      "Obstacle At Left Bottom Close (0m-2m)",
+      "Obstacle At Center Bottom Near (2m-10m)",
+      "Pole At Left Mid Faraway (10m+)",
+      "Pole At Left Mid Near (2m-10m)",
+      "Sign At Left Top Faraway (10m+)"
     ]
   },
   {

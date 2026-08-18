@@ -48,12 +48,13 @@
     "id": "P001_3_278",
     "video": "P001/3/clip_000278.mp4",
     "type": "object_context",
-    "question": "Which important visible objects and image locations are present in this video? Return a list of readable labels such as 'Person At Top Left'. If none apply, return an empty list.",
+    "question": "Which important visible objects and image locations are present in this video? Return a list of readable labels such as 'Person At Left Top Close (0m-2m)'. If none apply, return an empty list.",
     "answer": [
-      "Crosswalk At Left",
-      "Fence At Top Left",
-      "Vehicle At Left",
-      "Vehicle At Bottom Left"
+      "Crosswalk At Left Mid Close (0m-2m)",
+      "Fence At Left Top Near (2m-10m)",
+      "Vehicle At Left Mid Faraway (10m+)",
+      "Fence At Left Top Close (0m-2m)",
+      "Vehicle At Left Bottom Near (2m-10m)"
     ]
   },
   {

@@ -39,15 +39,17 @@
     "id": "P011_3_121",
     "video": "P011/3/clip_000121.mp4",
     "type": "object_context",
-    "question": "Which important visible objects and image locations are present in this video? Return a list of readable labels such as 'Person At Top Left'. If none apply, return an empty list.",
+    "question": "Which important visible objects and image locations are present in this video? Return a list of readable labels such as 'Person At Left Top Close (0m-2m)'. If none apply, return an empty list.",
     "answer": [
-      "Person At Top Left",
-      "Vehicle At Top Left",
-      "Stairs At Left",
-      "Person At Left",
-      "Sign At Center",
-      "Door At Bottom",
-      "Sign At Left"
+      "Person At Left Top Close (0m-2m)",
+      "Person At Left Top Near (2m-10m)",
+      "Vehicle At Left Top Near (2m-10m)",
+      "Stairs At Left Mid Close (0m-2m)",
+      "Person At Left Mid Near (2m-10m)",
+      "Vehicle At Left Top Close (0m-2m)",
+      "Sign At Center Mid Close (0m-2m)",
+      "Door At Center Bottom Close (0m-2m)",
+      "Sign At Left Mid Close (0m-2m)"
     ]
   },
   {

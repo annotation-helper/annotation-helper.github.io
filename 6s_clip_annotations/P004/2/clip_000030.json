@@ -38,14 +38,16 @@
     "id": "P004_2_30",
     "video": "P004/2/clip_000030.mp4",
     "type": "object_context",
-    "question": "Which important visible objects and image locations are present in this video? Return a list of readable labels such as 'Person At Top Left'. If none apply, return an empty list.",
+    "question": "Which important visible objects and image locations are present in this video? Return a list of readable labels such as 'Person At Left Top Close (0m-2m)'. If none apply, return an empty list.",
     "answer": [
-      "Vehicle At Top Left",
-      "Vehicle At Center",
-      "Vehicle At Bottom",
-      "Pole At Left",
-      "Vehicle At Left",
-      "Fence At Top Left"
+      "Vehicle At Left Top Close (0m-2m)",
+      "Vehicle At Left Top Faraway (10m+)",
+      "Vehicle At Center Mid Faraway (10m+)",
+      "Vehicle At Center Bottom Faraway (10m+)",
+      "Pole At Left Mid Faraway (10m+)",
+      "Vehicle At Left Top Near (2m-10m)",
+      "Vehicle At Left Mid Faraway (10m+)",
+      "Fence At Left Top Near (2m-10m)"
     ]
   },
   {

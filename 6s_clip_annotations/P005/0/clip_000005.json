@@ -40,13 +40,13 @@
     "id": "P005_0_5",
     "video": "P005/0/clip_000005.mp4",
     "type": "object_context",
-    "question": "Which important visible objects and image locations are present in this video? Return a list of readable labels such as 'Person At Top Left'. If none apply, return an empty list.",
+    "question": "Which important visible objects and image locations are present in this video? Return a list of readable labels such as 'Person At Left Top Close (0m-2m)'. If none apply, return an empty list.",
     "answer": [
-      "Dog At Left",
-      "Vehicle At Left",
-      "Dog At Top Left",
-      "Person At Top Left",
-      "Dog At Top"
+      "Dog At Left Mid Close (0m-2m)",
+      "Vehicle At Left Mid Faraway (10m+)",
+      "Dog At Left Top Close (0m-2m)",
+      "Person At Left Top Close (0m-2m)",
+      "Dog At Center Top Close (0m-2m)"
     ]
   },
   {

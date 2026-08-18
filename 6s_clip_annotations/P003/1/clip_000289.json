@@ -38,9 +38,9 @@
     "id": "P003_1_289",
     "video": "P003/1/clip_000289.mp4",
     "type": "object_context",
-    "question": "Which important visible objects and image locations are present in this video? Return a list of readable labels such as 'Person At Top Left'. If none apply, return an empty list.",
+    "question": "Which important visible objects and image locations are present in this video? Return a list of readable labels such as 'Person At Left Top Close (0m-2m)'. If none apply, return an empty list.",
     "answer": [
-      "Pole At Bottom Left"
+      "Pole At Left Bottom Faraway (10m+)"
     ]
   },
   {

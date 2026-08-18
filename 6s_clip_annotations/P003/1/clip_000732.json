@@ -40,14 +40,8 @@
     "id": "P003_1_732",
     "video": "P003/1/clip_000732.mp4",
     "type": "object_context",
-    "question": "Which important visible objects and image locations are present in this video? Return a list of readable labels such as 'Person At Top Left'. If none apply, return an empty list.",
-    "answer": [
-      "Person At Top Left",
-      "Dog At Top",
-      "Sign At Top Left",
-      "Dog At Center",
-      "Dog At Left"
-    ]
+    "question": "Which important visible objects and image locations are present in this video? Return a list of readable labels such as 'Person At Left Top Close (0m-2m)'. If none apply, return an empty list.",
+    "answer": []
   },
   {
     "id": "P003_1_732",

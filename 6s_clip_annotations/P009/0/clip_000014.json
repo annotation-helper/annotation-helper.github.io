@@ -42,12 +42,12 @@
     "id": "P009_0_14",
     "video": "P009/0/clip_000014.mp4",
     "type": "object_context",
-    "question": "Which important visible objects and image locations are present in this video? Return a list of readable labels such as 'Person At Top Left'. If none apply, return an empty list.",
+    "question": "Which important visible objects and image locations are present in this video? Return a list of readable labels such as 'Person At Left Top Close (0m-2m)'. If none apply, return an empty list.",
     "answer": [
-      "Sign At Top",
-      "Obstacle At Left",
-      "Person At Top Left",
-      "Bicycle At Top Left"
+      "Sign At Center Top Faraway (10m+)",
+      "Obstacle At Left Mid Close (0m-2m)",
+      "Person At Left Top Close (0m-2m)",
+      "Bicycle At Left Top Faraway (10m+)"
     ]
   },
   {

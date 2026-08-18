@@ -44,19 +44,20 @@
     "id": "P017_0_42",
     "video": "P017/0/clip_000042.mp4",
     "type": "object_context",
-    "question": "Which important visible objects and image locations are present in this video? Return a list of readable labels such as 'Person At Top Left'. If none apply, return an empty list.",
+    "question": "Which important visible objects and image locations are present in this video? Return a list of readable labels such as 'Person At Left Top Close (0m-2m)'. If none apply, return an empty list.",
     "answer": [
-      "Person At Left",
-      "Obstacle At Bottom Left",
-      "Door At Left",
-      "Sign At Top Left",
-      "Door At Top Left",
-      "Obstacle At Top Left",
-      "Sign At Bottom",
-      "Person At Bottom",
-      "Sign At Left",
-      "Obstacle At Bottom",
-      "Person At Top Left"
+      "Person At Left Mid Close (0m-2m)",
+      "Obstacle At Left Bottom Near (2m-10m)",
+      "Door At Left Mid Close (0m-2m)",
+      "Person At Left Mid Near (2m-10m)",
+      "Sign At Left Top Near (2m-10m)",
+      "Door At Left Top Close (0m-2m)",
+      "Obstacle At Left Top Near (2m-10m)",
+      "Sign At Center Bottom Near (2m-10m)",
+      "Person At Center Bottom Near (2m-10m)",
+      "Sign At Left Mid Near (2m-10m)",
+      "Obstacle At Center Bottom Near (2m-10m)",
+      "Person At Left Top Close (0m-2m)"
     ]
   },
   {

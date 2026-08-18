@@ -41,17 +41,18 @@
     "id": "P013_0_206",
     "video": "P013/0/clip_000206.mp4",
     "type": "object_context",
-    "question": "Which important visible objects and image locations are present in this video? Return a list of readable labels such as 'Person At Top Left'. If none apply, return an empty list.",
+    "question": "Which important visible objects and image locations are present in this video? Return a list of readable labels such as 'Person At Left Top Close (0m-2m)'. If none apply, return an empty list.",
     "answer": [
-      "Person At Top Left",
-      "Vehicle At Left",
-      "Pole At Top Left",
-      "Person At Top",
-      "Vehicle At Top Left",
-      "Dog At Left",
-      "Person At Center",
-      "Person At Left",
-      "Dog At Center"
+      "Person At Left Top Near (2m-10m)",
+      "Vehicle At Left Mid Close (0m-2m)",
+      "Pole At Left Top Close (0m-2m)",
+      "Person At Center Top Close (0m-2m)",
+      "Vehicle At Left Top Near (2m-10m)",
+      "Dog At Left Mid Close (0m-2m)",
+      "Person At Center Mid Close (0m-2m)",
+      "Person At Left Mid Close (0m-2m)",
+      "Dog At Center Mid Close (0m-2m)",
+      "Vehicle At Left Top Close (0m-2m)"
     ]
   },
   {

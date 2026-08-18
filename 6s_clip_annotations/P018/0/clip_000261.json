@@ -44,16 +44,18 @@
     "id": "P018_0_261",
     "video": "P018/0/clip_000261.mp4",
     "type": "object_context",
-    "question": "Which important visible objects and image locations are present in this video? Return a list of readable labels such as 'Person At Top Left'. If none apply, return an empty list.",
+    "question": "Which important visible objects and image locations are present in this video? Return a list of readable labels such as 'Person At Left Top Close (0m-2m)'. If none apply, return an empty list.",
     "answer": [
-      "Person At Center",
-      "Person At Top Left",
-      "Sign At Top Left",
-      "Person At Bottom",
-      "Traffic Signal At Left",
-      "Bicycle At Left",
-      "Curb At Top",
-      "Person At Left"
+      "Person At Center Mid Close (0m-2m)",
+      "Person At Left Top Near (2m-10m)",
+      "Person At Left Top Close (0m-2m)",
+      "Sign At Left Top Faraway (10m+)",
+      "Person At Center Bottom Close (0m-2m)",
+      "Traffic Signal At Left Mid Faraway (10m+)",
+      "Bicycle At Left Mid Faraway (10m+)",
+      "Curb At Center Top Close (0m-2m)",
+      "Person At Left Mid Faraway (10m+)",
+      "Sign At Left Top Close (0m-2m)"
     ]
   },
   {

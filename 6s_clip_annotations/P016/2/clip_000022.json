@@ -40,16 +40,19 @@
     "id": "P016_2_22",
     "video": "P016/2/clip_000022.mp4",
     "type": "object_context",
-    "question": "Which important visible objects and image locations are present in this video? Return a list of readable labels such as 'Person At Top Left'. If none apply, return an empty list.",
+    "question": "Which important visible objects and image locations are present in this video? Return a list of readable labels such as 'Person At Left Top Close (0m-2m)'. If none apply, return an empty list.",
     "answer": [
-      "Person At Top Right",
-      "Pole At Top Right",
-      "Obstacle At Center",
-      "Person At Center",
-      "Scooter At Center",
-      "Obstacle At Left",
-      "Person At Left",
-      "Scooter At Left"
+      "Person At Right Top Close (0m-2m)",
+      "Pole At Right Top Near (2m-10m)",
+      "Obstacle At Center Mid Faraway (10m+)",
+      "Person At Center Mid Faraway (10m+)",
+      "Scooter At Center Mid Faraway (10m+)",
+      "Obstacle At Left Mid Faraway (10m+)",
+      "Person At Left Mid Faraway (10m+)",
+      "Scooter At Left Mid Faraway (10m+)",
+      "Obstacle At Left Mid Near (2m-10m)",
+      "Person At Left Mid Near (2m-10m)",
+      "Scooter At Left Mid Near (2m-10m)"
     ]
   },
   {
