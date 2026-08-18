@@ -804,18 +804,14 @@
           <div class="clip-info" id="clipInfo">No participant selected</div>
           <div class="field" style="margin-top:14px;">
             <label class="label" for="segmentSel">Video Segment Index</label>
-            <select id="segmentSel" class="select" onchange="onSegmentChange()">
-              <option value="">— Select index —</option>
-              <option value="0">0</option>
-              <option value="1">1</option>
-              <option value="2">2</option>
-              <option value="3">3</option>
+            <select id="segmentSel" class="select" onchange="onSegmentChange()" disabled>
+              <option value="">— Lock participant first —</option>
             </select>
           </div>
           <div class="field">
             <label class="label" for="jsonFileSel">Annotation JSON</label>
-            <select id="jsonFileSel" class="select" onchange="loadSelectedAnnotation()">
-              <option value="">— Lock participant and select index —</option>
+            <select id="jsonFileSel" class="select" onchange="loadSelectedAnnotation()" disabled>
+              <option value="">— Select index first —</option>
             </select>
           </div>
           <div class="clip-nav-row">
@@ -1200,32 +1196,39 @@
       const sel = document.getElementById('participantSel');
       const seg = document.getElementById('segmentSel');
       const btn = document.getElementById('lockBtn');
+      if (!sel || !seg || !btn) return;
 
-      if (!participantLocked && (!sel.value || !seg.value)) {
-        toast('Select participant and video segment index first');
+      if (!participantLocked && !sel.value) {
+        toast('Select participant first');
         return;
       }
 
       participantLocked = !participantLocked;
       sel.disabled = participantLocked;
-      seg.disabled = participantLocked;
       btn.classList.toggle('locked', participantLocked);
       btn.textContent = participantLocked ? '🔒 Locked' : '🔓 Lock';
 
       if (!participantLocked) {
+        seg.disabled = true;
+        resetFileSelectors('— Lock participant first —', '— Select index first —');
         sel.focus();
       } else {
-        loadAnnotationList();
+        loadParticipantSegments();
       }
     }
 
     function onParticipantChange() {
-      const p = document.getElementById('participantSel').value;
+      const participantSel = document.getElementById('participantSel');
       const info = document.getElementById('clipInfo');
+      const p = participantSel ? participantSel.value : '';
       if (p) {
-        info.textContent = `✓ Participant: ${p} selected`;
+        if (info) info.textContent = `✓ Participant: ${p} selected`;
       } else {
-        info.textContent = 'No participant selected';
+        if (info) info.textContent = 'No participant selected';
+      }
+
+      if (!participantLocked) {
+        resetFileSelectors('— Lock participant first —', '— Select index first —');
       }
     }
 
@@ -1483,6 +1486,7 @@
         ['summaryTime', SUMMARY_TIME],
       ].forEach(([id, options]) => {
         const select = document.getElementById(id);
+        if (!select) return;
         options.forEach(([value, label]) => select.add(new Option(label, value)));
       });
     }
@@ -1494,6 +1498,7 @@
         ['objectDistanceSel', SUMMARY_OBJECT_DISTANCES],
       ].forEach(([id, options]) => {
         const select = document.getElementById(id);
+        if (!select) return;
         options.forEach(label => select.add(new Option(label, label)));
       });
     }
@@ -1503,6 +1508,7 @@
     ───────────────────────────────────── */
     function buildList(k) {
       const el = document.getElementById(`msl-${k}`);
+      if (!el || !DATA[k]) return;
       el.innerHTML = '';
       DATA[k].forEach(lbl => {
         const row = document.createElement('div');
@@ -1525,6 +1531,7 @@
     function msOpen(k) {
       const portal = document.getElementById(`ms-portal-${k}`);
       const btn = document.querySelector(`#ms-${k} .ms-btn`);
+      if (!portal || !btn) return;
       const was = portal.classList.contains('open');
 
       // Close all
@@ -1544,6 +1551,7 @@
 
     function closeMs(k) {
       const portal = document.getElementById(`ms-portal-${k}`);
+      if (!portal) return;
       portal.classList.remove('open');
       const btn = document.querySelector(`#ms-${k} .ms-btn`);
       if (btn) btn.classList.remove('open');
@@ -1595,7 +1603,8 @@
         label = n ? `$${n} item$${n !== 1 ? 's' : ''} selected` : placeholders[k];
       }
 
-      document.querySelector(`#ms-${k} .ms-lbl`).textContent = label;
+      const labelEl = document.querySelector(`#ms-${k} .ms-lbl`);
+      if (labelEl) labelEl.textContent = label;
 
       if (document.getElementById(`msc-${k}`)) {
         document.getElementById(`msc-${k}`).textContent = `${n} selected`;
@@ -1605,6 +1614,7 @@
 
     function renderTags(k) {
       const c = document.getElementById(`tg-${k}`);
+      if (!c) return;
       c.innerHTML = '';
       S[k].forEach(lbl => {
         const t = document.createElement('span');
@@ -1665,6 +1675,7 @@
 
     function renderSummaryObjectTags() {
       const c = document.getElementById('tg-summary-objects');
+      if (!c) return;
       c.innerHTML = '';
       summaryObjects.forEach(label => {
         const t = document.createElement('span');
@@ -1713,13 +1724,86 @@
       return annotationManifest;
     }
 
-    async function loadAnnotationList() {
-      const participant = document.getElementById('participantSel').value;
-      const segment = document.getElementById('segmentSel').value;
+    function resetFileSelectors(segmentPlaceholder, filePlaceholder) {
+      const segmentSel = document.getElementById('segmentSel');
       const fileSel = document.getElementById('jsonFileSel');
+      if (segmentSel) {
+        segmentSel.innerHTML = '';
+        segmentSel.add(new Option(segmentPlaceholder, ''));
+      }
+      if (fileSel) {
+        fileSel.innerHTML = '';
+        fileSel.add(new Option(filePlaceholder, ''));
+        fileSel.disabled = true;
+      }
+      currentFileList = [];
+      currentFileIndex = -1;
+      currentJsonPath = '';
+      currentJsonFileName = '';
+      const info = document.getElementById('fileInfo');
+      if (info) info.textContent = 'No JSON loaded';
+    }
+
+    async function loadParticipantSegments() {
+      const participantSel = document.getElementById('participantSel');
+      const segmentSel = document.getElementById('segmentSel');
+      const info = document.getElementById('fileInfo');
+      const participant = participantSel ? participantSel.value : '';
+      if (!participant || !segmentSel) return;
+      resetFileSelectors('Loading indexes...', '— Select index first —');
+      if (info) info.textContent = `Loading JSON list for ${participant}...`;
+
+      try {
+        const manifest = await loadManifest();
+        const prefix = `6s_clip_annotations/${participant}/`;
+        const segments = [...new Set(
+          manifest
+            .filter(path => path.startsWith(prefix) && path.endsWith('.json'))
+            .map(path => path.split('/')[2])
+        )].sort((a, b) => Number(a) - Number(b));
+
+        segmentSel.innerHTML = '';
+        if (!segments.length) {
+          segmentSel.add(new Option('No indexes found for this participant', ''));
+          segmentSel.disabled = true;
+          if (info) info.textContent = `No JSON files found for ${participant}`;
+          return;
+        }
+
+        segmentSel.add(new Option('— Select index —', ''));
+        segments.forEach(segment => segmentSel.add(new Option(segment, segment)));
+        segmentSel.disabled = false;
+        if (info) info.textContent = `${segments.length} index(es) found for ${participant}`;
+      } catch (error) {
+        resetFileSelectors('Could not load indexes', '— Select index first —');
+        if (info) info.textContent = error.message;
+        toast(error.message);
+      }
+    }
+
+    async function loadAnnotationList() {
+      const participantSel = document.getElementById('participantSel');
+      const segmentSel = document.getElementById('segmentSel');
+      const participant = participantSel ? participantSel.value : '';
+      const segment = segmentSel ? segmentSel.value : '';
+      const fileSel = document.getElementById('jsonFileSel');
+      const info = document.getElementById('fileInfo');
+      if (!fileSel) return;
+
+      if (!participant || !segment) {
+        fileSel.innerHTML = '<option value="">— Select index first —</option>';
+        fileSel.disabled = true;
+        currentFileList = [];
+        currentFileIndex = -1;
+        currentJsonPath = '';
+        currentJsonFileName = '';
+        if (info) info.textContent = 'Select an index to load JSON files';
+        return;
+      }
 
       fileSel.innerHTML = '<option value="">Loading JSON files...</option>';
-      document.getElementById('fileInfo').textContent = 'Loading JSON list...';
+      fileSel.disabled = true;
+      if (info) info.textContent = 'Loading JSON list...';
 
       try {
         const manifest = await loadManifest();
@@ -1731,18 +1815,21 @@
         fileSel.innerHTML = '';
         if (!currentFileList.length) {
           fileSel.add(new Option('No JSON files found for this participant/index', ''));
-          document.getElementById('fileInfo').textContent = `No JSON files found for ${participant}/${segment}`;
+          fileSel.disabled = true;
+          if (info) info.textContent = `No JSON files found for ${participant}/${segment}`;
           return;
         }
 
         currentFileList.forEach((path, index) => {
           fileSel.add(new Option(path.split('/').pop(), String(index)));
         });
+        fileSel.disabled = false;
         fileSel.value = '0';
         await loadSelectedAnnotation();
       } catch (error) {
         fileSel.innerHTML = '<option value="">Could not load JSON list</option>';
-        document.getElementById('fileInfo').textContent = error.message;
+        fileSel.disabled = true;
+        if (info) info.textContent = error.message;
         toast(error.message);
       }
     }
@@ -1754,13 +1841,15 @@
 
     async function loadSelectedAnnotation() {
       const fileSel = document.getElementById('jsonFileSel');
+      if (!fileSel) return;
       const index = Number(fileSel.value);
       if (!Number.isInteger(index) || index < 0 || index >= currentFileList.length) return;
 
       currentFileIndex = index;
       currentJsonPath = currentFileList[index];
       currentJsonFileName = currentJsonPath.split('/').pop();
-      document.getElementById('fileInfo').textContent = `Loading ${currentJsonPath}`;
+      const info = document.getElementById('fileInfo');
+      if (info) info.textContent = `Loading ${currentJsonPath}`;
 
       try {
         const response = await fetch(currentJsonPath, { cache: 'no-store' });
@@ -1769,28 +1858,33 @@
         }
         const items = await response.json();
         applyAnnotationItems(items);
-        document.getElementById('fileInfo').textContent = `${currentJsonFileName} (${currentFileIndex + 1}/${currentFileList.length})`;
+        if (info) info.textContent = `${currentJsonFileName} (${currentFileIndex + 1}/${currentFileList.length})`;
         toast(`Loaded ${currentJsonFileName}`);
       } catch (error) {
         resetAnnotationForm();
-        document.getElementById('fileInfo').textContent = error.message;
+        if (info) info.textContent = error.message;
         toast(error.message);
       }
     }
 
     function loadPrevAnnotation() {
       if (!currentFileList.length || currentFileIndex <= 0) return;
-      document.getElementById('jsonFileSel').value = String(currentFileIndex - 1);
+      const fileSel = document.getElementById('jsonFileSel');
+      if (!fileSel) return;
+      fileSel.value = String(currentFileIndex - 1);
       loadSelectedAnnotation();
     }
 
     function loadNextAnnotation() {
       if (!currentFileList.length || currentFileIndex >= currentFileList.length - 1) return;
-      document.getElementById('jsonFileSel').value = String(currentFileIndex + 1);
+      const fileSel = document.getElementById('jsonFileSel');
+      if (!fileSel) return;
+      fileSel.value = String(currentFileIndex + 1);
       loadSelectedAnnotation();
     }
 
     function resetAnnotationForm() {
+      loadedItemsByType = {};
       Object.keys(S).forEach(k => {
         S[k].clear();
         buildList(k);
@@ -1803,17 +1897,25 @@
         if (el) el.value = '';
       });
       const noChg = document.getElementById('noChg');
-      noChg.checked = false;
-      document.getElementById('transBuilder').style.display = 'block';
-      document.getElementById('transResult').style.display = 'none';
-      document.getElementById('transResult').value = '';
+      if (noChg) noChg.checked = false;
+      const transBuilder = document.getElementById('transBuilder');
+      const transResult = document.getElementById('transResult');
+      if (transBuilder) transBuilder.style.display = 'block';
+      if (transResult) {
+        transResult.style.display = 'none';
+        transResult.value = '';
+      }
       onUpdate();
     }
 
     function applyAnnotationItems(items) {
       resetAnnotationForm();
       loadedItemsByType = {};
-      items.forEach(item => { loadedItemsByType[item.type] = item; });
+      if (Array.isArray(items)) {
+        items.forEach(item => {
+          if (item && item.type) loadedItemsByType[item.type] = item;
+        });
+      }
 
       setSingleSelection('env', answerForType('environment_classification'));
       setMultiSelection('coarse', answerForType('coarse_activity_classification'));
@@ -1862,6 +1964,7 @@
 
     function setSelectByText(id, text) {
       const select = document.getElementById(id);
+      if (!select) return;
       select.value = '';
       if (!text) return;
       for (const option of select.options) {
@@ -1876,14 +1979,15 @@
       const value = Array.isArray(answer) ? answer[0] : answer;
       if (!value) return;
       if (value === 'No Major Change') {
-        document.getElementById('noChg').checked = true;
+        const noChg = document.getElementById('noChg');
+        if (noChg) noChg.checked = true;
         onTransToggle();
         return;
       }
       const states = value.split(' To ').slice(0, 3);
       ['tState1', 'tState2', 'tState3'].forEach((id, index) => {
         const el = document.getElementById(id);
-        el.value = states[index] || '';
+        if (el) el.value = states[index] || '';
       });
       onTransChange();
     }
@@ -1900,9 +2004,11 @@
        TRANSITION
     ───────────────────────────────────── */
     function onTransToggle() {
-      const nc = document.getElementById('noChg').checked;
+      const noChg = document.getElementById('noChg');
       const bld = document.getElementById('transBuilder');
       const res = document.getElementById('transResult');
+      if (!noChg || !bld || !res) return;
+      const nc = noChg.checked;
       bld.style.display = nc ? 'none' : 'block';
 
       if (nc) {
@@ -1918,9 +2024,9 @@
 
     function getTransitionSequence() {
       const states = [
-        document.getElementById('tState1').value,
-        document.getElementById('tState2').value,
-        document.getElementById('tState3').value,
+        document.getElementById('tState1')?.value,
+        document.getElementById('tState2')?.value,
+        document.getElementById('tState3')?.value,
       ].filter(Boolean);
 
       const sequence = [];
@@ -1934,6 +2040,7 @@
 
     function onTransChange() {
       const res = document.getElementById('transResult');
+      if (!res) return;
       const sequence = getTransitionSequence();
 
       if (!sequence.length) { res.style.display = 'none'; onUpdate(); return; }
@@ -1944,11 +2051,11 @@
     }
 
     function getTransTxt() {
-      if (document.getElementById('noChg').checked)
+      if (document.getElementById('noChg')?.checked)
         return 'No Major Change';
 
       const res = document.getElementById('transResult');
-      return res.value || '';
+      return res ? (res.value || '') : '';
     }
 
     /* ─────────────────────────────────────
@@ -1958,18 +2065,20 @@
       /* Rebuild summary display */
       const sum = buildSummary();
       const sb = document.getElementById('summaryBox');
-      if (sum.length) { sb.value = sum.join('\n'); sb.classList.remove('empty'); }
-      else { sb.value = 'Select surface, weather, time, and objects…'; sb.classList.add('empty'); }
+      if (sb) {
+        if (sum.length) { sb.value = sum.join('\n'); sb.classList.remove('empty'); }
+        else { sb.value = 'Select surface, weather, time, and objects…'; sb.classList.add('empty'); }
+      }
 
       /* Progress bar */
       const env = S.env.size > 0;
-      const nc = document.getElementById('noChg').checked;
+      const nc = document.getElementById('noChg')?.checked || false;
       const transitionSelected = getTransitionSequence().length > 0;
       const res = document.getElementById('transResult');
       const transOk = nc || transitionSelected;  // Transition is checked if any option is selected
       const object_ok = summaryObjects.length > 0;
       const sum_ok = selectedOptionText('summarySurface') && selectedOptionText('summaryWeather') && selectedOptionText('summaryTime');
-      const trans_txt_ok = res.value && res.value.trim() !== '';  // Transition text must not be empty
+      const trans_txt_ok = res && res.value && res.value.trim() !== '';  // Transition text must not be empty
 
       const n = [
         env,
@@ -1981,9 +2090,12 @@
         (transOk && trans_txt_ok),  // Both: selected AND has text
       ].filter(Boolean).length;
 
-      document.getElementById('progTxt').textContent = `${n} / 7`;
-      document.getElementById('progFill').style.width = `${n / 7 * 100}%`;
-      document.getElementById('hdrbadge').textContent = `${n} / 7 complete`;
+      const progTxt = document.getElementById('progTxt');
+      const progFill = document.getElementById('progFill');
+      const hdrBadge = document.getElementById('hdrbadge');
+      if (progTxt) progTxt.textContent = `${n} / 7`;
+      if (progFill) progFill.style.width = `${n / 7 * 100}%`;
+      if (hdrBadge) hdrBadge.textContent = `${n} / 7 complete`;
     }
 
     /* ─────────────────────────────────────
