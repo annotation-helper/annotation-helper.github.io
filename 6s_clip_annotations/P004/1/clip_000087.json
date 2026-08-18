@@ -45,9 +45,10 @@
     "answer": [
       "Vehicle At Left Top Close (0m-2m)",
       "Fence At Left Mid Close (0m-2m)",
-      "Vehicle At Left Top Near (2m-10m)",
+      "Vehicle At Left Top Near (2m-4m)",
+      "Vehicle At Left Top Faraway (4m+)",
       "Person At Left Top Close (0m-2m)",
-      "Fence At Left Mid Near (2m-10m)"
+      "Fence At Left Mid Near (2m-4m)"
     ]
   },
   {

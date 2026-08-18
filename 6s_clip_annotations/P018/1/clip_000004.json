@@ -50,11 +50,11 @@
     "answer": [
       "Person At Left Top Close (0m-2m)",
       "Dog At Left Mid Close (0m-2m)",
-      "Vehicle At Left Top Faraway (10m+)",
-      "Pole At Left Mid Faraway (10m+)",
-      "Obstacle At Center Bottom Faraway (10m+)",
+      "Vehicle At Left Top Faraway (4m+)",
+      "Pole At Left Mid Faraway (4m+)",
+      "Obstacle At Center Bottom Faraway (4m+)",
       "Dog At Center Mid Close (0m-2m)",
-      "Pole At Left Bottom Faraway (10m+)"
+      "Pole At Left Bottom Faraway (4m+)"
     ]
   },
   {

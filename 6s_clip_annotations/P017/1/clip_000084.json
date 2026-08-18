@@ -45,13 +45,12 @@
       "Fence At Left Top Close (0m-2m)",
       "Dog At Left Mid Close (0m-2m)",
       "Person At Center Bottom Close (0m-2m)",
-      "Vehicle At Left Bottom Faraway (10m+)",
-      "Guardrail At Left Mid Near (2m-10m)",
+      "Vehicle At Left Bottom Faraway (4m+)",
+      "Guardrail At Left Mid Near (2m-4m)",
       "Dog At Center Mid Close (0m-2m)",
       "Person At Left Bottom Close (0m-2m)",
-      "Vehicle At Left Mid Faraway (10m+)",
-      "Dog At Left Top Close (0m-2m)",
-      "Vehicle At Left Bottom Near (2m-10m)"
+      "Vehicle At Left Mid Faraway (4m+)",
+      "Dog At Left Top Close (0m-2m)"
     ]
   },
   {

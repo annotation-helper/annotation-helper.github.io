@@ -42,11 +42,12 @@
     "answer": [
       "Person At Left Top Close (0m-2m)",
       "Fence At Left Mid Close (0m-2m)",
-      "Pole At Left Mid Near (2m-10m)",
+      "Pole At Left Mid Faraway (4m+)",
       "Fence At Center Mid Close (0m-2m)",
-      "Pole At Center Mid Near (2m-10m)",
-      "Fence At Center Mid Near (2m-10m)",
-      "Pole At Center Bottom Near (2m-10m)",
+      "Pole At Center Mid Faraway (4m+)",
+      "Pole At Center Mid Near (2m-4m)",
+      "Fence At Center Mid Near (2m-4m)",
+      "Pole At Center Bottom Near (2m-4m)",
       "Pole At Center Bottom Close (0m-2m)"
     ]
   },

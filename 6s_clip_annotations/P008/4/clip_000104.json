@@ -52,14 +52,13 @@
     "answer": [
       "Person At Left Top Close (0m-2m)",
       "Obstacle At Left Top Close (0m-2m)",
-      "Sign At Left Top Near (2m-10m)",
-      "Vehicle At Left Mid Faraway (10m+)",
-      "Traffic Signal At Left Mid Faraway (10m+)",
-      "Vehicle At Left Bottom Faraway (10m+)",
-      "Vehicle At Left Top Faraway (10m+)",
-      "Vehicle At Left Top Near (2m-10m)",
-      "Traffic Signal At Left Bottom Faraway (10m+)",
-      "Pole At Left Bottom Faraway (10m+)"
+      "Sign At Left Top Near (2m-4m)",
+      "Vehicle At Left Mid Faraway (4m+)",
+      "Traffic Signal At Left Mid Faraway (4m+)",
+      "Vehicle At Left Bottom Faraway (4m+)",
+      "Vehicle At Left Top Faraway (4m+)",
+      "Traffic Signal At Left Bottom Faraway (4m+)",
+      "Pole At Left Bottom Faraway (4m+)"
     ]
   },
   {

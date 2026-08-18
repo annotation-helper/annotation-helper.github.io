@@ -43,9 +43,9 @@
     "answer": [
       "Person At Left Top Close (0m-2m)",
       "Person At Right Top Close (0m-2m)",
-      "Person At Right Top Near (2m-10m)",
-      "Obstacle At Center Mid Faraway (10m+)",
-      "Person At Center Mid Faraway (10m+)"
+      "Person At Right Top Near (2m-4m)",
+      "Obstacle At Center Mid Faraway (4m+)",
+      "Person At Center Mid Faraway (4m+)"
     ]
   },
   {

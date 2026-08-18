@@ -47,13 +47,13 @@
     "answer": [
       "Person At Left Top Close (0m-2m)",
       "Dog At Left Mid Close (0m-2m)",
-      "Vehicle At Left Mid Faraway (10m+)",
+      "Vehicle At Left Mid Faraway (4m+)",
       "Obstacle At Left Top Close (0m-2m)",
       "Obstacle At Center Mid Close (0m-2m)",
       "Dog At Center Mid Close (0m-2m)",
-      "Stairs At Left Bottom Near (2m-10m)",
+      "Stairs At Left Bottom Near (2m-4m)",
       "Dog At Left Top Close (0m-2m)",
-      "Fence At Left Mid Near (2m-10m)",
+      "Fence At Left Mid Near (2m-4m)",
       "Fence At Left Mid Close (0m-2m)"
     ]
   },

@@ -49,11 +49,11 @@
     "answer": [
       "Crosswalk At Left Bottom Close (0m-2m)",
       "Curb At Left Mid Close (0m-2m)",
-      "Vehicle At Left Mid Near (2m-10m)",
+      "Vehicle At Left Mid Faraway (4m+)",
       "Curb At Left Top Close (0m-2m)",
       "Person At Left Bottom Close (0m-2m)",
       "Person At Center Bottom Close (0m-2m)",
-      "Curb At Left Mid Near (2m-10m)"
+      "Curb At Left Mid Near (2m-4m)"
     ]
   },
   {

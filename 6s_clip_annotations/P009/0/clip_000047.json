@@ -43,10 +43,9 @@
     "type": "object_context",
     "question": "Which important visible objects and image locations are present in this video? Return a list of readable labels such as 'Person At Left Top Close (0m-2m)'. If none apply, return an empty list.",
     "answer": [
-      "Sign At Left Mid Faraway (10m+)",
-      "Vehicle At Left Mid Faraway (10m+)",
-      "Dog At Left Bottom Close (0m-2m)",
-      "Sign At Left Mid Near (2m-10m)"
+      "Sign At Left Mid Faraway (4m+)",
+      "Vehicle At Left Mid Faraway (4m+)",
+      "Dog At Left Bottom Close (0m-2m)"
     ]
   },
   {

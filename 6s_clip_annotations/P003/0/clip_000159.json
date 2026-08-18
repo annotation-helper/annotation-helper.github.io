@@ -44,9 +44,9 @@
     "answer": [
       "Fence At Left Mid Close (0m-2m)",
       "Pole At Left Top Close (0m-2m)",
-      "Fence At Left Mid Near (2m-10m)",
+      "Fence At Left Mid Near (2m-4m)",
       "Person At Left Top Close (0m-2m)",
-      "Fence At Left Top Near (2m-10m)"
+      "Fence At Left Top Faraway (4m+)"
     ]
   },
   {

@@ -42,11 +42,11 @@
     "question": "Which important visible objects and image locations are present in this video? Return a list of readable labels such as 'Person At Left Top Close (0m-2m)'. If none apply, return an empty list.",
     "answer": [
       "Person At Left Top Close (0m-2m)",
-      "Person At Center Top Near (2m-10m)",
-      "Person At Center Mid Faraway (10m+)",
+      "Person At Center Top Near (2m-4m)",
+      "Person At Center Mid Faraway (4m+)",
       "Fence At Left Top Close (0m-2m)",
-      "Pole At Center Top Faraway (10m+)",
-      "Pole At Left Top Faraway (10m+)"
+      "Pole At Center Top Faraway (4m+)",
+      "Pole At Left Top Faraway (4m+)"
     ]
   },
   {

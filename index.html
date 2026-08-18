@@ -890,7 +890,7 @@
           <b>Dog Fine-Grained</b> — tick all that apply<br>
           <b>Navigation Context</b> — tick all that apply<br>
           <b>Objects</b> — select object, direction, and distance<br>
-          <b>Summary</b> — select surface, weather, and time<br>
+          <b>Summary</b> — select surface and weather<br>
           <b>Transition</b> — choose up to three main activity states<br>
           <span style="opacity:.75;">💡 Use the search boxes to filter quickly.</span>
         </div>
@@ -999,28 +999,29 @@
 
           <div id="objectBuilder">
             <div class="summary-grid">
-            <div>
-              <label class="label" for="objectSel">Object</label>
-              <select id="objectSel" class="select">
-                <option value="">— Select object —</option>
-              </select>
-            </div>
-            <div>
-              <label class="label" for="objectDirectionSel">Direction</label>
-              <select id="objectDirectionSel" class="select">
-                <option value="">— Select direction —</option>
-              </select>
-            </div>
-            <div>
-              <label class="label" for="objectDistanceSel">Distance</label>
-              <select id="objectDistanceSel" class="select">
-                <option value="">— Select distance —</option>
-              </select>
-            </div>
+              <div>
+                <label class="label" for="objectSel">Object</label>
+                <select id="objectSel" class="select">
+                  <option value="">— Select object —</option>
+                </select>
+              </div>
+              <div>
+                <label class="label" for="objectDirectionSel">Direction</label>
+                <select id="objectDirectionSel" class="select">
+                  <option value="">— Select direction —</option>
+                </select>
+              </div>
+              <div>
+                <label class="label" for="objectDistanceSel">Distance</label>
+                <select id="objectDistanceSel" class="select">
+                  <option value="">— Select distance —</option>
+                </select>
+              </div>
             </div>
             <button class="btn btn-blue btn-sm" onclick="addSummaryObject()">Add Object</button>
             <div class="tags" id="tg-summary-objects"></div>
-            <p class="hint" style="margin-top:6px;">Add each important visible object with its image position and distance
+            <p class="hint" style="margin-top:6px;">Add each important visible object with its image position and
+              distance
               bucket.</p>
           </div>
           <p class="missing-note">Please add an object or check that there is no important object.</p>
@@ -1052,7 +1053,7 @@
                 <option value="">— Select weather —</option>
               </select>
             </div>
-            <div>
+            <div style="display:none;">
               <label class="label" for="summaryTime">Time</label>
               <select id="summaryTime" class="select" onchange="onUpdate()">
                 <option value="">— Select time —</option>
@@ -1061,7 +1062,7 @@
           </div>
           <p class="hint" style="margin-top:6px;">✨ These selected labels are saved as the video_summary answer list.
           </p>
-          <p class="missing-note">Please finish surface, weather, and time.</p>
+          <p class="missing-note">Please finish surface and weather.</p>
         </div>
       </div>
 
@@ -1108,8 +1109,6 @@
               clip has only one or two states.</p>
           </div>
 
-          <textarea id="transResult" class="summary-box" style="display:none;"
-            placeholder="Transition description will appear here..."></textarea>
           <p class="missing-note">Please finish transition description.</p>
 
         </div>
@@ -1344,8 +1343,8 @@
 
     const SUMMARY_OBJECT_DISTANCES = [
       'Close (0m-2m)',
-      'Near (2m-10m)',
-      'Faraway (10m+)',
+      'Near (2m-4m)',
+      'Faraway (4m+)',
     ];
 
     /* ─────────────────────────────────────
@@ -1751,9 +1750,9 @@
     ───────────────────────────────────── */
     function buildSummary() {
       return [
-        selectedOptionText('summarySurface'),
-        selectedOptionText('summaryWeather'),
-        selectedOptionText('summaryTime'),
+        prefixedOptionText('summarySurface', 'Surface'),
+        prefixedOptionText('summaryWeather', 'Weather'),
+        prefixedOptionText('summaryTime', 'Time'),
       ].filter(Boolean);
     }
 
@@ -1761,6 +1760,11 @@
       const select = document.getElementById(id);
       if (!select || !select.value) return '';
       return select.options[select.selectedIndex].text;
+    }
+
+    function prefixedOptionText(id, prefix) {
+      const text = selectedOptionText(id);
+      return text ? `${prefix}: ${text}` : '';
     }
 
     async function loadManifest() {
@@ -1953,12 +1957,7 @@
       const noChg = document.getElementById('noChg');
       if (noChg) noChg.checked = false;
       const transBuilder = document.getElementById('transBuilder');
-      const transResult = document.getElementById('transResult');
       if (transBuilder) transBuilder.style.display = 'block';
-      if (transResult) {
-        transResult.style.display = 'none';
-        transResult.value = '';
-      }
       onUpdate();
     }
 
@@ -2006,9 +2005,9 @@
 
     function applySummaryAnswer(answer) {
       const values = Array.isArray(answer) ? answer : [];
-      setSelectByText('summarySurface', values.find(value => value.startsWith('Surface: ')));
-      setSelectByText('summaryWeather', values.find(value => value.startsWith('Weather: ')));
-      setSelectByText('summaryTime', values.find(value => value.startsWith('Time: ')));
+      setSelectByText('summarySurface', stripSummaryPrefix(values.find(value => String(value).startsWith('Surface: ')), 'Surface'));
+      setSelectByText('summaryWeather', stripSummaryPrefix(values.find(value => String(value).startsWith('Weather: ')), 'Weather'));
+      setSelectByText('summaryTime', stripSummaryPrefix(values.find(value => String(value).startsWith('Time: ')), 'Time'));
       summaryObjects.length = 0;
       values
         .filter(value => String(value).startsWith('Object: '))
@@ -2027,6 +2026,11 @@
     function normalizeObjectContextLabel(value) {
       if (!value) return '';
       return String(value).replace(/^Object:\s*/i, '').trim();
+    }
+
+    function stripSummaryPrefix(value, prefix) {
+      if (!value) return '';
+      return String(value).replace(new RegExp(`^${prefix}:\\s*`, 'i'), '').trim();
     }
 
     function applyObjectAnswer(answer) {
@@ -2090,17 +2094,15 @@
     function onTransToggle() {
       const noChg = document.getElementById('noChg');
       const bld = document.getElementById('transBuilder');
-      const res = document.getElementById('transResult');
-      if (!noChg || !bld || !res) return;
+      if (!noChg || !bld) return;
       const nc = noChg.checked;
       bld.style.display = nc ? 'none' : 'block';
 
       if (nc) {
-        res.style.display = 'block';
-        res.value = 'No Major Change';
-      } else {
-        res.style.display = 'none';
-        res.value = '';
+        ['tState1', 'tState2', 'tState3'].forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.value = '';
+        });
       }
 
       onUpdate();
@@ -2123,14 +2125,6 @@
     }
 
     function onTransChange() {
-      const res = document.getElementById('transResult');
-      if (!res) return;
-      const sequence = getTransitionSequence();
-
-      if (!sequence.length) { res.style.display = 'none'; onUpdate(); return; }
-
-      res.style.display = 'block';
-      res.value = sequence.length <= 1 ? 'No Major Change' : sequence.join(' To ');
       onUpdate();
     }
 
@@ -2138,8 +2132,9 @@
       if (document.getElementById('noChg')?.checked)
         return 'No Major Change';
 
-      const res = document.getElementById('transResult');
-      return res ? (res.value || '') : '';
+      const sequence = getTransitionSequence();
+      if (!sequence.length) return '';
+      return sequence.length <= 1 ? 'No Major Change' : sequence.join(' To ');
     }
 
     /* ─────────────────────────────────────
@@ -2150,11 +2145,9 @@
       const env = S.env.size > 0;
       const nc = document.getElementById('noChg')?.checked || false;
       const transitionSelected = getTransitionSequence().length > 0;
-      const res = document.getElementById('transResult');
-      const transOk = nc || transitionSelected;  // Transition is checked if any option is selected
+      const trans_txt_ok = Boolean(getTransTxt());
       const object_ok = noImportantObject || summaryObjects.length > 0;
-      const sum_ok = selectedOptionText('summarySurface') && selectedOptionText('summaryWeather') && selectedOptionText('summaryTime');
-      const trans_txt_ok = res && res.value && res.value.trim() !== '';  // Transition text must not be empty
+      const sum_ok = selectedOptionText('summarySurface') && selectedOptionText('summaryWeather');
 
       const n = [
         env,
@@ -2163,7 +2156,7 @@
         S.nav.size > 0,
         object_ok,
         sum_ok,
-        (transOk && trans_txt_ok),  // Both: selected AND has text
+        trans_txt_ok,
       ].filter(Boolean).length;
 
       const progTxt = document.getElementById('progTxt');
@@ -2180,7 +2173,7 @@
         nav: S.nav.size > 0,
         objects: object_ok,
         summary: sum_ok,
-        transition: transOk && trans_txt_ok,
+        transition: trans_txt_ok,
       });
     }
 
@@ -2215,7 +2208,7 @@
         dog: S.dog.size > 0,
         nav: S.nav.size > 0,
         objects: noImportantObject || summaryObjects.length > 0,
-        summary: Boolean(selectedOptionText('summarySurface') && selectedOptionText('summaryWeather') && selectedOptionText('summaryTime')),
+        summary: Boolean(selectedOptionText('summarySurface') && selectedOptionText('summaryWeather')),
         transition: Boolean((nc || transitionSelected) && trText),
       };
 

@@ -49,12 +49,13 @@
       "Gate At Left Top Close (0m-2m)",
       "Person At Left Mid Close (0m-2m)",
       "Person At Center Bottom Close (0m-2m)",
-      "Person At Left Mid Near (2m-10m)",
-      "Person At Center Bottom Near (2m-10m)",
-      "Person At Center Mid Near (2m-10m)",
+      "Person At Left Mid Near (2m-4m)",
+      "Person At Center Bottom Near (2m-4m)",
+      "Person At Center Mid Faraway (4m+)",
       "Fence At Left Top Close (0m-2m)",
-      "Person At Left Top Near (2m-10m)",
-      "Fence At Left Top Near (2m-10m)"
+      "Person At Left Top Near (2m-4m)",
+      "Person At Center Mid Near (2m-4m)",
+      "Fence At Left Top Near (2m-4m)"
     ]
   },
   {

@@ -42,11 +42,10 @@
     "answer": [
       "Person At Left Mid Close (0m-2m)",
       "Obstacle At Left Bottom Close (0m-2m)",
-      "Vehicle At Left Bottom Faraway (10m+)",
-      "Vehicle At Left Mid Faraway (10m+)",
+      "Vehicle At Left Bottom Faraway (4m+)",
+      "Vehicle At Left Mid Faraway (4m+)",
       "Person At Left Top Close (0m-2m)",
-      "Obstacle At Left Mid Close (0m-2m)",
-      "Vehicle At Left Mid Near (2m-10m)"
+      "Obstacle At Left Mid Close (0m-2m)"
     ]
   },
   {
