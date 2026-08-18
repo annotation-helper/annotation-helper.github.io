@@ -338,6 +338,24 @@
       flex-shrink: 0;
     }
 
+    .clip-nav-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .file-info {
+      margin-top: 10px;
+      padding: 8px 10px;
+      border: 1px solid var(--border-lt);
+      border-radius: var(--r-sm);
+      background: var(--surface-lt);
+      color: var(--muted);
+      font-size: 12px;
+      overflow-wrap: anywhere;
+    }
+
     /* ── Multi-Select Dropdown ── */
     .ms {
       position: relative;
@@ -784,6 +802,27 @@
               title="Lock/unlock participant selection">🔓 Lock</button>
           </div>
           <div class="clip-info" id="clipInfo">No participant selected</div>
+          <div class="field" style="margin-top:14px;">
+            <label class="label" for="segmentSel">Video Segment Index</label>
+            <select id="segmentSel" class="select" onchange="onSegmentChange()">
+              <option value="">— Select index —</option>
+              <option value="0">0</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+            </select>
+          </div>
+          <div class="field">
+            <label class="label" for="jsonFileSel">Annotation JSON</label>
+            <select id="jsonFileSel" class="select" onchange="loadSelectedAnnotation()">
+              <option value="">— Lock participant and select index —</option>
+            </select>
+          </div>
+          <div class="clip-nav-row">
+            <button class="btn btn-ghost" onclick="loadPrevAnnotation()">← Previous JSON</button>
+            <button class="btn btn-ghost" onclick="loadNextAnnotation()">Next JSON →</button>
+          </div>
+          <div class="file-info" id="fileInfo">No JSON loaded</div>
         </div>
       </div>
 
@@ -1068,7 +1107,6 @@
           <div class="export-btns">
             <button class="btn btn-ghost" onclick="previewJSON()">👁 Preview JSON</button>
             <button class="btn btn-green" onclick="downloadJSON()">⬇ Download JSON</button>
-            <button class="btn btn-ghost" onclick="copyJSON()">📋 Copy JSON</button>
           </div>
 
           <pre class="json-out" id="jsonOut"></pre>
@@ -1160,15 +1198,24 @@
 
     function toggleLock() {
       const sel = document.getElementById('participantSel');
+      const seg = document.getElementById('segmentSel');
       const btn = document.getElementById('lockBtn');
+
+      if (!participantLocked && (!sel.value || !seg.value)) {
+        toast('Select participant and video segment index first');
+        return;
+      }
 
       participantLocked = !participantLocked;
       sel.disabled = participantLocked;
+      seg.disabled = participantLocked;
       btn.classList.toggle('locked', participantLocked);
       btn.textContent = participantLocked ? '🔒 Locked' : '🔓 Lock';
 
       if (!participantLocked) {
         sel.focus();
+      } else {
+        loadAnnotationList();
       }
     }
 
@@ -1179,6 +1226,12 @@
         info.textContent = `✓ Participant: ${p} selected`;
       } else {
         info.textContent = 'No participant selected';
+      }
+    }
+
+    function onSegmentChange() {
+      if (participantLocked) {
+        loadAnnotationList();
       }
     }
 
@@ -1378,6 +1431,12 @@
     ───────────────────────────────────── */
     const S = { env: new Set(), coarse: new Set(), dog: new Set(), nav: new Set() };
     const summaryObjects = [];
+    let annotationManifest = [];
+    let currentFileList = [];
+    let currentFileIndex = -1;
+    let currentJsonPath = '';
+    let currentJsonFileName = '';
+    let loadedItemsByType = {};
 
     /* ─────────────────────────────────────
        INITIALISE
@@ -1644,6 +1703,191 @@
       return select.options[select.selectedIndex].text;
     }
 
+    async function loadManifest() {
+      if (annotationManifest.length) return annotationManifest;
+      const response = await fetch('manifest.json', { cache: 'no-store' });
+      if (!response.ok) {
+        throw new Error('Could not load manifest.json');
+      }
+      annotationManifest = await response.json();
+      return annotationManifest;
+    }
+
+    async function loadAnnotationList() {
+      const participant = document.getElementById('participantSel').value;
+      const segment = document.getElementById('segmentSel').value;
+      const fileSel = document.getElementById('jsonFileSel');
+
+      fileSel.innerHTML = '<option value="">Loading JSON files...</option>';
+      document.getElementById('fileInfo').textContent = 'Loading JSON list...';
+
+      try {
+        const manifest = await loadManifest();
+        const prefix = `6s_clip_annotations/${participant}/${segment}/`;
+        currentFileList = manifest
+          .filter(path => path.startsWith(prefix) && path.endsWith('.json'))
+          .sort((a, b) => clipNumberFromPath(a) - clipNumberFromPath(b));
+
+        fileSel.innerHTML = '';
+        if (!currentFileList.length) {
+          fileSel.add(new Option('No JSON files found for this participant/index', ''));
+          document.getElementById('fileInfo').textContent = `No JSON files found for ${participant}/${segment}`;
+          return;
+        }
+
+        currentFileList.forEach((path, index) => {
+          fileSel.add(new Option(path.split('/').pop(), String(index)));
+        });
+        fileSel.value = '0';
+        await loadSelectedAnnotation();
+      } catch (error) {
+        fileSel.innerHTML = '<option value="">Could not load JSON list</option>';
+        document.getElementById('fileInfo').textContent = error.message;
+        toast(error.message);
+      }
+    }
+
+    function clipNumberFromPath(path) {
+      const match = path.match(/clip_(\d+)\.json$/);
+      return match ? Number(match[1]) : 0;
+    }
+
+    async function loadSelectedAnnotation() {
+      const fileSel = document.getElementById('jsonFileSel');
+      const index = Number(fileSel.value);
+      if (!Number.isInteger(index) || index < 0 || index >= currentFileList.length) return;
+
+      currentFileIndex = index;
+      currentJsonPath = currentFileList[index];
+      currentJsonFileName = currentJsonPath.split('/').pop();
+      document.getElementById('fileInfo').textContent = `Loading ${currentJsonPath}`;
+
+      try {
+        const response = await fetch(currentJsonPath, { cache: 'no-store' });
+        if (!response.ok) {
+          throw new Error(`Could not load ${currentJsonFileName}`);
+        }
+        const items = await response.json();
+        applyAnnotationItems(items);
+        document.getElementById('fileInfo').textContent = `${currentJsonFileName} (${currentFileIndex + 1}/${currentFileList.length})`;
+        toast(`Loaded ${currentJsonFileName}`);
+      } catch (error) {
+        resetAnnotationForm();
+        document.getElementById('fileInfo').textContent = error.message;
+        toast(error.message);
+      }
+    }
+
+    function loadPrevAnnotation() {
+      if (!currentFileList.length || currentFileIndex <= 0) return;
+      document.getElementById('jsonFileSel').value = String(currentFileIndex - 1);
+      loadSelectedAnnotation();
+    }
+
+    function loadNextAnnotation() {
+      if (!currentFileList.length || currentFileIndex >= currentFileList.length - 1) return;
+      document.getElementById('jsonFileSel').value = String(currentFileIndex + 1);
+      loadSelectedAnnotation();
+    }
+
+    function resetAnnotationForm() {
+      Object.keys(S).forEach(k => {
+        S[k].clear();
+        buildList(k);
+        refreshMs(k);
+      });
+      summaryObjects.length = 0;
+      renderSummaryObjectTags();
+      ['summarySurface', 'summaryWeather', 'summaryTime', 'objectSel', 'objectDirectionSel', 'objectDistanceSel', 'tState1', 'tState2', 'tState3'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+      });
+      const noChg = document.getElementById('noChg');
+      noChg.checked = false;
+      document.getElementById('transBuilder').style.display = 'block';
+      document.getElementById('transResult').style.display = 'none';
+      document.getElementById('transResult').value = '';
+      onUpdate();
+    }
+
+    function applyAnnotationItems(items) {
+      resetAnnotationForm();
+      loadedItemsByType = {};
+      items.forEach(item => { loadedItemsByType[item.type] = item; });
+
+      setSingleSelection('env', answerForType('environment_classification'));
+      setMultiSelection('coarse', answerForType('coarse_activity_classification'));
+      setMultiSelection('dog', answerForType('dog_finegrained_activity_classification'));
+      setMultiSelection('nav', answerForType('navigation_context_classification'));
+      applySummaryAnswer(answerForType('video_summary'));
+      applyTransitionAnswer(answerForType('transition_description'));
+
+      const clip = clipNumberFromPath(currentJsonPath);
+      document.getElementById('clipNum').value = String(clip);
+      onUpdate();
+    }
+
+    function answerForType(type) {
+      return loadedItemsByType[type] ? loadedItemsByType[type].answer : null;
+    }
+
+    function setSingleSelection(key, answer) {
+      S[key].clear();
+      if (answer && DATA[key].includes(answer)) S[key].add(answer);
+      buildList(key);
+      refreshMs(key);
+    }
+
+    function setMultiSelection(key, answer) {
+      S[key].clear();
+      const values = Array.isArray(answer) ? answer : [];
+      values.forEach(value => {
+        if (DATA[key].includes(value)) S[key].add(value);
+      });
+      buildList(key);
+      refreshMs(key);
+    }
+
+    function applySummaryAnswer(answer) {
+      const values = Array.isArray(answer) ? answer : [];
+      setSelectByText('summarySurface', values.find(value => value.startsWith('Surface: ')));
+      setSelectByText('summaryWeather', values.find(value => value.startsWith('Weather: ')));
+      setSelectByText('summaryTime', values.find(value => value.startsWith('Time: ')));
+      summaryObjects.length = 0;
+      values
+        .filter(value => value.startsWith('Object: '))
+        .forEach(value => summaryObjects.push(value));
+      renderSummaryObjectTags();
+    }
+
+    function setSelectByText(id, text) {
+      const select = document.getElementById(id);
+      select.value = '';
+      if (!text) return;
+      for (const option of select.options) {
+        if (option.text === text) {
+          select.value = option.value;
+          return;
+        }
+      }
+    }
+
+    function applyTransitionAnswer(answer) {
+      const value = Array.isArray(answer) ? answer[0] : answer;
+      if (!value) return;
+      if (value === 'No Major Change') {
+        document.getElementById('noChg').checked = true;
+        onTransToggle();
+        return;
+      }
+      const states = value.split(' To ').slice(0, 3);
+      ['tState1', 'tState2', 'tState3'].forEach((id, index) => {
+        const el = document.getElementById(id);
+        el.value = states[index] || '';
+      });
+      onTransChange();
+    }
+
     /* Oxford-comma list joiner */
     function joinList(a) {
       if (!a.length) return '';
@@ -1751,51 +1995,53 @@
 
     function buildJSON() {
       const participant = document.getElementById('participantSel').value || 'UNKNOWN';
+      const segment = document.getElementById('segmentSel').value || '0';
       const clipNumInput = document.getElementById('clipNum').value || '0';
       const clipNum = padClipNum(clipNumInput);
-      const baseId = `$${participant}_$${clipNum}`;
-      const videoPath = `$${participant}/0/clip_$${clipNum}.mp4`;
+      const clipIndex = Number(clipNum);
+      const baseId = loadedItemsByType.environment_classification?.id || `${participant}_${segment}_${clipIndex}`;
+      const videoPath = loadedItemsByType.environment_classification?.video || `${participant}/${segment}/clip_${clipNum}.mp4`;
       const sumT = buildSummary();
       const trT = getTransTxt();
 
       return [
         {
-          id: `${baseId}_001`,
+          id: baseId,
           video: videoPath,
           type: 'environment_classification',
           question: "Which environment label best matches this video? Choose exactly one label from: ['Forest', 'Indoor', 'Intersection', 'None', 'Playground', 'Rural', 'Trail', 'Urban']. Return only one label.",
           answer: [...S.env][0] || ''
         },
         {
-          id: `${baseId}_002`,
+          id: baseId,
           video: videoPath,
           type: 'coarse_activity_classification',
           question: "Which coarse activity labels are present in this video? Choose all applicable labels only from: ['Crossing Street', 'Crowd Present', 'Distraction Event', 'Environmental Monitoring', 'Human Dog Interaction', 'Indoor Navigation', 'Investigation', 'Navigating Obstacle', 'None', 'Object Interaction', 'Person Passing Close', 'Playing', 'Running', 'Social Encounter', 'Stationary', 'Trotting', 'Turning', 'Walking']. Return the answer as a list. If none apply, return an empty list.",
           answer: [...S.coarse]
         },
         {
-          id: `${baseId}_003`,
+          id: baseId,
           video: videoPath,
           type: 'dog_finegrained_activity_classification',
           question: "Which dog fine-grained activity labels are present in this video? Consider only dog fine-grained activity labels. Choose all applicable labels only from: ['Ascending Stairs', 'Backing Up', 'Carrying Object', 'Crouching', 'Descending Stairs', 'Drinking', 'Grabbing Object', 'Head Looking Down', 'Head Looking Forward', 'Head Looking Left', 'Head Looking Right', 'Head Looking Up', 'Head Scanning', 'Head Shake', 'Jumping Up', 'Licking Object', 'Lying Down', 'Nudging', 'Jumping', 'Rolling', 'Running', 'Pulling Forward', 'Resist Backward', 'Sitting', 'Sniffing Ground', 'Sniffing Object', 'Social Approach', 'Stopped', 'Trotting', 'Walking Forward']. Return the answer as a list. If none apply, return an empty list.",
           answer: [...S.dog]
         },
         {
-          id: `${baseId}_004`,
+          id: baseId,
           video: videoPath,
           type: 'navigation_context_classification',
           question: "Which navigation context labels are present in this video? Choose all applicable labels only from: ['Nav At Open Space', 'Nav At Obstacle', 'Nav At Narrow Space', 'Nav At Stairs', 'Nav At Curb', 'Nav At Crosswalk', 'Nav At Traffic Signal', 'Nav At Crossing Street', 'Nav At Indoor Space', 'Nav At Door', 'Nav At Intersection', 'Nav At Vehicle Nearby', 'None']. Return the answer as a list. If none apply, return an empty list.",
           answer: [...S.nav]
         },
         {
-          id: `${baseId}_005`,
+          id: baseId,
           video: videoPath,
           type: 'video_summary',
           question: "Which ordered summary labels describe this video? Return a list of readable labels.",
           answer: sumT
         },
         {
-          id: `${baseId}_006`,
+          id: baseId,
           video: videoPath,
           type: 'transition_description',
           question: "Which main dog activity transition describes this video? Return a list with one readable transition, such as 'Stopped To Walking' or 'Walking To Turning To Walking'. If no important activity change occurs, return ['No Major Change'].",
@@ -1842,32 +2088,13 @@
       }
 
       const clipNum = padClipNum(document.getElementById('clipNum').value || '0');
+      const fileName = currentJsonFileName || `clip_${clipNum}.json`;
       const blob = new Blob([JSON.stringify(buildJSON(), null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
-      const a = Object.assign(document.createElement('a'), { href: url, download: `clip${clipNum}.json` });
+      const a = Object.assign(document.createElement('a'), { href: url, download: fileName });
       a.click();
       URL.revokeObjectURL(url);
       toast('⬇ Download started');
-    }
-
-    function copyJSON() {
-      const participant = document.getElementById('participantSel').value;
-      const progTxt = document.getElementById('progTxt').textContent;
-
-      if (!participant) {
-        toast('⚠ Please select a participant first');
-        return;
-      }
-
-      if (progTxt !== '7 / 7') {
-        toast('All 7 fields must be completed (7/7)');
-        return;
-      }
-
-      navigator.clipboard
-        .writeText(JSON.stringify(buildJSON(), null, 2))
-        .then(() => toast('📋 JSON copied!'))
-        .catch(() => toast('❌ Copy failed — try Preview instead'));
     }
 
     function copySummary() {
