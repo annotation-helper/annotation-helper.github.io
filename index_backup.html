@@ -1,51 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Dog Cam Annotation Tool</title>
   <style>
     /* ── Reset & Variables ── */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
     :root {
-      --blue:       #3b82f6;
-      --blue-dk:    #1e40af;
-      --blue-lt:    #dbeafe;
-      --blue-ring:  rgba(59,130,246,.2);
-      --green:      #10b981;
-      --bg:         #0f172a;
-      --surface:    #1e293b;
+      --blue: #3b82f6;
+      --blue-dk: #1e40af;
+      --blue-lt: #dbeafe;
+      --blue-ring: rgba(59, 130, 246, .2);
+      --green: #10b981;
+      --bg: #0f172a;
+      --surface: #1e293b;
       --surface-lt: #334155;
-      --border:     #475569;
-      --border-lt:  #64748b;
-      --text:       #f1f5f9;
-      --muted:      #94a3b8;
-      --tag-bg:     #1e3a8a;
-      --tag-fg:     #93c5fd;
-      --r:          10px;
-      --r-sm:       6px;
-      --sh:         0 1px 3px rgba(0,0,0,.3), 0 1px 2px rgba(0,0,0,.2);
-      --sh-lg:      0 8px 24px rgba(0,0,0,.4);
+      --border: #475569;
+      --border-lt: #64748b;
+      --text: #f1f5f9;
+      --muted: #94a3b8;
+      --tag-bg: #1e3a8a;
+      --tag-fg: #93c5fd;
+      --r: 10px;
+      --r-sm: 6px;
+      --sh: 0 1px 3px rgba(0, 0, 0, .3), 0 1px 2px rgba(0, 0, 0, .2);
+      --sh-lg: 0 8px 24px rgba(0, 0, 0, .4);
     }
 
     body.light-mode {
-      --blue:       #2563eb;
-      --blue-dk:    #1d4ed8;
-      --blue-lt:    #eff6ff;
-      --blue-ring:  rgba(37,99,235,.15);
-      --green:      #16a34a;
-      --bg:         #f1f5f9;
-      --surface:    #ffffff;
+      --blue: #2563eb;
+      --blue-dk: #1d4ed8;
+      --blue-lt: #eff6ff;
+      --blue-ring: rgba(37, 99, 235, .15);
+      --green: #16a34a;
+      --bg: #f1f5f9;
+      --surface: #ffffff;
       --surface-lt: #f8fafc;
-      --border:     #cbd5e1;
-      --border-lt:  #e2e8f0;
-      --text:       #0f172a;
-      --muted:      #64748b;
-      --tag-bg:     #dbeafe;
-      --tag-fg:     #1d4ed8;
-      --sh:         0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.04);
-      --sh-lg:      0 8px 24px rgba(0,0,0,.12);
+      --border: #cbd5e1;
+      --border-lt: #e2e8f0;
+      --text: #0f172a;
+      --muted: #64748b;
+      --tag-bg: #dbeafe;
+      --tag-fg: #1d4ed8;
+      --sh: 0 1px 3px rgba(0, 0, 0, .08), 0 1px 2px rgba(0, 0, 0, .04);
+      --sh-lg: 0 8px 24px rgba(0, 0, 0, .12);
     }
 
     body {
@@ -59,12 +66,17 @@
 
     /* ── Top Bar ── */
     .topbar {
-      position: sticky; top: 0; z-index: 300;
+      position: sticky;
+      top: 0;
+      z-index: 300;
       background: linear-gradient(135deg, #1e40af 0%, #1e3a8a 100%);
       color: #fff;
-      padding: 0 20px; height: 52px;
-      display: flex; align-items: center; gap: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,.3);
+      padding: 0 20px;
+      height: 52px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, .3);
       transition: background .3s;
     }
 
@@ -72,109 +84,337 @@
       background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
     }
 
-    .topbar h1    { font-size: 15px; font-weight: 600; }
+    .topbar h1 {
+      font-size: 15px;
+      font-weight: 600;
+    }
+
     .topbar-badge {
-      margin-left: auto; font-size: 12px;
-      padding: 4px 14px; border-radius: 999px;
-      background: rgba(255,255,255,.15); backdrop-filter: blur(4px);
+      margin-left: auto;
+      font-size: 12px;
+      padding: 4px 14px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, .15);
+      backdrop-filter: blur(4px);
     }
 
     .theme-toggle {
-      background: rgba(255,255,255,.15); border: none;
-      color: #fff; width: 36px; height: 36px;
-      border-radius: 6px; cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 16px; transition: background .2s;
+      background: rgba(255, 255, 255, .15);
+      border: none;
+      color: #fff;
+      width: 36px;
+      height: 36px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      transition: background .2s;
     }
+
     .theme-toggle:hover {
-      background: rgba(255,255,255,.25);
+      background: rgba(255, 255, 255, .25);
     }
 
     /* ── Page Layout ── */
     .page {
-      max-width: 1360px; margin: 0 auto; padding: 16px;
-      display: grid; grid-template-columns: 380px 1fr;
-      gap: 14px; align-items: start;
+      max-width: 1360px;
+      margin: 0 auto;
+      padding: 16px;
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      gap: 14px;
+      align-items: start;
       overflow: visible;
     }
-    .left  { position: sticky; top: 66px; display: flex; flex-direction: column; gap: 14px; }
-    .right { display: flex; flex-direction: column; gap: 14px; min-width: 0; overflow: visible; position: relative; }
+
+    .left {
+      position: sticky;
+      top: 66px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .right {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      min-width: 0;
+      overflow: visible;
+      position: relative;
+    }
 
     /* ── Cards ── */
-    .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); box-shadow: var(--sh); overflow: visible; transition: background .3s, border-color .3s; }
-    .card-head { padding: 11px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px; transition: border-color .3s; }
-    .card-head h2 { font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
-    .card-head .slot { margin-left: auto; display: flex; gap: 6px; }
-    .card-body { padding: 16px; overflow: visible; }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      box-shadow: var(--sh);
+      overflow: visible;
+      transition: background .3s, border-color .3s;
+    }
+
+    .card.missing {
+      border-color: #ef4444;
+      box-shadow: 0 0 0 2px rgba(239, 68, 68, .35), var(--sh);
+    }
+
+    .missing-note {
+      display: none;
+      margin-top: 10px;
+      color: #ef4444;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .card.missing .missing-note {
+      display: block;
+    }
+
+    .card-head {
+      padding: 11px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: border-color .3s;
+    }
+
+    .card-head h2 {
+      font-size: 11.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .label-hint {
+      font-size: 10px;
+      font-weight: 500;
+      text-transform: none;
+      letter-spacing: 0;
+      color: var(--muted);
+      opacity: .9;
+      overflow-wrap: anywhere;
+    }
+
+    .card-head .slot {
+      margin-left: auto;
+      display: flex;
+      gap: 6px;
+    }
+
+    .card-body {
+      padding: 16px;
+      overflow: visible;
+    }
 
     /* ── Buttons ── */
     .btn {
-      display: inline-flex; align-items: center; gap: 5px;
-      padding: 6px 14px; border: none; border-radius: var(--r-sm);
-      font-size: 13px; font-weight: 500; cursor: pointer;
-      transition: filter .15s, transform .1s; white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 6px 14px;
+      border: none;
+      border-radius: var(--r-sm);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: filter .15s, transform .1s;
+      white-space: nowrap;
     }
-    .btn:active        { transform: scale(.97); }
-    .btn-blue          { background: var(--blue); color: #fff; }
-    .btn-blue:hover    { filter: brightness(1.15); }
-    .btn-green         { background: var(--green); color: #fff; }
-    .btn-green:hover   { filter: brightness(1.15); }
-    .btn-ghost         { background: var(--surface-lt); color: var(--text); border: 1px solid var(--border-lt); transition: background .2s; }
-    .btn-ghost:hover   { background: var(--border); }
-    .btn-sm            { padding: 4px 10px; font-size: 12px; }
-    .btn-lock          { background: #10b981; color: #fff; padding: 6px 12px; font-size: 12px; transition: all .2s; }
-    .btn-lock:hover    { filter: brightness(1.1); }
-    .btn-lock.locked   { background: #059669; opacity: 1; }
+
+    .btn:active {
+      transform: scale(.97);
+    }
+
+    .btn-blue {
+      background: var(--blue);
+      color: #fff;
+    }
+
+    .btn-blue:hover {
+      filter: brightness(1.15);
+    }
+
+    .btn-green {
+      background: var(--green);
+      color: #fff;
+    }
+
+    .btn-green:hover {
+      filter: brightness(1.15);
+    }
+
+    .btn-ghost {
+      background: var(--surface-lt);
+      color: var(--text);
+      border: 1px solid var(--border-lt);
+      transition: background .2s;
+    }
+
+    .btn-ghost:hover {
+      background: var(--border);
+    }
+
+    .btn-sm {
+      padding: 4px 10px;
+      font-size: 12px;
+    }
+
+    .btn-lock {
+      background: #10b981;
+      color: #fff;
+      padding: 6px 12px;
+      font-size: 12px;
+      transition: all .2s;
+    }
+
+    .btn-lock:hover {
+      filter: brightness(1.1);
+    }
+
+    .btn-lock.locked {
+      background: #059669;
+      opacity: 1;
+    }
 
     /* ── Form Controls ── */
     .input {
-      width: 100%; padding: 7px 10px;
-      border: 1px solid var(--border); border-radius: var(--r-sm);
-      font-size: 13px; color: var(--text); background: var(--surface-lt);
+      width: 100%;
+      padding: 7px 10px;
+      border: 1px solid var(--border);
+      border-radius: var(--r-sm);
+      font-size: 13px;
+      color: var(--text);
+      background: var(--surface-lt);
       transition: border-color .15s, box-shadow .15s, background .3s, color .3s;
     }
-    .input:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px var(--blue-ring); }
-    .input::placeholder { color: var(--muted); }
+
+    .input:focus {
+      outline: none;
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px var(--blue-ring);
+    }
+
+    .input::placeholder {
+      color: var(--muted);
+    }
 
     .select {
-      width: 100%; padding: 7px 30px 7px 10px;
-      border: 1px solid var(--border); border-radius: var(--r-sm);
-      font-size: 13px; color: var(--text);
+      width: 100%;
+      padding: 7px 30px 7px 10px;
+      border: 1px solid var(--border);
+      border-radius: var(--r-sm);
+      font-size: 13px;
+      color: var(--text);
       background: var(--surface-lt) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") no-repeat right 9px center;
-      appearance: none; cursor: pointer;
+      appearance: none;
+      cursor: pointer;
       transition: border-color .15s, box-shadow .15s, background .3s, color .3s;
     }
-    .select:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px var(--blue-ring); }
+
+    .select:focus {
+      outline: none;
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px var(--blue-ring);
+    }
 
     /* ── Field Wrapper ── */
-    .field { margin-bottom: 14px; }
-    .field:last-child { margin-bottom: 0; }
-    .label { display: block; font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); margin-bottom: 6px; transition: color .3s; }
-    .hint  { font-size: 11px; color: var(--muted); margin-top: 5px; transition: color .3s; }
+    .field {
+      margin-bottom: 14px;
+    }
+
+    .field:last-child {
+      margin-bottom: 0;
+    }
+
+    .label {
+      display: block;
+      font-size: 11.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      color: var(--muted);
+      margin-bottom: 6px;
+      transition: color .3s;
+    }
+
+    .hint {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 5px;
+      transition: color .3s;
+    }
 
     /* ── Participant Selector ── */
     .participant-row {
-      display: flex; gap: 8px; align-items: flex-end; margin-bottom: 14px;
+      display: flex;
+      gap: 8px;
+      align-items: flex-end;
+      margin-bottom: 14px;
     }
-    .participant-row .select { flex: 1; }
-    .participant-row .btn   { flex-shrink: 0; }
+
+    .participant-row .select {
+      flex: 1;
+    }
+
+    .participant-row .btn {
+      flex-shrink: 0;
+    }
+
+    .clip-nav-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .file-info {
+      margin-top: 10px;
+      padding: 8px 10px;
+      border: 1px solid var(--border-lt);
+      border-radius: var(--r-sm);
+      background: var(--surface-lt);
+      color: var(--muted);
+      font-size: 12px;
+      overflow-wrap: anywhere;
+    }
 
     /* ── Multi-Select Dropdown ── */
-    .ms                { position: relative; }
+    .ms {
+      position: relative;
+    }
+
     .ms-btn {
-      width: 100%; padding: 7px 30px 7px 10px;
-      border: 1px solid var(--border); border-radius: var(--r-sm);
-      font-size: 13px; color: var(--text); text-align: left; cursor: pointer;
+      width: 100%;
+      padding: 7px 30px 7px 10px;
+      border: 1px solid var(--border);
+      border-radius: var(--r-sm);
+      font-size: 13px;
+      color: var(--text);
+      text-align: left;
+      cursor: pointer;
       background: var(--surface-lt) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") no-repeat right 9px center;
       transition: border-color .15s, box-shadow .15s, background .3s, color .3s;
     }
+
     .ms-btn:focus,
-    .ms-btn.open       { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px var(--blue-ring); }
+    .ms-btn.open {
+      outline: none;
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px var(--blue-ring);
+    }
 
     .ms-drop {
       position: fixed;
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: var(--r); box-shadow: var(--sh-lg); 
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      box-shadow: var(--sh-lg);
       z-index: 9999;
       overflow-y: auto;
       transition: background .3s, border-color .3s;
@@ -182,45 +422,163 @@
       max-width: 500px;
       max-height: 300px;
     }
-    .ms-drop.open      { display: block !important; }
 
-    .ms-search         { padding: 8px; border-bottom: 1px solid var(--border-lt); transition: border-color .3s; }
-    .ms-search input   { width: 100%; padding: 5px 8px; border: 1px solid var(--border); border-radius: var(--r-sm); font-size: 12.5px; background: var(--surface-lt); color: var(--text); transition: background .3s, color .3s, border-color .3s; }
-    .ms-search input:focus { outline: none; border-color: var(--blue); }
-    .ms-search input::placeholder { color: var(--muted); }
+    .ms-drop.open {
+      display: block !important;
+    }
 
-    .ms-list           { max-height: 250px; overflow-y: auto; }
+    .ms-search {
+      padding: 8px;
+      border-bottom: 1px solid var(--border-lt);
+      transition: border-color .3s;
+    }
+
+    .ms-search input {
+      width: 100%;
+      padding: 5px 8px;
+      border: 1px solid var(--border);
+      border-radius: var(--r-sm);
+      font-size: 12.5px;
+      background: var(--surface-lt);
+      color: var(--text);
+      transition: background .3s, color .3s, border-color .3s;
+    }
+
+    .ms-search input:focus {
+      outline: none;
+      border-color: var(--blue);
+    }
+
+    .ms-search input::placeholder {
+      color: var(--muted);
+    }
+
+    .ms-list {
+      max-height: 250px;
+      overflow-y: auto;
+    }
 
     .ms-item {
-      display: flex; align-items: center; gap: 8px;
-      padding: 6px 12px; cursor: pointer; font-size: 13px;
-      transition: background .1s; color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 12px;
+      cursor: pointer;
+      font-size: 13px;
+      transition: background .1s;
+      color: var(--text);
     }
-    .ms-item:hover     { background: var(--surface-lt); }
-    .ms-item.on        { background: var(--tag-bg); }
-    .ms-item input[type="checkbox"] { pointer-events: none; accent-color: var(--blue); width: 14px; height: 14px; flex-shrink: 0; }
 
-    .ms-foot           { padding: 6px 12px; border-top: 1px solid var(--border-lt); display: flex; justify-content: space-between; align-items: center; transition: border-color .3s; }
-    .ms-foot-count     { font-size: 11px; color: var(--muted); }
+    .ms-item:hover {
+      background: var(--surface-lt);
+    }
+
+    .ms-item.on {
+      background: var(--tag-bg);
+    }
+
+    .ms-item input[type="checkbox"] {
+      pointer-events: none;
+      accent-color: var(--blue);
+      width: 14px;
+      height: 14px;
+      flex-shrink: 0;
+    }
+
+    .ms-foot {
+      padding: 6px 12px;
+      border-top: 1px solid var(--border-lt);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: border-color .3s;
+    }
+
+    .ms-foot-count {
+      font-size: 11px;
+      color: var(--muted);
+    }
 
     /* ── Tags ── */
-    .tags              { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 7px; min-height: 22px; }
-    .tag               { display: inline-flex; align-items: center; gap: 3px; padding: 3px 9px; background: var(--tag-bg); color: var(--tag-fg); border-radius: 999px; font-size: 11.5px; font-weight: 500; max-width: 240px; transition: background .3s, color .3s; }
-    .tag-txt           { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .tag-x             { background: none; border: none; cursor: pointer; color: var(--tag-fg); opacity: .7; padding: 0 2px; font-size: 15px; line-height: 1; flex-shrink: 0; }
-    .tag-x:hover       { opacity: 1; }
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-top: 7px;
+      min-height: 22px;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      padding: 3px 9px;
+      background: var(--tag-bg);
+      color: var(--tag-fg);
+      border-radius: 999px;
+      font-size: 11.5px;
+      font-weight: 500;
+      max-width: 240px;
+      transition: background .3s, color .3s;
+    }
+
+    .tag-txt {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .tag-x {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--tag-fg);
+      opacity: .7;
+      padding: 0 2px;
+      font-size: 15px;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+
+    .tag-x:hover {
+      opacity: 1;
+    }
 
     /* ── Progress Bar ── */
-    .prog-row          { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); font-weight: 500; transition: color .3s; }
-    .prog-bar          { height: 5px; background: var(--border); border-radius: 999px; overflow: hidden; margin-top: 5px; transition: background .3s; }
-    .prog-fill         { height: 100%; background: var(--green); border-radius: 999px; transition: width .35s; }
+    .prog-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 500;
+      transition: color .3s;
+    }
+
+    .prog-bar {
+      height: 5px;
+      background: var(--border);
+      border-radius: 999px;
+      overflow: hidden;
+      margin-top: 5px;
+      transition: background .3s;
+    }
+
+    .prog-fill {
+      height: 100%;
+      background: var(--green);
+      border-radius: 999px;
+      transition: width .35s;
+    }
 
     /* ── Auto Summary ── */
     .summary-box {
-      padding: 12px 14px; background: var(--surface-lt);
+      padding: 12px 14px;
+      background: var(--surface-lt);
       border: 1px solid var(--border);
       border-radius: var(--r-sm);
-      font-size: 13.5px; line-height: 1.8; color: var(--text);
+      font-size: 13.5px;
+      line-height: 1.8;
+      color: var(--text);
       min-height: 140px;
       max-height: 300px;
       font-family: inherit;
@@ -229,38 +587,124 @@
       width: 100%;
       box-sizing: border-box;
     }
-    .summary-box.empty { color: var(--muted); font-style: italic; }
-    .summary-box:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px var(--blue-ring); }
+
+    .summary-box.empty {
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    .summary-box:focus {
+      outline: none;
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px var(--blue-ring);
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      align-items: start;
+      margin-bottom: 10px;
+    }
 
     /* ── Transition ── */
     .trans-toggle {
-      display: flex; align-items: center; gap: 8px;
-      padding: 9px 13px; background: var(--surface-lt);
-      border: 1px solid var(--border-lt); border-radius: var(--r-sm);
-      cursor: pointer; margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 13px;
+      background: var(--surface-lt);
+      border: 1px solid var(--border-lt);
+      border-radius: var(--r-sm);
+      cursor: pointer;
+      margin-bottom: 12px;
       transition: background .3s, border-color .3s;
     }
-    .trans-toggle input[type="checkbox"] { width: 14px; height: 14px; accent-color: var(--blue); cursor: pointer; flex-shrink: 0; }
-    .trans-toggle span { font-size: 13px; cursor: pointer; }
 
-    .trans-grid        { display: grid; grid-template-columns: 1fr 36px 1fr; gap: 8px; align-items: start; }
-    .trans-arrow       { display: flex; align-items: center; justify-content: center; padding-top: 24px; font-size: 20px; color: var(--muted); }
+    .trans-toggle input[type="checkbox"] {
+      width: 14px;
+      height: 14px;
+      accent-color: var(--blue);
+      cursor: pointer;
+      flex-shrink: 0;
+    }
 
-    .trans-result      { margin-top: 10px; padding: 9px 13px; border-radius: var(--r-sm); font-size: 13px; line-height: 1.6; display: none; transition: all .3s; }
-    .trans-result.nc   { background: #7c2d12; border: 1px solid #ea580c; color: #fed7aa; }
-    .trans-result.ch   { background: #064e3b; border: 1px solid #10b981; color: #a7f3d0; }
+    .trans-toggle span {
+      font-size: 13px;
+      cursor: pointer;
+    }
 
-    body.light-mode .trans-result.nc   { background: #fefce8; border: 1px solid #fde047; color: #713f12; }
-    body.light-mode .trans-result.ch   { background: #f0fdf4; border: 1px solid #86efac; color: #14532d; }
+    .trans-grid {
+      display: grid;
+      grid-template-columns: 1fr 36px 1fr 36px 1fr;
+      gap: 8px;
+      align-items: start;
+    }
+
+    .trans-arrow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding-top: 24px;
+      font-size: 20px;
+      color: var(--muted);
+    }
+
+    .trans-result {
+      margin-top: 10px;
+      padding: 9px 13px;
+      border-radius: var(--r-sm);
+      font-size: 13px;
+      line-height: 1.6;
+      display: none;
+      transition: all .3s;
+    }
+
+    .trans-result.nc {
+      background: #7c2d12;
+      border: 1px solid #ea580c;
+      color: #fed7aa;
+    }
+
+    .trans-result.ch {
+      background: #064e3b;
+      border: 1px solid #10b981;
+      color: #a7f3d0;
+    }
+
+    body.light-mode .trans-result.nc {
+      background: #fefce8;
+      border: 1px solid #fde047;
+      color: #713f12;
+    }
+
+    body.light-mode .trans-result.ch {
+      background: #f0fdf4;
+      border: 1px solid #86efac;
+      color: #14532d;
+    }
 
     /* ── Export / JSON ── */
-    .export-btns       { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
+    .export-btns {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 4px;
+    }
+
     .json-out {
-      display: none; margin-top: 12px; padding: 14px;
-      background: #0f0f0f; color: #94a3b8;
-      border-radius: var(--r-sm); font-family: 'Courier New', monospace;
-      font-size: 12px; white-space: pre; overflow-x: auto;
-      max-height: 380px; overflow-y: auto;
+      display: none;
+      margin-top: 12px;
+      padding: 14px;
+      background: #0f0f0f;
+      color: #94a3b8;
+      border-radius: var(--r-sm);
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      white-space: pre;
+      overflow-x: auto;
+      max-height: 380px;
+      overflow-y: auto;
     }
 
     body.light-mode .json-out {
@@ -269,1030 +713,1631 @@
 
     /* ── Toast Notification ── */
     .toast {
-      position: fixed; bottom: 20px; right: 20px; z-index: 9999;
-      background: #1e293b; color: #fff; border: 1px solid var(--border-lt);
-      padding: 9px 16px; border-radius: var(--r); font-size: 13px;
-      box-shadow: var(--sh-lg); pointer-events: none;
-      opacity: 0; transform: translateY(8px);
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 9999;
+      background: #1e293b;
+      color: #fff;
+      border: 1px solid var(--border-lt);
+      padding: 9px 16px;
+      border-radius: var(--r);
+      font-size: 13px;
+      box-shadow: var(--sh-lg);
+      pointer-events: none;
+      opacity: 0;
+      transform: translateY(8px);
       transition: opacity .2s, transform .2s;
     }
-    .toast.on          { opacity: 1; transform: none; }
+
+    .toast.on {
+      opacity: 1;
+      transform: none;
+    }
 
     /* ── Divider ── */
-    hr.div             { border: none; border-top: 1px solid var(--border-lt); margin: 12px 0; transition: border-color .3s; }
+    hr.div {
+      border: none;
+      border-top: 1px solid var(--border-lt);
+      margin: 12px 0;
+      transition: border-color .3s;
+    }
 
     /* ── Responsive ── */
     @media (max-width: 860px) {
-      .page            { grid-template-columns: 1fr; }
-      .left            { position: static; }
-      .trans-grid      { grid-template-columns: 1fr; }
-      .trans-arrow     { display: none; }
+      .page {
+        grid-template-columns: 1fr;
+      }
+
+      .left {
+        position: static;
+      }
+
+      .trans-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .summary-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .trans-arrow {
+        display: none;
+      }
     }
   </style>
 </head>
+
 <body>
 
-<!-- ═══════════════════════════════════════
+  <!-- ═══════════════════════════════════════
      HEADER
 ═══════════════════════════════════════ -->
-<header class="topbar">
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-  </svg>
-  <h1>Dog Cam Research · Annotation Tool</h1>
-  <div class="topbar-badge" id="hdrbadge">0 / 6 complete</div>
-  <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Toggle dark/light mode">🌙</button>
-</header>
+  <header class="topbar">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+    </svg>
+    <h1>Dog Cam Research · Annotation Tool</h1>
+    <div class="topbar-badge" id="hdrbadge">0 / 7 complete</div>
+    <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Toggle dark/light mode">🌙</button>
+  </header>
 
 
-<!-- ═══════════════════════════════════════
+  <!-- ═══════════════════════════════════════
      PAGE
 ═══════════════════════════════════════ -->
-<div class="page">
+  <div class="page">
 
-  <!-- ─────────────────────────────────────
+    <!-- ─────────────────────────────────────
        LEFT — Participant + Progress
   ───────────────────────────────────── -->
-  <aside class="left">
+    <aside class="left">
 
-    <!-- Participant Selection Card -->
-    <div class="card">
-      <div class="card-head">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-        <h2>Participant Selection</h2>
-      </div>
-      <div class="card-body">
-        <div class="participant-row">
-          <select id="participantSel" class="select" onchange="onParticipantChange()">
-            <option value="">— Select Participant —</option>
-            <option value="P001">P001</option>
-            <option value="P002">P002</option>
-            <option value="P003">P003</option>
-            <option value="P004">P004</option>
-            <option value="P005">P005</option>
-            <option value="P006">P006</option>
-            <option value="P007">P007</option>
-            <option value="P008">P008</option>
-            <option value="P009">P009</option>
-            <option value="P010">P010</option>
-            <option value="P011">P011</option>
-            <option value="P012">P012</option>
-            <option value="P013">P013</option>
-            <option value="P014">P014</option>
-            <option value="P015">P015</option>
-            <option value="P016">P016</option>
-            <option value="P017">P017</option>
-            <option value="P018">P018</option>
-            <option value="P019">P019</option>
-          </select>
-          <button id="lockBtn" class="btn btn-lock" onclick="toggleLock()" title="Lock/unlock participant selection">🔓 Lock</button>
+      <!-- Participant Selection Card -->
+      <div class="card">
+        <div class="card-head">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+            <circle cx="12" cy="7" r="4" />
+          </svg>
+          <h2>Participant Selection</h2>
         </div>
-        <div class="clip-info" id="clipInfo">No participant selected</div>
-      </div>
-    </div>
-
-    <!-- Progress Card -->
-    <div class="card">
-      <div class="card-head">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="2" x2="12" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-        <h2>Progress</h2>
-      </div>
-      <div class="card-body">
-        <div class="prog-row">
-          <span>Annotation progress</span>
-          <span id="progTxt">0 / 6</span>
+        <div class="card-body">
+          <div class="participant-row">
+            <select id="participantSel" class="select" onchange="onParticipantChange()">
+              <option value="">— Select Participant —</option>
+              <option value="P001">P001</option>
+              <option value="P002">P002</option>
+              <option value="P003">P003</option>
+              <option value="P004">P004</option>
+              <option value="P005">P005</option>
+              <option value="P006">P006</option>
+              <option value="P007">P007</option>
+              <option value="P008">P008</option>
+              <option value="P009">P009</option>
+              <option value="P010">P010</option>
+              <option value="P011">P011</option>
+              <option value="P012">P012</option>
+              <option value="P013">P013</option>
+              <option value="P014">P014</option>
+              <option value="P015">P015</option>
+              <option value="P016">P016</option>
+              <option value="P017">P017</option>
+              <option value="P018">P018</option>
+              <option value="P019">P019</option>
+            </select>
+            <button id="lockBtn" class="btn btn-lock" onclick="toggleLock()"
+              title="Lock/unlock participant selection">🔓 Lock</button>
+          </div>
+          <div class="clip-info" id="clipInfo">No participant selected</div>
+          <div class="field" style="margin-top:14px;">
+            <label class="label" for="segmentSel">Video Segment Index</label>
+            <select id="segmentSel" class="select" onchange="onSegmentChange()" disabled>
+              <option value="">— Lock participant first —</option>
+            </select>
+          </div>
+          <div class="field">
+            <label class="label" for="jsonFileSel">Annotation JSON</label>
+            <select id="jsonFileSel" class="select" onchange="loadSelectedAnnotation()" disabled>
+              <option value="">— Select index first —</option>
+            </select>
+          </div>
+          <div class="clip-nav-row">
+            <button class="btn btn-ghost" onclick="loadPrevAnnotation()">← Previous JSON</button>
+            <button class="btn btn-ghost" onclick="loadNextAnnotation()">Next JSON →</button>
+          </div>
+          <div class="file-info" id="fileInfo">No JSON loaded</div>
         </div>
-        <div class="prog-bar">
-          <div class="prog-fill" id="progFill" style="width:0%"></div>
+      </div>
+
+      <!-- Progress Card -->
+      <div class="card">
+        <div class="card-head">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="2" x2="12" y2="22" />
+            <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+          </svg>
+          <h2>Progress</h2>
         </div>
+        <div class="card-body">
+          <div class="prog-row">
+            <span>Annotation progress</span>
+            <span id="progTxt">0 / 7</span>
+          </div>
+          <div class="prog-bar">
+            <div class="prog-fill" id="progFill" style="width:0%"></div>
+          </div>
 
-        <div style="display:flex; gap:8px; margin-top:12px;">
-          <button class="btn btn-ghost" style="flex:1" onclick="clearAll()">🗑 Clear All</button>
-          <button class="btn btn-blue"  style="flex:1" onclick="gotoExport()">↓ Export</button>
+          <div style="display:flex; gap:8px; margin-top:12px;">
+            <button class="btn btn-green" style="flex:1" onclick="downloadJSON()">⬇ Download JSON</button>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- Tips Card -->
-    <div class="card">
-      <div class="card-head">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-        <h2>Quick Reference</h2>
+      <!-- Tips Card -->
+      <div class="card">
+        <div class="card-head">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10" />
+            <line x1="12" y1="8" x2="12" y2="12" />
+            <line x1="12" y1="16" x2="12.01" y2="16" />
+          </svg>
+          <h2>Quick Reference</h2>
+        </div>
+        <div class="card-body" style="font-size:12.5px; color:var(--muted); line-height:2.1;">
+          <b>Environment</b> — pick exactly one label<br>
+          <b>Coarse Activity</b> — tick all that apply<br>
+          <b>Dog Fine-Grained</b> — tick all that apply<br>
+          <b>Navigation Context</b> — tick all that apply<br>
+          <b>Objects</b> — select object, direction, and distance<br>
+          <b>Summary</b> — select surface and weather<br>
+          <b>Transition</b> — choose up to three main activity states<br>
+          <span style="opacity:.75;">💡 Use the search boxes to filter quickly.</span>
+        </div>
       </div>
-      <div class="card-body" style="font-size:12.5px; color:var(--muted); line-height:2.1;">
-        <b>Environment</b> — pick exactly one label<br>
-        <b>Coarse Activity</b> — tick all that apply<br>
-        <b>Dog Fine-Grained</b> — tick all that apply<br>
-        <b>Navigation Context</b> — tick all that apply<br>
-        <b>Summary</b> — auto-built & editable<br>
-        <b>Transition</b> — choose start → end state<br>
-        <span style="opacity:.75;">💡 Use the search boxes to filter quickly.</span>
-      </div>
-    </div>
 
-  </aside>
+    </aside>
 
 
-  <!-- ─────────────────────────────────────
+    <!-- ─────────────────────────────────────
        RIGHT — Annotation Form
   ───────────────────────────────────── -->
-  <section class="right">
+    <section class="right">
 
-    <!-- ① Environment  +  ② Coarse Activity -->
-    <div class="card">
-      <div class="card-head">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h7"/></svg>
-        <h2>① Environment &amp; ② Coarse Activity</h2>
-      </div>
-      <div class="card-body">
-
-        <div class="field">
-          <label class="label" for="envSel">🌍 Environment Classification</label>
-          <div class="ms" id="ms-env">
-            <button type="button" class="ms-btn" onclick="msOpen('env')">
-              <span class="ms-lbl">Select environment…</span>
-            </button>
-          </div>
+      <!-- ① Environment  +  ② Coarse Activity -->
+      <div class="card" id="card-env-coarse">
+        <div class="card-head">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 6h16M4 12h16M4 18h7" />
+          </svg>
+          <h2>① Environment &amp; ② Coarse Activity <span class="label-hint" id="coarseTitleHint"></span></h2>
         </div>
+        <div class="card-body">
 
-        <div class="field">
-          <label class="label">🏃 Coarse Activity Classification</label>
-          <div class="ms" id="ms-coarse">
-            <button type="button" class="ms-btn" onclick="msOpen('coarse')">
-              <span class="ms-lbl">Select activities…</span>
-            </button>
-          </div>
-          <div class="tags" id="tg-coarse"></div>
-        </div>
-
-      </div>
-    </div>
-
-    <!-- ③ Dog Fine-Grained Activity -->
-    <div class="card">
-      <div class="card-head">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
-        <h2>③ Dog Fine-Grained Activity  <span style="font-weight:400; text-transform:none; letter-spacing:0;">(D_ labels)</span></h2>
-      </div>
-      <div class="card-body">
-        <div class="field" style="margin-bottom:0">
-          <label class="label">🐕 Dog Activity Labels</label>
-          <div class="ms" id="ms-dog">
-            <button type="button" class="ms-btn" onclick="msOpen('dog')">
-              <span class="ms-lbl">Select dog activities…</span>
-            </button>
-          </div>
-          <div class="tags" id="tg-dog"></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ④ Navigation Context -->
-    <div class="card">
-      <div class="card-head">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
-        <h2>④ Navigation Context</h2>
-      </div>
-      <div class="card-body">
-        <div class="field" style="margin-bottom:0">
-          <label class="label">🗺️ Navigation Labels</label>
-          <div class="ms" id="ms-nav">
-            <button type="button" class="ms-btn" onclick="msOpen('nav')">
-              <span class="ms-lbl">Select navigation context…</span>
-            </button>
-          </div>
-          <div class="tags" id="tg-nav"></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- ⑤ Auto-Generated Summary -->
-    <div class="card">
-      <div class="card-head">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-        <h2>⑤ Auto-Generated Video Summary</h2>
-        <div class="slot">
-          <button class="btn btn-sm btn-ghost" onclick="copySummary()">Copy</button>
-        </div>
-      </div>
-      <div class="card-body">
-        <textarea id="summaryBox" class="summary-box empty" placeholder="Select labels above to auto-generate a summary…">Select labels above to auto-generate a summary…</textarea>
-        <p class="hint" style="margin-top:6px;">✨ Assembled automatically from your label selections — fully editable.</p>
-      </div>
-    </div>
-
-    <!-- ⑥ Transition Description -->
-    <div class="card">
-      <div class="card-head">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-        <h2>⑥ Transition Description</h2>
-      </div>
-      <div class="card-body">
-
-        <label class="trans-toggle">
-          <input type="checkbox" id="noChg" onchange="onTransToggle()">
-          <span>No major change occurs in this video</span>
-        </label>
-
-        <div id="transBuilder">
-          <div class="trans-grid">
-            <div>
-              <label class="label" for="tFrom">At the START, the dog was…</label>
-              <select id="tFrom" class="select" onchange="onTransChange()">
-                <option value="">— Select start state —</option>
-              </select>
-            </div>
-            <div class="trans-arrow">→</div>
-            <div>
-              <label class="label" for="tTo">At the END, the dog was…</label>
-              <select id="tTo" class="select" onchange="onTransChange()">
-                <option value="">— Select end state —</option>
-              </select>
+          <div class="field">
+            <label class="label" for="envSel">🌍 Environment Classification</label>
+            <div class="ms" id="ms-env">
+              <button type="button" class="ms-btn" onclick="msOpen('env')">
+                <span class="ms-lbl">Select environment…</span>
+              </button>
             </div>
           </div>
-          <p class="hint" style="margin-top:6px;">💡 Select the dog's dominant state at each end of the clip; the sentence is auto-generated below.</p>
+
+          <div class="field">
+            <label class="label">🏃 Coarse Activity Classification</label>
+            <div class="ms" id="ms-coarse">
+              <button type="button" class="ms-btn" onclick="msOpen('coarse')">
+                <span class="ms-lbl">Select activities…</span>
+              </button>
+            </div>
+            <div class="tags" id="tg-coarse"></div>
+          </div>
+          <p class="missing-note">Please finish environment and coarse activity.</p>
+
         </div>
-
-        <textarea id="transResult" class="summary-box" style="display:none;" placeholder="Transition description will appear here..."></textarea>
-
       </div>
-    </div>
 
-    <!-- Export -->
-    <div class="card" id="exportCard">
-      <div class="card-head">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-        <h2>💾 Export Annotation</h2>
-      </div>
-      <div class="card-body">
-
-        <div class="field">
-          <label class="label" for="clipNum">Clip Number</label>
-          <input id="clipNum" class="input" type="text" placeholder="Enter 6-digit number (e.g. 123456 or just 1 for 000001)" maxlength="6">
-          <p class="hint">Enter a number; it will automatically be padded to 6 digits (e.g., 5 → 000005)</p>
+      <!-- ③ Dog Fine-Grained Activity -->
+      <div class="card" id="card-dog">
+        <div class="card-head">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8" />
+            <path d="M21 21l-4.35-4.35" />
+          </svg>
+          <h2>③ Dog Fine-Grained Activity <span class="label-hint" id="dogTitleHint"></span></h2>
         </div>
-
-        <div class="export-btns">
-          <button class="btn btn-ghost"  onclick="previewJSON()">👁 Preview JSON</button>
-          <button class="btn btn-green"  onclick="downloadJSON()">⬇ Download JSON</button>
-          <button class="btn btn-ghost"  onclick="copyJSON()">📋 Copy JSON</button>
+        <div class="card-body">
+          <div class="field" style="margin-bottom:0">
+            <label class="label">🐕 Dog Activity Labels</label>
+            <div class="ms" id="ms-dog">
+              <button type="button" class="ms-btn" onclick="msOpen('dog')">
+                <span class="ms-lbl">Select dog activities…</span>
+              </button>
+            </div>
+            <div class="tags" id="tg-dog"></div>
+          </div>
+          <p class="missing-note">Please finish dog fine-grained activity.</p>
         </div>
-
-        <pre class="json-out" id="jsonOut"></pre>
       </div>
-    </div>
 
-  </section>
-</div>
+      <!-- ④ Navigation Context -->
+      <div class="card" id="card-nav">
+        <div class="card-head">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="3 11 22 2 13 21 11 13 3 11" />
+          </svg>
+          <h2>④ Navigation Context <span class="label-hint" id="navTitleHint"></span></h2>
+        </div>
+        <div class="card-body">
+          <div class="field" style="margin-bottom:0">
+            <label class="label">🗺️ Navigation Labels</label>
+            <div class="ms" id="ms-nav">
+              <button type="button" class="ms-btn" onclick="msOpen('nav')">
+                <span class="ms-lbl">Select navigation context…</span>
+              </button>
+            </div>
+            <div class="tags" id="tg-nav"></div>
+          </div>
+          <p class="missing-note">Please finish navigation context.</p>
+        </div>
+      </div>
 
-<!-- Toast -->
-<div class="toast" id="toast"></div>
+      <!-- ⑤ Objects -->
+      <div class="card" id="card-objects">
+        <div class="card-head">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="18" height="18" rx="2" />
+            <path d="M8 8h8M8 12h8M8 16h5" />
+          </svg>
+          <h2>⑤ Objects</h2>
+        </div>
+        <div class="card-body">
+          <label class="trans-toggle">
+            <input type="checkbox" id="noObj" onchange="onObjectNoneToggle()">
+            <span>There is no important object in this video</span>
+          </label>
+
+          <div id="objectBuilder">
+            <div class="summary-grid">
+              <div>
+                <label class="label" for="objectSel">Object</label>
+                <select id="objectSel" class="select">
+                  <option value="">— Select object —</option>
+                </select>
+              </div>
+              <div>
+                <label class="label" for="objectDirectionSel">Direction</label>
+                <select id="objectDirectionSel" class="select">
+                  <option value="">— Select direction —</option>
+                </select>
+              </div>
+              <div>
+                <label class="label" for="objectDistanceSel">Distance</label>
+                <select id="objectDistanceSel" class="select">
+                  <option value="">— Select distance —</option>
+                </select>
+              </div>
+            </div>
+            <button class="btn btn-blue btn-sm" onclick="addSummaryObject()">Add Object</button>
+            <div class="tags" id="tg-summary-objects"></div>
+            <p class="hint" style="margin-top:6px;">Add each important visible object with its image position and
+              distance
+              bucket.</p>
+          </div>
+          <p class="missing-note">Please add an object or check that there is no important object.</p>
+        </div>
+      </div>
+
+      <!-- ⑥ Video Summary -->
+      <div class="card" id="card-summary">
+        <div class="card-head">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+            <polyline points="14 2 14 8 20 8" />
+            <line x1="16" y1="13" x2="8" y2="13" />
+            <line x1="16" y1="17" x2="8" y2="17" />
+          </svg>
+          <h2>⑥ Video Summary Labels</h2>
+        </div>
+        <div class="card-body">
+          <div class="summary-grid">
+            <div>
+              <label class="label" for="summarySurface">Surface</label>
+              <select id="summarySurface" class="select" onchange="onUpdate()">
+                <option value="">— Select surface —</option>
+              </select>
+            </div>
+            <div>
+              <label class="label" for="summaryWeather">Weather</label>
+              <select id="summaryWeather" class="select" onchange="onUpdate()">
+                <option value="">— Select weather —</option>
+              </select>
+            </div>
+            <div style="display:none;">
+              <label class="label" for="summaryTime">Time</label>
+              <select id="summaryTime" class="select" onchange="onUpdate()">
+                <option value="">— Select time —</option>
+              </select>
+            </div>
+          </div>
+          <p class="hint" style="margin-top:6px;">✨ These selected labels are saved as the video_summary answer list.
+          </p>
+          <p class="missing-note">Please finish surface and weather.</p>
+        </div>
+      </div>
+
+      <!-- ⑦ Transition Description -->
+      <div class="card" id="card-transition">
+        <div class="card-head">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="5" y1="12" x2="19" y2="12" />
+            <polyline points="12 5 19 12 12 19" />
+          </svg>
+          <h2>⑦ Transition Description</h2>
+        </div>
+        <div class="card-body">
+
+          <label class="trans-toggle">
+            <input type="checkbox" id="noChg" onchange="onTransToggle()">
+            <span>No major change occurs in this video</span>
+          </label>
+
+          <div id="transBuilder">
+            <div class="trans-grid">
+              <div>
+                <label class="label" for="tState1">State 1</label>
+                <select id="tState1" class="select" onchange="onTransChange()">
+                  <option value="">— Select state —</option>
+                </select>
+              </div>
+              <div class="trans-arrow">→</div>
+              <div>
+                <label class="label" for="tState2">State 2</label>
+                <select id="tState2" class="select" onchange="onTransChange()">
+                  <option value="">— Optional state —</option>
+                </select>
+              </div>
+              <div class="trans-arrow">→</div>
+              <div>
+                <label class="label" for="tState3">State 3</label>
+                <select id="tState3" class="select" onchange="onTransChange()">
+                  <option value="">— Optional state —</option>
+                </select>
+              </div>
+            </div>
+            <p class="hint" style="margin-top:6px;">💡 Use the main activity states only. Leave later boxes empty if the
+              clip has only one or two states.</p>
+          </div>
+
+          <p class="missing-note">Please finish transition description.</p>
+
+        </div>
+      </div>
+
+    </section>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
 
 
-<!-- ═══════════════════════════════════════
+  <!-- ═══════════════════════════════════════
      DROPDOWN PORTALS
 ═══════════════════════════════════════ -->
 
-<!-- Environment Portal -->
-<div id="ms-portal-env" class="ms-drop" style="display:none;">
-  <div class="ms-search">
-    <input type="text" placeholder="Search…" oninput="msFilter('env', this.value)">
+  <!-- Environment Portal -->
+  <div id="ms-portal-env" class="ms-drop" style="display:none;">
+    <div class="ms-search">
+      <input type="text" placeholder="Search…" oninput="msFilter('env', this.value)">
+    </div>
+    <div class="ms-list" id="msl-env"></div>
   </div>
-  <div class="ms-list" id="msl-env"></div>
-</div>
 
-<!-- Coarse Activity Portal -->
-<div id="ms-portal-coarse" class="ms-drop" style="display:none;">
-  <div class="ms-search">
-    <input type="text" placeholder="Search activities…" oninput="msFilter('coarse', this.value)">
+  <!-- Coarse Activity Portal -->
+  <div id="ms-portal-coarse" class="ms-drop" style="display:none;">
+    <div class="ms-search">
+      <input type="text" placeholder="Search activities…" oninput="msFilter('coarse', this.value)">
+    </div>
+    <div class="ms-list" id="msl-coarse"></div>
+    <div class="ms-foot">
+      <span class="ms-foot-count" id="msc-coarse">0 selected</span>
+      <button class="btn btn-sm btn-ghost" onclick="msClearAll('coarse')">Clear all</button>
+    </div>
   </div>
-  <div class="ms-list" id="msl-coarse"></div>
-  <div class="ms-foot">
-    <span class="ms-foot-count" id="msc-coarse">0 selected</span>
-    <button class="btn btn-sm btn-ghost" onclick="msClearAll('coarse')">Clear all</button>
-  </div>
-</div>
 
-<!-- Dog Activity Portal -->
-<div id="ms-portal-dog" class="ms-drop" style="display:none;">
-  <div class="ms-search">
-    <input type="text" placeholder="Search e.g. sniff, tail, head, walk…" oninput="msFilter('dog', this.value)">
+  <!-- Dog Activity Portal -->
+  <div id="ms-portal-dog" class="ms-drop" style="display:none;">
+    <div class="ms-search">
+      <input type="text" placeholder="Search e.g. sniff, tail, head, walk…" oninput="msFilter('dog', this.value)">
+    </div>
+    <div class="ms-list" id="msl-dog"></div>
+    <div class="ms-foot">
+      <span class="ms-foot-count" id="msc-dog">0 selected</span>
+      <button class="btn btn-sm btn-ghost" onclick="msClearAll('dog')">Clear all</button>
+    </div>
   </div>
-  <div class="ms-list" id="msl-dog"></div>
-  <div class="ms-foot">
-    <span class="ms-foot-count" id="msc-dog">0 selected</span>
-    <button class="btn btn-sm btn-ghost" onclick="msClearAll('dog')">Clear all</button>
-  </div>
-</div>
 
-<!-- Navigation Context Portal -->
-<div id="ms-portal-nav" class="ms-drop" style="display:none;">
-  <div class="ms-search">
-    <input type="text" placeholder="Search e.g. crosswalk, curb, obstacle…" oninput="msFilter('nav', this.value)">
+  <!-- Navigation Context Portal -->
+  <div id="ms-portal-nav" class="ms-drop" style="display:none;">
+    <div class="ms-search">
+      <input type="text" placeholder="Search e.g. crosswalk, curb, obstacle…" oninput="msFilter('nav', this.value)">
+    </div>
+    <div class="ms-list" id="msl-nav"></div>
+    <div class="ms-foot">
+      <span class="ms-foot-count" id="msc-nav">0 selected</span>
+      <button class="btn btn-sm btn-ghost" onclick="msClearAll('nav')">Clear all</button>
+    </div>
   </div>
-  <div class="ms-list" id="msl-nav"></div>
-  <div class="ms-foot">
-    <span class="ms-foot-count" id="msc-nav">0 selected</span>
-    <button class="btn btn-sm btn-ghost" onclick="msClearAll('nav')">Clear all</button>
-  </div>
-</div>
 
 
-<!-- ═══════════════════════════════════════
+  <!-- ═══════════════════════════════════════
      JAVASCRIPT
 ═══════════════════════════════════════ -->
-<script>
-/* ─────────────────────────────────────
-   THEME MANAGEMENT
-───────────────────────────────────── */
-function toggleTheme() {
-  const isDark = document.body.classList.toggle('light-mode');
-  const btn = document.getElementById('themeToggle');
-  btn.textContent = isDark ? '☀️' : '🌙';
-  localStorage.setItem('theme', isDark ? 'light' : 'dark');
-}
+  <script>
+    /* ─────────────────────────────────────
+       THEME MANAGEMENT
+    ───────────────────────────────────── */
+    function toggleTheme() {
+      const isLight = document.body.classList.toggle('light-mode');
+      const btn = document.getElementById('themeToggle');
+      btn.textContent = isLight ? '☀️' : '🌙';
+      localStorage.setItem('theme', isLight ? 'light' : 'dark');
+    }
 
-function initTheme() {
-  const saved = localStorage.getItem('theme');
-  if (saved === 'light') {
-    document.body.classList.add('light-mode');
-    document.getElementById('themeToggle').textContent = '☀️';
-  }
-}
-
-/* ─────────────────────────────────────
-   LOCK FUNCTIONALITY
-───────────────────────────────────── */
-let participantLocked = false;
-
-function toggleLock() {
-  const sel = document.getElementById('participantSel');
-  const btn = document.getElementById('lockBtn');
-  
-  participantLocked = !participantLocked;
-  sel.disabled = participantLocked;
-  btn.classList.toggle('locked', participantLocked);
-  btn.textContent = participantLocked ? '🔒 Locked' : '🔓 Lock';
-  
-  if (!participantLocked) {
-    sel.focus();
-  }
-}
-
-function onParticipantChange() {
-  const p = document.getElementById('participantSel').value;
-  const info = document.getElementById('clipInfo');
-  if (p) {
-    info.textContent = `✓ Participant: ${p} selected`;
-  } else {
-    info.textContent = 'No participant selected';
-  }
-}
-
-/* ─────────────────────────────────────
-   LABEL DATA
-───────────────────────────────────── */
-const DATA = {
-  env: [
-    'Forest', 'Indoor', 'Intersection', 'None', 'Playground', 'Rural', 'Trail', 'Urban'
-  ],
-  coarse: [
-    'Crossing Street','Crowd Present','Distraction Event','D Play Running',
-    'D Turning','D Turning Right Body','Environmental Monitoring',
-    'Human Dog Interaction','Indoor Navigation','Investigation',
-    'Navigating Obstacle','None','Object Interaction','Person Passing Close',
-    'Running','Social Encounter','Stationary','Trotting','Turning','Walking'
-  ],
-  dog: [
-    'D_ASCENDING_STAIRS','D_BACKING_UP','D_BODY_SHAKE','D_CARRYING_OBJECT',
-    'D_CROUCHING','D_DESCENDING_STAIRS','D_DRINKING','D_EAR_FLICK',
-    'D_GRABBING_OBJECT','D_HEAD_LOOKING_DOWN','D_HEAD_LOOKING_FORWARD',
-    'D_HEAD_LOOKING_LEFT','D_HEAD_LOOKING_RIGHT','D_HEAD_LOOKING_UP',
-    'D_HEAD_SCANNING','D_HEAD_SHAKE','D_HEAD_TURNING_LEFT_BODY',
-    'D_JUMPING_UP','D_LEASH_SLACK','D_LEASH_TAUT','D_LICKING_OBJECT',
-    'D_LICKING_SELF','D_LYING_DOWN','D_NUDGING','D_PLAY_JUMPING',
-    'D_PLAY_ROLLING','D_PLAY_RUNNING','D_PULLING_FORWARD','D_RESIST_BACKWARD',
-    'D_RUNNING','D_SITTING','D_SNIFFING_GROUND','D_SNIFFING_OBJECT',
-    'D_SOCIAL_APPROACH','D_STOPPED','D_TAIL_LOWERED','D_TAIL_RAISED',
-    'D_TAIL_WAGGING_FAST','D_TAIL_WAGGING_SLOW','D_TROTTING',
-    'D_TURNING_LEFT_BODY','D_TURNING_RIGHT_BODY','D_WALKING','D_WALKING_FORWARD'
-  ],
-  nav: [
-    'Crowd Present','Door Opening','Indoor Navigation','Intersection',
-    'Narrow Passage Ahead','Nav At Crosswalk','Nav At Curb','Nav Crossed Street',
-    'Nav Crossing Active','Nav Crosswalk','Nav Crosswalk Active',
-    'Nav Crosswalk Ahead','Nav Crosswalk Markings','Nav Curb Ahead',
-    'Nav Dog Arc Around','Nav Dog Stops At Edge','Nav Dog Stops At Obstacle',
-    'Nav Intersection','Nav Narrow Space','Nav Obstacle Present','Nav Open Space',
-    'Nav Stairs Ahead','Nav Stepping Down','Nav Stepping Up','Nav Traffic Signal',
-    'Nav Vehicle Waiting','Nav Waiting To Cross','None','Obstacle In Path',
-    'Vehicle Stopped Nearby','Vehicle Waiting'
-  ]
-};
-
-/* ─────────────────────────────────────
-   LABEL → PLAIN ENGLISH MAPS (for summary)
-───────────────────────────────────── */
-const DOG_TXT = {
-  D_ASCENDING_STAIRS:       'ascending stairs',
-  D_BACKING_UP:             'backing up',
-  D_BODY_SHAKE:             'shaking its body',
-  D_CARRYING_OBJECT:        'carrying an object',
-  D_CROUCHING:              'crouching',
-  D_DESCENDING_STAIRS:      'descending stairs',
-  D_DRINKING:               'drinking',
-  D_EAR_FLICK:              'flicking its ears',
-  D_GRABBING_OBJECT:        'grabbing an object',
-  D_HEAD_LOOKING_DOWN:      'looking down',
-  D_HEAD_LOOKING_FORWARD:   'looking forward',
-  D_HEAD_LOOKING_LEFT:      'looking left',
-  D_HEAD_LOOKING_RIGHT:     'looking right',
-  D_HEAD_LOOKING_UP:        'looking up',
-  D_HEAD_SCANNING:          'scanning the environment',
-  D_HEAD_SHAKE:             'shaking its head',
-  D_HEAD_TURNING_LEFT_BODY: 'turning its head to the left',
-  D_JUMPING_UP:             'jumping up',
-  D_LEASH_SLACK:            'walking with a slack leash',
-  D_LEASH_TAUT:             'pulling on a taut leash',
-  D_LICKING_OBJECT:         'licking an object',
-  D_LICKING_SELF:           'licking itself',
-  D_LYING_DOWN:             'lying down',
-  D_NUDGING:                'nudging something',
-  D_PLAY_JUMPING:           'jumping playfully',
-  D_PLAY_ROLLING:           'rolling playfully',
-  D_PLAY_RUNNING:           'running playfully',
-  D_PULLING_FORWARD:        'pulling forward on the leash',
-  D_RESIST_BACKWARD:        'resisting backward',
-  D_RUNNING:                'running',
-  D_SITTING:                'sitting',
-  D_SNIFFING_GROUND:        'sniffing the ground',
-  D_SNIFFING_OBJECT:        'sniffing an object',
-  D_SOCIAL_APPROACH:        'approaching socially',
-  D_STOPPED:                'stopped',
-  D_TAIL_LOWERED:           'tail lowered',
-  D_TAIL_RAISED:            'tail raised',
-  D_TAIL_WAGGING_FAST:      'wagging its tail quickly',
-  D_TAIL_WAGGING_SLOW:      'wagging its tail slowly',
-  D_TROTTING:               'trotting',
-  D_TURNING_LEFT_BODY:      'turning left',
-  D_TURNING_RIGHT_BODY:     'turning right',
-  D_WALKING:                'walking',
-  D_WALKING_FORWARD:        'walking forward',
-};
-
-const COARSE_TXT = {
-  'Crossing Street':          'crossing a street',
-  'Crowd Present':            'navigating through a crowd',
-  'Distraction Event':        'encountering a distraction',
-  'D Play Running':           'play-running',
-  'D Turning':                'turning',
-  'D Turning Right Body':     'turning right',
-  'Environmental Monitoring': 'monitoring the environment',
-  'Human Dog Interaction':    'interacting with a human',
-  'Indoor Navigation':        'navigating indoors',
-  'Investigation':            'investigating something',
-  'Navigating Obstacle':      'navigating an obstacle',
-  'None':                     null,
-  'Object Interaction':       'interacting with an object',
-  'Person Passing Close':     'a person passing close by',
-  'Running':                  'running',
-  'Social Encounter':         'engaged in a social encounter',
-  'Stationary':               'stationary',
-  'Trotting':                 'trotting',
-  'Turning':                  'turning',
-  'Walking':                  'walking',
-};
-
-const ENV_TXT = {
-  Forest: 'a forest', Indoor: 'an indoor space', Intersection: 'an intersection',
-  None: 'an unspecified area', Playground: 'a playground', Rural: 'a rural area',
-  Trail: 'a trail', Urban: 'an urban area',
-};
-
-/* Transition state options — plain English, covers the fine-grained label space */
-const TRANS_OPTS = [
-  ['walking',                     'Walking'],
-  ['trotting',                    'Trotting'],
-  ['running',                     'Running'],
-  ['play-running',                'Play Running'],
-  ['stopped / stationary',        'Stopped / Stationary'],
-  ['sitting',                     'Sitting'],
-  ['lying down',                  'Lying Down'],
-  ['sniffing the ground',         'Sniffing the Ground'],
-  ['sniffing an object',          'Sniffing an Object'],
-  ['scanning the environment',    'Scanning the Environment'],
-  ['looking left',                'Looking Left'],
-  ['looking right',               'Looking Right'],
-  ['looking up',                  'Looking Up'],
-  ['looking down',                'Looking Down'],
-  ['ascending stairs',            'Ascending Stairs'],
-  ['descending stairs',           'Descending Stairs'],
-  ['turning left',                'Turning Left'],
-  ['turning right',               'Turning Right'],
-  ['pulling forward on the leash','Pulling Forward on Leash'],
-  ['backing up',                  'Backing Up'],
-  ['interacting with a person',   'Interacting with a Person'],
-  ['navigating an obstacle',      'Navigating an Obstacle'],
-  ['crossing the street',         'Crossing the Street'],
-  ['approaching something',       'Approaching Something'],
-  ['playing',                     'Playing'],
-];
-
-/* ─────────────────────────────────────
-   STATE  (selected labels per category)
-───────────────────────────────────── */
-const S = { env: new Set(), coarse: new Set(), dog: new Set(), nav: new Set() };
-
-/* ─────────────────────────────────────
-   INITIALISE
-───────────────────────────────────── */
-function init() {
-  initTheme();
-  
-  // Restore participant if it was saved
-  const savedParticipant = localStorage.getItem('savedParticipant');
-  if (savedParticipant) {
-    document.getElementById('participantSel').value = savedParticipant;
-    onParticipantChange();
-  }
-  
-  Object.keys(DATA).forEach(k => buildList(k));
-
-  const tF = document.getElementById('tFrom');
-  const tT = document.getElementById('tTo');
-  TRANS_OPTS.forEach(([v, l]) => {
-    tF.add(new Option(l, v));
-    tT.add(new Option(l, v));
-  });
-
-  // Close dropdowns when clicking outside them
-  document.addEventListener('click', e => {
-    Object.keys(DATA).forEach(k => {
-      const wrap = document.getElementById(`ms-${k}`);
-      const portal = document.getElementById(`ms-portal-${k}`);
-      if ((wrap && !wrap.contains(e.target)) && (portal && !portal.contains(e.target))) {
-        closeMs(k);
+    function initTheme() {
+      const saved = localStorage.getItem('theme');
+      if (saved !== 'dark') {
+        document.body.classList.add('light-mode');
+        document.getElementById('themeToggle').textContent = '☀️';
       }
-    });
-  });
-}
+    }
 
-/* ─────────────────────────────────────
-   MULTI-SELECT  —  core functions
-───────────────────────────────────── */
-function buildList(k) {
-  const el = document.getElementById(`msl-${k}`);
-  el.innerHTML = '';
-  DATA[k].forEach(lbl => {
-    const row = document.createElement('div');
-    row.className = 'ms-item' + (S[k].has(lbl) ? ' on' : '');
-    row.dataset.v = lbl;
+    /* ─────────────────────────────────────
+       LOCK FUNCTIONALITY
+    ───────────────────────────────────── */
+    let participantLocked = false;
 
-    const cb = document.createElement('input');
-    cb.type = 'checkbox';
-    cb.checked = S[k].has(lbl);
+    function toggleLock() {
+      const sel = document.getElementById('participantSel');
+      const seg = document.getElementById('segmentSel');
+      const btn = document.getElementById('lockBtn');
+      if (!sel || !seg || !btn) return;
 
-    const sp = document.createElement('span');
-    sp.textContent = lbl;
+      if (!participantLocked && !sel.value) {
+        toast('Select participant first');
+        return;
+      }
 
-    row.append(cb, sp);
-    row.addEventListener('click', () => msTogItem(k, lbl, row, cb));
-    el.appendChild(row);
-  });
-}
+      participantLocked = !participantLocked;
+      sel.disabled = participantLocked;
+      btn.classList.toggle('locked', participantLocked);
+      btn.textContent = participantLocked ? '🔒 Locked' : '🔓 Lock';
 
-function msOpen(k) {
-  const portal = document.getElementById(`ms-portal-${k}`);
-  const btn    = document.querySelector(`#ms-${k} .ms-btn`);
-  const was    = portal.classList.contains('open');
-  
-  // Close all
-  Object.keys(DATA).forEach(j => closeMs(j));
-  
-  if (!was) {
-    portal.classList.add('open');
-    btn.classList.add('open');
-    
-    // Position the portal dropdown below the button
-    const rect = btn.getBoundingClientRect();
-    portal.style.top = (rect.bottom + 4) + 'px';
-    portal.style.left = rect.left + 'px';
-    portal.style.width = Math.max(rect.width, 280) + 'px';
-  }
-}
+      if (!participantLocked) {
+        seg.disabled = true;
+        resetFileSelectors('— Lock participant first —', '— Select index first —');
+        sel.focus();
+      } else {
+        loadParticipantSegments();
+      }
+    }
 
-function closeMs(k) {
-  const portal = document.getElementById(`ms-portal-${k}`);
-  portal.classList.remove('open');
-  const btn = document.querySelector(`#ms-${k} .ms-btn`);
-  if (btn) btn.classList.remove('open');
-}
+    function onParticipantChange() {
+      const participantSel = document.getElementById('participantSel');
+      const info = document.getElementById('clipInfo');
+      const p = participantSel ? participantSel.value : '';
+      if (p) {
+        if (info) info.textContent = `✓ Participant: ${p} selected`;
+      } else {
+        if (info) info.textContent = 'No participant selected';
+      }
 
-function msTogItem(k, lbl, row, cb) {
-  // Environment can only have ONE selection
-  if (k === 'env') {
-    S[k].clear();
-    S[k].add(lbl);
-    buildList(k);
-  } else {
-    // Other dropdowns allow multiple selections
-    if (S[k].has(lbl)) { S[k].delete(lbl); row.classList.remove('on'); cb.checked = false; }
-    else               { S[k].add(lbl);    row.classList.add('on');    cb.checked = true;  }
-  }
-  refreshMs(k);
-  onUpdate();
-}
+      if (!participantLocked) {
+        resetFileSelectors('— Lock participant first —', '— Select index first —');
+      }
+    }
 
-function msFilter(k, q) {
-  const lo = q.toLowerCase();
-  document.querySelectorAll(`#msl-${k} .ms-item`).forEach(i => {
-    i.style.display = i.dataset.v.toLowerCase().includes(lo) ? '' : 'none';
-  });
-}
+    function onSegmentChange() {
+      if (participantLocked) {
+        loadAnnotationList();
+      }
+    }
 
-function msClearAll(k) {
-  S[k].clear();
-  buildList(k);
-  refreshMs(k);
-  onUpdate();
-}
+    /* ─────────────────────────────────────
+       LABEL DATA
+    ───────────────────────────────────── */
+    const DATA = {
+      env: [
+        'Forest', 'Indoor', 'Intersection', 'None', 'Playground', 'Rural', 'Trail', 'Urban'
+      ],
+      coarse: [
+        'Crossing Street', 'Crowd Present', 'Distraction Event', 'Environmental Monitoring',
+        'Human Dog Interaction', 'Indoor Navigation', 'Investigation',
+        'Navigating Obstacle', 'None', 'Object Interaction', 'Person Passing Close',
+        'Playing', 'Running', 'Social Encounter', 'Stationary', 'Trotting', 'Turning', 'Walking'
+      ],
+      dog: ['Ascending Stairs', 'Backing Up', 'Carrying Object',
+        'Crouching', 'Descending Stairs', 'Drinking', 'Grabbing Object',
+        'Head Looking Down', 'Head Looking Forward', 'Head Looking Left',
+        'Head Looking Right', 'Head Looking Up', 'Head Scanning', 'Head Shake',
+        'Jumping Up', 'Licking Object', 'Lying Down', 'Nudging', 'Jumping',
+        'Rolling', 'Running', 'Pulling Forward', 'Resist Backward',
+        'Sitting', 'Sniffing Ground', 'Sniffing Object',
+        'Social Approach', 'Stopped', 'Trotting', 'Walking Forward'
+      ],
+      nav: [
+        'Nav At Open Space',
+        'Nav At Obstacle',
+        'Nav At Narrow Space',
+        'Nav At Stairs',
+        'Nav At Curb',
+        'Nav At Crosswalk',
+        'Nav At Traffic Signal',
+        'Nav At Crossing Street',
+        'Nav At Indoor Space',
+        'Nav At Door',
+        'Nav At Intersection',
+        'Nav At Vehicle Nearby',
+        'None'
+      ]
+    };
 
-function refreshMs(k) {
-  const n = S[k].size;
-  const placeholders = {
-    env:    'Select environment…',
-    coarse: 'Select activities…',
-    dog:    'Select dog activities…',
-    nav:    'Select navigation context…',
-  };
-  
-  let label;
-  if (k === 'env' && n > 0) {
-    // Show the actual environment name
-    label = [...S[k]][0];
-  } else {
-    label = n ? `$${n} item$${n !== 1 ? 's' : ''} selected` : placeholders[k];
-  }
-  
-  document.querySelector(`#ms-${k} .ms-lbl`).textContent = label;
-  
-  if (document.getElementById(`msc-${k}`)) {
-    document.getElementById(`msc-${k}`).textContent = `${n} selected`;
-  }
-  renderTags(k);
-}
+    const SUMMARY_SURFACES = [
+      ['SURFACE_GRASS', 'Grass'],
+      ['SURFACE_DIRT', 'Dirt'],
+      ['SURFACE_CONCRETE', 'Concrete'],
+      ['SURFACE_ASPHALT', 'Asphalt'],
+      ['SURFACE_SAND', 'Sand'],
+      ['SURFACE_CARPET', 'Carpet'],
+      ['SURFACE_TILE', 'Tile'],
+      ['SURFACE_WOOD', 'Wood'],
+      ['SURFACE_SNOW', 'Snow'],
+      ['SURFACE_MUD', 'Mud'],
+      ['SURFACE_GRAVEL', 'Gravel'],
+      ['SURFACE_UNKNOWN', 'Unknown'],
+    ];
 
-function renderTags(k) {
-  const c = document.getElementById(`tg-${k}`);
-  c.innerHTML = '';
-  S[k].forEach(lbl => {
-    const t  = document.createElement('span');
-    t.className = 'tag';
+    const SUMMARY_WEATHER = [
+      ['WEATHER_CLEAR', 'Clear'],
+      ['WEATHER_CLOUDY', 'Cloudy'],
+      ['WEATHER_RAINY', 'Rainy'],
+      ['WEATHER_UNKNOWN', 'Unknown'],
+    ];
 
-    const tx = document.createElement('span');
-    tx.className = 'tag-txt';
-    tx.title = lbl;
-    tx.textContent = lbl;
+    const SUMMARY_TIME = [
+      ['TIME_DAYTIME', 'Daytime'],
+      ['TIME_NIGHT', 'Night'],
+    ];
 
-    const xb = document.createElement('button');
-    xb.className = 'tag-x';
-    xb.textContent = '×';
-    xb.addEventListener('click', e => { e.stopPropagation(); rmTag(k, lbl); });
+    const SUMMARY_OBJECTS = [
+      'Person',
+      'Vehicle',
+      'Bicycle',
+      'Scooter',
+      'Dog',
+      'Crosswalk',
+      'Curb',
+      'Traffic Signal',
+      'Sign',
+      'Pole',
+      'Fence',
+      'Gate',
+      'Guardrail',
+      'Stairs',
+      'Ramp',
+      'Door',
+      'Obstacle',
+    ];
 
-    t.append(tx, xb);
-    c.appendChild(t);
-  });
-}
+    const SUMMARY_OBJECT_DIRECTIONS = [
+      'Left Top',
+      'Left Mid',
+      'Left Bottom',
+      'Center Top',
+      'Center Mid',
+      'Center Bottom',
+      'Right Top',
+      'Right Mid',
+      'Right Bottom',
+    ];
 
-function rmTag(k, lbl) {
-  S[k].delete(lbl);
-  buildList(k);
-  refreshMs(k);
-  onUpdate();
-}
+    const SUMMARY_OBJECT_DISTANCES = [
+      'Close (0m-2m)',
+      'Near (2m-4m)',
+      'Faraway (4m+)',
+    ];
 
-/* ─────────────────────────────────────
-   SUMMARY BUILDER
-───────────────────────────────────── */
-const PRIMARY_MOVE = new Set(['Walking','Trotting','Running','Stationary','D Play Running','Turning']);
+    /* ─────────────────────────────────────
+       LABEL → PLAIN ENGLISH MAPS (for summary)
+    ───────────────────────────────────── */
+    const DOG_TXT = {
+      D_ASCENDING_STAIRS: 'ascending stairs',
+      D_BACKING_UP: 'backing up',
+      D_BODY_SHAKE: 'shaking its body',
+      D_CARRYING_OBJECT: 'carrying an object',
+      D_CROUCHING: 'crouching',
+      D_DESCENDING_STAIRS: 'descending stairs',
+      D_DRINKING: 'drinking',
+      D_EAR_FLICK: 'flicking its ears',
+      D_GRABBING_OBJECT: 'grabbing an object',
+      D_HEAD_LOOKING_DOWN: 'looking down',
+      D_HEAD_LOOKING_FORWARD: 'looking forward',
+      D_HEAD_LOOKING_LEFT: 'looking left',
+      D_HEAD_LOOKING_RIGHT: 'looking right',
+      D_HEAD_LOOKING_UP: 'looking up',
+      D_HEAD_SCANNING: 'scanning the environment',
+      D_HEAD_SHAKE: 'shaking its head',
+      D_HEAD_TURNING_LEFT_BODY: 'turning its head to the left',
+      D_JUMPING_UP: 'jumping up',
+      D_LEASH_SLACK: 'walking with a slack leash',
+      D_LEASH_TAUT: 'pulling on a taut leash',
+      D_LICKING_OBJECT: 'licking an object',
+      D_LICKING_SELF: 'licking itself',
+      D_LYING_DOWN: 'lying down',
+      D_NUDGING: 'nudging something',
+      D_PLAY_JUMPING: 'jumping playfully',
+      D_PLAY_ROLLING: 'rolling playfully',
+      D_PLAY_RUNNING: 'running playfully',
+      D_PULLING_FORWARD: 'pulling forward on the leash',
+      D_RESIST_BACKWARD: 'resisting backward',
+      D_RUNNING: 'running',
+      D_SITTING: 'sitting',
+      D_SNIFFING_GROUND: 'sniffing the ground',
+      D_SNIFFING_OBJECT: 'sniffing an object',
+      D_SOCIAL_APPROACH: 'approaching socially',
+      D_STOPPED: 'stopped',
+      D_TAIL_LOWERED: 'tail lowered',
+      D_TAIL_RAISED: 'tail raised',
+      D_TAIL_WAGGING_FAST: 'wagging its tail quickly',
+      D_TAIL_WAGGING_SLOW: 'wagging its tail slowly',
+      D_TROTTING: 'trotting',
+      D_TURNING_LEFT_BODY: 'turning left',
+      D_TURNING_RIGHT_BODY: 'turning right',
+      D_WALKING: 'walking',
+      D_WALKING_FORWARD: 'walking forward',
+    };
 
-function buildSummary() {
-  const env    = S.env.size > 0 ? [...S.env][0] : '';
-  const coarseA = [...S.coarse].filter(x => x !== 'None');
-  const dogA    = [...S.dog];
-  const navA    = [...S.nav].filter(x => x !== 'None');
+    const COARSE_TXT = {
+      'Crossing Street': 'crossing a street',
+      'Crowd Present': 'navigating through a crowd',
+      'Distraction Event': 'encountering a distraction',
+      'D Play Running': 'play-running',
+      'D Turning': 'turning',
+      'D Turning Right Body': 'turning right',
+      'Environmental Monitoring': 'monitoring the environment',
+      'Human Dog Interaction': 'interacting with a human',
+      'Indoor Navigation': 'navigating indoors',
+      'Investigation': 'investigating something',
+      'Navigating Obstacle': 'navigating an obstacle',
+      'None': null,
+      'Object Interaction': 'interacting with an object',
+      'Person Passing Close': 'a person passing close by',
+      'Running': 'running',
+      'Social Encounter': 'engaged in a social encounter',
+      'Stationary': 'stationary',
+      'Trotting': 'trotting',
+      'Turning': 'turning',
+      'Walking': 'walking',
+    };
 
-  if (!env && !coarseA.length && !dogA.length) return null;
+    const ENV_TXT = {
+      Forest: 'a forest', Indoor: 'an indoor space', Intersection: 'an intersection',
+      None: 'an unspecified area', Playground: 'a playground', Rural: 'a rural area',
+      Trail: 'a trail', Urban: 'an urban area',
+    };
 
-  const sentences = [];
+    /* Transition state options from SUMMARY_TRANSITION_LABELS */
+    const TRANS_OPTS = [
+      ['Stopped', 'Stopped'],
+      ['Walking', 'Walking'],
+      ['Running', 'Running'],
+      ['Turning', 'Turning'],
+    ];
 
-  /* Sentence 1 — Setting + primary movement + other coarse activities */
-  const prim  = coarseA.find(c => PRIMARY_MOVE.has(c));
-  const other = coarseA.filter(c => !PRIMARY_MOVE.has(c));
+    /* ─────────────────────────────────────
+       STATE  (selected labels per category)
+    ───────────────────────────────────── */
+    const S = { env: new Set(), coarse: new Set(), dog: new Set(), nav: new Set() };
+    const summaryObjects = [];
+    let noImportantObject = false;
+    let annotationManifest = [];
+    let currentFileList = [];
+    let currentFileIndex = -1;
+    let currentJsonPath = '';
+    let currentJsonFileName = '';
+    let loadedItemsByType = {};
 
-  let s1 = (env && env !== 'None')
-    ? `In ${ENV_TXT[env] || env}, the dog `
-    : 'The dog ';
+    /* ─────────────────────────────────────
+       INITIALISE
+    ───────────────────────────────────── */
+    function init() {
+      initTheme();
 
-  s1 += prim
-    ? `is ${COARSE_TXT[prim]}`
-    : (dogA.length ? 'is present in the scene' : 'is visible in the scene');
+      // Restore participant if it was saved
+      const savedParticipant = localStorage.getItem('savedParticipant');
+      if (savedParticipant) {
+        document.getElementById('participantSel').value = savedParticipant;
+        onParticipantChange();
+      }
 
-  const otherTxts = other.map(c => COARSE_TXT[c]).filter(Boolean);
-  if (otherTxts.length) s1 += ` while ${joinList(otherTxts)}`;
-  sentences.push(s1 + '.');
+      Object.keys(DATA).forEach(k => buildList(k));
+      buildSummarySelectors();
+      buildObjectSelectors();
+      buildTitleHints();
 
-  /* Sentence 2 — Fine-grained dog actions */
-  if (dogA.length) {
-    const MOVE_SET = new Set([
-      'D_WALKING','D_WALKING_FORWARD','D_TROTTING','D_RUNNING','D_PLAY_RUNNING',
-      'D_STOPPED','D_SITTING','D_LYING_DOWN','D_CROUCHING',
-      'D_ASCENDING_STAIRS','D_DESCENDING_STAIRS',
-      'D_TURNING_LEFT_BODY','D_TURNING_RIGHT_BODY',
-      'D_PULLING_FORWARD','D_BACKING_UP','D_RESIST_BACKWARD',
-      'D_SOCIAL_APPROACH','D_PLAY_JUMPING','D_PLAY_ROLLING','D_JUMPING_UP'
-    ]);
-    const mv = dogA.filter(d =>  MOVE_SET.has(d)).map(d => DOG_TXT[d]).filter(Boolean);
-    const sx = dogA.filter(d => !MOVE_SET.has(d)).map(d => DOG_TXT[d]).filter(Boolean);
-    const all = [...mv, ...sx];
-    if (all.length) sentences.push(`The dog is observed ${joinList(all)}.`);
-  }
+      const transitionSelects = [
+        document.getElementById('tState1'),
+        document.getElementById('tState2'),
+        document.getElementById('tState3'),
+      ];
+      TRANS_OPTS.forEach(([v, l]) => {
+        transitionSelects.forEach(sel => sel.add(new Option(l, v)));
+      });
 
-  /* Sentence 3 — Navigation context (if any non-None labels) */
-  if (navA.length) {
-    const nTxts = navA.map(n => n.replace(/^Nav /i, '').toLowerCase());
-    sentences.push(`Navigation context includes ${joinList(nTxts)}.`);
-  }
+      // Close dropdowns when clicking outside them
+      document.addEventListener('click', e => {
+        Object.keys(DATA).forEach(k => {
+          const wrap = document.getElementById(`ms-${k}`);
+          const portal = document.getElementById(`ms-portal-${k}`);
+          if ((wrap && !wrap.contains(e.target)) && (portal && !portal.contains(e.target))) {
+            closeMs(k);
+          }
+        });
+      });
+    }
 
-  return sentences.join(' ');
-}
+    function buildSummarySelectors() {
+      [
+        ['summarySurface', SUMMARY_SURFACES],
+        ['summaryWeather', SUMMARY_WEATHER],
+        ['summaryTime', SUMMARY_TIME],
+      ].forEach(([id, options]) => {
+        const select = document.getElementById(id);
+        if (!select) return;
+        options.forEach(([value, label]) => select.add(new Option(label, value)));
+      });
+    }
 
-/* Oxford-comma list joiner */
-function joinList(a) {
-  if (!a.length) return '';
-  if (a.length === 1) return a[0];
-  if (a.length === 2) return `$${a[0]} and $${a[1]}`;
-  return `$${a.slice(0, -1).join(', ')}, and $${a[a.length - 1]}`;
-}
+    function buildObjectSelectors() {
+      [
+        ['objectSel', SUMMARY_OBJECTS],
+        ['objectDirectionSel', SUMMARY_OBJECT_DIRECTIONS],
+        ['objectDistanceSel', SUMMARY_OBJECT_DISTANCES],
+      ].forEach(([id, options]) => {
+        const select = document.getElementById(id);
+        if (!select) return;
+        options.forEach(label => select.add(new Option(label, label)));
+      });
+    }
 
-/* ─────────────────────────────────────
-   TRANSITION
-───────────────────────────────────── */
-function onTransToggle() {
-  const nc  = document.getElementById('noChg').checked;
-  const bld = document.getElementById('transBuilder');
-  const res = document.getElementById('transResult');
-  bld.style.display = nc ? 'none' : 'block';
-  
-  if (nc) {
-    res.style.display = 'block';
-    res.value = 'No major change occurs in the video.';
-  } else {
-    res.style.display = 'none';
-    res.value = '';
-  }
-  
-  onUpdate();
-}
+    function compactTitleLabels(labels, stripPrefix = '') {
+      return labels
+        .map(label => stripPrefix && label.startsWith(stripPrefix) ? label.slice(stripPrefix.length) : label)
+        .join(', ');
+    }
 
-function onTransChange() {
-  const f   = document.getElementById('tFrom').value;
-  const t   = document.getElementById('tTo').value;
-  const res = document.getElementById('transResult');
+    function buildTitleHints() {
+      const hints = [
+        ['coarseTitleHint', DATA.coarse],
+        ['dogTitleHint', DATA.dog],
+        ['navTitleHint', DATA.nav, 'Nav At '],
+      ];
+      hints.forEach(([id, labels, stripPrefix]) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.textContent = `(${compactTitleLabels(labels, stripPrefix || '')})`;
+      });
+    }
 
-  if (!f && !t) { res.style.display = 'none'; onUpdate(); return; }
+    /* ─────────────────────────────────────
+       MULTI-SELECT  —  core functions
+    ───────────────────────────────────── */
+    function buildList(k) {
+      const el = document.getElementById(`msl-${k}`);
+      if (!el || !DATA[k]) return;
+      el.innerHTML = '';
+      DATA[k].forEach(lbl => {
+        const row = document.createElement('div');
+        row.className = 'ms-item' + (S[k].has(lbl) ? ' on' : '');
+        row.dataset.v = lbl;
 
-  res.style.display = 'block';
-  
-  let text = '';
-  if (f && t) {
-    text = (f === t)
-      ? `The dog remains ${f} throughout the clip with no significant behavioral change.`
-      : `The dog transitions from ${f} to ${t}.`;
-  } else if (f) {
-    text = `At the start of the clip, the dog is ${f}.`;
-  } else {
-    text = `By the end of the clip, the dog is ${t}.`;
-  }
-  
-  res.value = text;
-  onUpdate();
-}
+        const cb = document.createElement('input');
+        cb.type = 'checkbox';
+        cb.checked = S[k].has(lbl);
 
-function getTransTxt() {
-  if (document.getElementById('noChg').checked)
-    return 'No major change occurs in the video.';
+        const sp = document.createElement('span');
+        sp.textContent = lbl;
 
-  const res = document.getElementById('transResult');
-  return res.value || '';
-}
+        row.append(cb, sp);
+        row.addEventListener('click', () => msTogItem(k, lbl, row, cb));
+        el.appendChild(row);
+      });
+    }
 
-/* ─────────────────────────────────────
-   PROGRESS + CENTRAL UPDATE
-───────────────────────────────────── */
-function onUpdate() {
-  /* Rebuild summary display */
-  const sum = buildSummary();
-  const sb  = document.getElementById('summaryBox');
-  if (sum) { sb.value = sum; sb.classList.remove('empty'); }
-  else     { sb.value = 'Select labels above to auto-generate a summary…'; sb.classList.add('empty'); }
+    function msOpen(k) {
+      const portal = document.getElementById(`ms-portal-${k}`);
+      const btn = document.querySelector(`#ms-${k} .ms-btn`);
+      if (!portal || !btn) return;
+      const was = portal.classList.contains('open');
 
-  /* Progress bar */
-  const env     = S.env.size > 0;
-  const nc      = document.getElementById('noChg').checked;
-  const tf      = document.getElementById('tFrom').value;
-  const tt      = document.getElementById('tTo').value;
-  const res     = document.getElementById('transResult');
-  const transOk = nc || tf || tt;  // Transition is checked if any option is selected
-  const sum_ok  = sb.value && sb.value !== 'Select labels above to auto-generate a summary…' && sb.value.trim() !== '';
-  const trans_txt_ok = res.value && res.value.trim() !== '';  // Transition text must not be empty
+      // Close all
+      Object.keys(DATA).forEach(j => closeMs(j));
 
-  const n = [
-    env,
-    S.coarse.size > 0,
-    S.dog.size    > 0,
-    S.nav.size    > 0,
-    sum_ok,
-    (transOk && trans_txt_ok),  // Both: selected AND has text
-  ].filter(Boolean).length;
+      if (!was) {
+        portal.classList.add('open');
+        btn.classList.add('open');
 
-  document.getElementById('progTxt').textContent  = `${n} / 6`;
-  document.getElementById('progFill').style.width = `${n / 6 * 100}%`;
-  document.getElementById('hdrbadge').textContent = `${n} / 6 complete`;
-}
+        // Position the portal dropdown below the button
+        const rect = btn.getBoundingClientRect();
+        portal.style.top = (rect.bottom + 4) + 'px';
+        portal.style.left = rect.left + 'px';
+        portal.style.width = Math.max(rect.width, 280) + 'px';
+      }
+    }
 
-/* ─────────────────────────────────────
-   JSON BUILDER
-───────────────────────────────────── */
-function padClipNum(num) {
-  return String(num).padStart(6, '0');
-}
+    function closeMs(k) {
+      const portal = document.getElementById(`ms-portal-${k}`);
+      if (!portal) return;
+      portal.classList.remove('open');
+      const btn = document.querySelector(`#ms-${k} .ms-btn`);
+      if (btn) btn.classList.remove('open');
+    }
 
-function buildJSON() {
-  const participant = document.getElementById('participantSel').value || 'UNKNOWN';
-  const clipNumInput = document.getElementById('clipNum').value || '0';
-  const clipNum = padClipNum(clipNumInput);
-  const baseId = `$${participant}_$${clipNum}`;
-  const videoPath = `$${participant}/0/clip_$${clipNum}.mp4`;
-  const sumT = document.getElementById('summaryBox').value || '';
-  const trT  = getTransTxt();
-  
-  return [
-    {
-      id: `${baseId}_001`,
-      video: videoPath,
-      type: 'environment_classification',
-      question: "Which environment label best matches this video? Choose exactly one label from: ['Forest', 'Indoor', 'Intersection', 'None', 'Playground', 'Rural', 'Trail', 'Urban']. Return only one label.",
-      answer: [...S.env][0] || ''
-    },
-    {
-      id: `${baseId}_002`,
-      video: videoPath,
-      type: 'coarse_activity_classification',
-      question: "Which coarse activity labels are present in this video? Choose all applicable labels only from: ['Crossing Street', 'Crowd Present', 'Distraction Event', 'D Play Running', 'D Turning', 'D Turning Right Body', 'Environmental Monitoring', 'Human Dog Interaction', 'Indoor Navigation', 'Investigation', 'Navigating Obstacle', 'None', 'Object Interaction', 'Person Passing Close', 'Running', 'Social Encounter', 'Stationary', 'Trotting', 'Turning', 'Walking']. Return the answer as a list. If none apply, return an empty list.",
-      answer: [...S.coarse]
-    },
-    {
-      id: `${baseId}_003`,
-      video: videoPath,
-      type: 'dog_finegrained_activity_classification',
-      question: "Which dog fine-grained activity labels are present in this video? Consider only dog labels that start with D_. Choose all applicable labels only from: ['D_ASCENDING_STAIRS', 'D_BACKING_UP', 'D_BODY_SHAKE', 'D_CARRYING_OBJECT', 'D_CROUCHING', 'D_DESCENDING_STAIRS', 'D_DRINKING', 'D_EAR_FLICK', 'D_GRABBING_OBJECT', 'D_HEAD_LOOKING_DOWN', 'D_HEAD_LOOKING_FORWARD', 'D_HEAD_LOOKING_LEFT', 'D_HEAD_LOOKING_RIGHT', 'D_HEAD_LOOKING_UP', 'D_HEAD_SCANNING', 'D_HEAD_SHAKE', 'D_HEAD_TURNING_LEFT_BODY', 'D_JUMPING_UP', 'D_LEASH_SLACK', 'D_LEASH_TAUT', 'D_LICKING_OBJECT', 'D_LICKING_SELF', 'D_LYING_DOWN', 'D_NUDGING', 'D_PLAY_JUMPING', 'D_PLAY_ROLLING', 'D_PLAY_RUNNING', 'D_PULLING_FORWARD', 'D_RESIST_BACKWARD', 'D_RUNNING', 'D_SITTING', 'D_SNIFFING_GROUND', 'D_SNIFFING_OBJECT', 'D_SOCIAL_APPROACH', 'D_STOPPED', 'D_TAIL_LOWERED', 'D_TAIL_RAISED', 'D_TAIL_WAGGING_FAST', 'D_TAIL_WAGGING_SLOW', 'D_TROTTING', 'D_TURNING_LEFT_BODY', 'D_TURNING_RIGHT_BODY', 'D_WALKING', 'D_WALKING_FORWARD']. Return the answer as a list. If none apply, return an empty list.",
-      answer: [...S.dog]
-    },
-    {
-      id: `${baseId}_004`,
-      video: videoPath,
-      type: 'navigation_context_classification',
-      question: "Which navigation context labels are present in this video? Choose all applicable labels only from: ['Crowd Present', 'Door Opening', 'Indoor Navigation', 'Intersection', 'Narrow Passage Ahead', 'Nav At Crosswalk', 'Nav At Curb', 'Nav Crossed Street', 'Nav Crossing Active', 'Nav Crosswalk', 'Nav Crosswalk Active', 'Nav Crosswalk Ahead', 'Nav Crosswalk Markings', 'Nav Curb Ahead', 'Nav Dog Arc Around', 'Nav Dog Stops At Edge', 'Nav Dog Stops At Obstacle', 'Nav Intersection', 'Nav Narrow Space', 'Nav Obstacle Present', 'Nav Open Space', 'Nav Stairs Ahead', 'Nav Stepping Down', 'Nav Stepping Up', 'Nav Traffic Signal', 'Nav Vehicle Waiting', 'Nav Waiting To Cross', 'None', 'Obstacle In Path', 'Vehicle Stopped Nearby', 'Vehicle Waiting']. Return the answer as a list. If none apply, return an empty list.",
-      answer: [...S.nav]
-    },
-    {
-      id: `${baseId}_005`,
-      video: videoPath,
-      type: 'video_summary',
-      question: "Summarize this video in 2 to 4 sentences.",
-      answer: sumT
-    },
-    {
-      id: `${baseId}_006`,
-      video: videoPath,
-      type: 'transition_description',
-      question: "Describe the main change, if any, that happens from the beginning to the end of the video in one sentence. If there is no important change, answer: 'No major change occurs in the video.'",
-      answer: trT
-    },
-  ];
-}
+    function msTogItem(k, lbl, row, cb) {
+      // Environment can only have ONE selection
+      if (k === 'env') {
+        S[k].clear();
+        S[k].add(lbl);
+        buildList(k);
+      } else {
+        // Other dropdowns allow multiple selections
+        if (S[k].has(lbl)) { S[k].delete(lbl); row.classList.remove('on'); cb.checked = false; }
+        else { S[k].add(lbl); row.classList.add('on'); cb.checked = true; }
+      }
+      refreshMs(k);
+      onUpdate();
+    }
 
-/* ─────────────────────────────────────
-   EXPORT ACTIONS
-───────────────────────────────────── */
-function previewJSON() {
-  const participant = document.getElementById('participantSel').value;
-  const progTxt = document.getElementById('progTxt').textContent;
-  
-  if (!participant) {
-    toast('⚠ Please select a participant first');
-    return;
-  }
-  
-  if (progTxt !== '6 / 6') {
-    toast('⚠ All 6 fields must be completed (6/6)');
-    return;
-  }
-  
-  const el = document.getElementById('jsonOut');
-  el.textContent = JSON.stringify(buildJSON(), null, 2);
-  el.style.display = 'block';
-  toast('👁 JSON preview ready');
-}
+    function msFilter(k, q) {
+      const lo = q.toLowerCase();
+      document.querySelectorAll(`#msl-${k} .ms-item`).forEach(i => {
+        i.style.display = i.dataset.v.toLowerCase().includes(lo) ? '' : 'none';
+      });
+    }
 
-function downloadJSON() {
-  const participant = document.getElementById('participantSel').value;
-  const progTxt = document.getElementById('progTxt').textContent;
-  
-  if (!participant) {
-    toast('⚠ Please select a participant first');
-    return;
-  }
-  
-  if (progTxt !== '6 / 6') {
-    toast('⚠ All 6 fields must be completed (6/6)');
-    return;
-  }
-  
-  const clipNum = padClipNum(document.getElementById('clipNum').value || '0');
-  const blob = new Blob([JSON.stringify(buildJSON(), null, 2)], { type: 'application/json' });
-  const url  = URL.createObjectURL(blob);
-  const a    = Object.assign(document.createElement('a'), { href: url, download: `clip${clipNum}.json` });
-  a.click();
-  URL.revokeObjectURL(url);
-  toast('⬇ Download started');
-}
+    function msClearAll(k) {
+      S[k].clear();
+      buildList(k);
+      refreshMs(k);
+      onUpdate();
+    }
 
-function copyJSON() {
-  const participant = document.getElementById('participantSel').value;
-  const progTxt = document.getElementById('progTxt').textContent;
-  
-  if (!participant) {
-    toast('⚠ Please select a participant first');
-    return;
-  }
-  
-  if (progTxt !== '6 / 6') {
-    toast('⚠ All 6 fields must be completed (6/6)');
-    return;
-  }
-  
-  navigator.clipboard
-    .writeText(JSON.stringify(buildJSON(), null, 2))
-    .then(() => toast('📋 JSON copied!'))
-    .catch(() => toast('❌ Copy failed — try Preview instead'));
-}
+    function refreshMs(k) {
+      const n = S[k].size;
+      const placeholders = {
+        env: 'Select environment…',
+        coarse: 'Select activities…',
+        dog: 'Select dog activities…',
+        nav: 'Select navigation context…',
+      };
 
-function copySummary() {
-  const sb = document.getElementById('summaryBox');
-  if (sb.value === 'Select labels above to auto-generate a summary…' || sb.value.trim() === '') {
-    toast('⚠ No summary generated yet');
-    return;
-  }
-  navigator.clipboard.writeText(sb.value)
-    .then(() => toast('📋 Summary copied!'))
-    .catch(() => toast('❌ Copy failed'));
-}
+      let label;
+      if (k === 'env' && n > 0) {
+        // Show the actual environment name
+        label = [...S[k]][0];
+      } else {
+        label = n ? `${n} item${n !== 1 ? 's' : ''} selected` : placeholders[k];
+      }
 
-/* ─────────────────────────────────────
-   UTILITY
-───────────────────────────────────── */
-function clearAll() {
-  if (!confirm('Clear all annotation data for this clip?')) return;
-  
-  // Save participant to localStorage before refresh
-  const participant = document.getElementById('participantSel').value;
-  if (participant) {
-    localStorage.setItem('savedParticipant', participant);
-  }
-  
-  // Reload the page
-  location.reload();
-}
+      const labelEl = document.querySelector(`#ms-${k} .ms-lbl`);
+      if (labelEl) labelEl.textContent = label;
 
-function gotoExport() {
-  document.getElementById('exportCard').scrollIntoView({ behavior: 'smooth' });
-}
+      if (document.getElementById(`msc-${k}`)) {
+        document.getElementById(`msc-${k}`).textContent = `${n} selected`;
+      }
+      renderTags(k);
+    }
 
-let _toastTimer;
-function toast(msg) {
-  const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.classList.add('on');
-  clearTimeout(_toastTimer);
-  _toastTimer = setTimeout(() => el.classList.remove('on'), 2600);
-}
+    function renderTags(k) {
+      const c = document.getElementById(`tg-${k}`);
+      if (!c) return;
+      c.innerHTML = '';
+      S[k].forEach(lbl => {
+        const t = document.createElement('span');
+        t.className = 'tag';
 
-/* ─────────────────────────────────────
-   BOOT
-───────────────────────────────────── */
-init();
-</script>
+        const tx = document.createElement('span');
+        tx.className = 'tag-txt';
+        tx.title = lbl;
+        tx.textContent = lbl;
+
+        const xb = document.createElement('button');
+        xb.className = 'tag-x';
+        xb.textContent = '×';
+        xb.addEventListener('click', e => { e.stopPropagation(); rmTag(k, lbl); });
+
+        t.append(tx, xb);
+        c.appendChild(t);
+      });
+    }
+
+    function rmTag(k, lbl) {
+      S[k].delete(lbl);
+      buildList(k);
+      refreshMs(k);
+      onUpdate();
+    }
+
+    function addSummaryObject() {
+      if (noImportantObject) {
+        toast('Uncheck "No important object" before adding objects');
+        return;
+      }
+
+      const object = document.getElementById('objectSel').value;
+      const direction = document.getElementById('objectDirectionSel').value;
+      const distance = document.getElementById('objectDistanceSel').value;
+
+      if (!object || !direction || !distance) {
+        toast('Select object, direction, and distance first');
+        return;
+      }
+
+      const label = `${object} At ${direction} ${distance}`;
+      if (!summaryObjects.includes(label)) {
+        summaryObjects.push(label);
+      }
+
+      document.getElementById('objectSel').value = '';
+      document.getElementById('objectDirectionSel').value = '';
+      document.getElementById('objectDistanceSel').value = '';
+      renderSummaryObjectTags();
+      onUpdate();
+    }
+
+    function onObjectNoneToggle() {
+      const checkbox = document.getElementById('noObj');
+      const builder = document.getElementById('objectBuilder');
+      noImportantObject = checkbox ? checkbox.checked : false;
+
+      if (noImportantObject) {
+        summaryObjects.length = 0;
+        ['objectSel', 'objectDirectionSel', 'objectDistanceSel'].forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.value = '';
+        });
+        renderSummaryObjectTags();
+      }
+
+      if (builder) builder.style.display = noImportantObject ? 'none' : 'block';
+      onUpdate();
+    }
+
+    function removeSummaryObject(label) {
+      const index = summaryObjects.indexOf(label);
+      if (index >= 0) {
+        summaryObjects.splice(index, 1);
+      }
+      renderSummaryObjectTags();
+      onUpdate();
+    }
+
+    function renderSummaryObjectTags() {
+      const c = document.getElementById('tg-summary-objects');
+      if (!c) return;
+      c.innerHTML = '';
+      summaryObjects.forEach(label => {
+        const t = document.createElement('span');
+        t.className = 'tag';
+
+        const tx = document.createElement('span');
+        tx.className = 'tag-txt';
+        tx.title = label;
+        tx.textContent = label;
+
+        const xb = document.createElement('button');
+        xb.className = 'tag-x';
+        xb.textContent = '×';
+        xb.addEventListener('click', e => { e.stopPropagation(); removeSummaryObject(label); });
+
+        t.append(tx, xb);
+        c.appendChild(t);
+      });
+    }
+
+    /* ─────────────────────────────────────
+       SUMMARY BUILDER
+    ───────────────────────────────────── */
+    function buildSummary() {
+      return [
+        prefixedOptionText('summarySurface', 'Surface'),
+        prefixedOptionText('summaryWeather', 'Weather'),
+        prefixedOptionText('summaryTime', 'Time'),
+      ].filter(Boolean);
+    }
+
+    function selectedOptionText(id) {
+      const select = document.getElementById(id);
+      if (!select || !select.value) return '';
+      return select.options[select.selectedIndex].text;
+    }
+
+    function prefixedOptionText(id, prefix) {
+      const text = selectedOptionText(id);
+      return text ? `${prefix}: ${text}` : '';
+    }
+
+    async function loadManifest() {
+      if (annotationManifest.length) return annotationManifest;
+      const response = await fetch('manifest.json', { cache: 'no-store' });
+      if (!response.ok) {
+        throw new Error('Could not load manifest.json');
+      }
+      annotationManifest = await response.json();
+      return annotationManifest;
+    }
+
+    function resetFileSelectors(segmentPlaceholder, filePlaceholder) {
+      const segmentSel = document.getElementById('segmentSel');
+      const fileSel = document.getElementById('jsonFileSel');
+      if (segmentSel) {
+        segmentSel.innerHTML = '';
+        segmentSel.add(new Option(segmentPlaceholder, ''));
+      }
+      if (fileSel) {
+        fileSel.innerHTML = '';
+        fileSel.add(new Option(filePlaceholder, ''));
+        fileSel.disabled = true;
+      }
+      currentFileList = [];
+      currentFileIndex = -1;
+      currentJsonPath = '';
+      currentJsonFileName = '';
+      const info = document.getElementById('fileInfo');
+      if (info) info.textContent = 'No JSON loaded';
+    }
+
+    async function loadParticipantSegments() {
+      const participantSel = document.getElementById('participantSel');
+      const segmentSel = document.getElementById('segmentSel');
+      const info = document.getElementById('fileInfo');
+      const participant = participantSel ? participantSel.value : '';
+      if (!participant || !segmentSel) return;
+      resetFileSelectors('Loading indexes...', '— Select index first —');
+      if (info) info.textContent = `Loading JSON list for ${participant}...`;
+
+      try {
+        const manifest = await loadManifest();
+        const prefix = `6s_clip_annotations/${participant}/`;
+        const segments = [...new Set(
+          manifest
+            .filter(path => path.startsWith(prefix) && path.endsWith('.json'))
+            .map(path => path.split('/')[2])
+        )].sort((a, b) => Number(a) - Number(b));
+
+        segmentSel.innerHTML = '';
+        if (!segments.length) {
+          segmentSel.add(new Option('No indexes found for this participant', ''));
+          segmentSel.disabled = true;
+          if (info) info.textContent = `No JSON files found for ${participant}`;
+          return;
+        }
+
+        segmentSel.add(new Option('— Select index —', ''));
+        segments.forEach(segment => segmentSel.add(new Option(segment, segment)));
+        segmentSel.disabled = false;
+        if (info) info.textContent = `${segments.length} index(es) found for ${participant}`;
+      } catch (error) {
+        resetFileSelectors('Could not load indexes', '— Select index first —');
+        if (info) info.textContent = error.message;
+        toast(error.message);
+      }
+    }
+
+    async function loadAnnotationList() {
+      const participantSel = document.getElementById('participantSel');
+      const segmentSel = document.getElementById('segmentSel');
+      const participant = participantSel ? participantSel.value : '';
+      const segment = segmentSel ? segmentSel.value : '';
+      const fileSel = document.getElementById('jsonFileSel');
+      const info = document.getElementById('fileInfo');
+      if (!fileSel) return;
+
+      if (!participant || !segment) {
+        fileSel.innerHTML = '<option value="">— Select index first —</option>';
+        fileSel.disabled = true;
+        currentFileList = [];
+        currentFileIndex = -1;
+        currentJsonPath = '';
+        currentJsonFileName = '';
+        if (info) info.textContent = 'Select an index to load JSON files';
+        return;
+      }
+
+      fileSel.innerHTML = '<option value="">Loading JSON files...</option>';
+      fileSel.disabled = true;
+      if (info) info.textContent = 'Loading JSON list...';
+
+      try {
+        const manifest = await loadManifest();
+        const prefix = `6s_clip_annotations/${participant}/${segment}/`;
+        currentFileList = manifest
+          .filter(path => path.startsWith(prefix) && path.endsWith('.json'))
+          .sort((a, b) => clipNumberFromPath(a) - clipNumberFromPath(b));
+
+        fileSel.innerHTML = '';
+        if (!currentFileList.length) {
+          fileSel.add(new Option('No JSON files found for this participant/index', ''));
+          fileSel.disabled = true;
+          if (info) info.textContent = `No JSON files found for ${participant}/${segment}`;
+          return;
+        }
+
+        currentFileList.forEach((path, index) => {
+          fileSel.add(new Option(path.split('/').pop(), String(index)));
+        });
+        fileSel.disabled = false;
+        fileSel.value = '0';
+        await loadSelectedAnnotation();
+      } catch (error) {
+        fileSel.innerHTML = '<option value="">Could not load JSON list</option>';
+        fileSel.disabled = true;
+        if (info) info.textContent = error.message;
+        toast(error.message);
+      }
+    }
+
+    function clipNumberFromPath(path) {
+      const match = path.match(/clip_(\d+)\.json$/);
+      return match ? Number(match[1]) : 0;
+    }
+
+    async function loadSelectedAnnotation() {
+      const fileSel = document.getElementById('jsonFileSel');
+      if (!fileSel) return;
+      const index = Number(fileSel.value);
+      if (!Number.isInteger(index) || index < 0 || index >= currentFileList.length) return;
+
+      currentFileIndex = index;
+      currentJsonPath = currentFileList[index];
+      currentJsonFileName = currentJsonPath.split('/').pop();
+      const info = document.getElementById('fileInfo');
+      if (info) info.textContent = `Loading ${currentJsonPath}`;
+
+      try {
+        const response = await fetch(currentJsonPath, { cache: 'no-store' });
+        if (!response.ok) {
+          throw new Error(`Could not load ${currentJsonFileName}`);
+        }
+        const items = await response.json();
+        applyAnnotationItems(items);
+        if (info) info.textContent = `${currentJsonFileName} (${currentFileIndex + 1}/${currentFileList.length})`;
+        toast(`Loaded ${currentJsonFileName}`);
+      } catch (error) {
+        resetAnnotationForm();
+        if (info) info.textContent = error.message;
+        toast(error.message);
+      }
+    }
+
+    function loadPrevAnnotation() {
+      if (!currentFileList.length || currentFileIndex <= 0) return;
+      const fileSel = document.getElementById('jsonFileSel');
+      if (!fileSel) return;
+      fileSel.value = String(currentFileIndex - 1);
+      loadSelectedAnnotation();
+    }
+
+    function loadNextAnnotation() {
+      if (!currentFileList.length || currentFileIndex >= currentFileList.length - 1) return;
+      const fileSel = document.getElementById('jsonFileSel');
+      if (!fileSel) return;
+      fileSel.value = String(currentFileIndex + 1);
+      loadSelectedAnnotation();
+    }
+
+    function resetAnnotationForm() {
+      loadedItemsByType = {};
+      Object.keys(S).forEach(k => {
+        S[k].clear();
+        buildList(k);
+        refreshMs(k);
+      });
+      summaryObjects.length = 0;
+      noImportantObject = false;
+      renderSummaryObjectTags();
+      ['summarySurface', 'summaryWeather', 'summaryTime', 'objectSel', 'objectDirectionSel', 'objectDistanceSel', 'tState1', 'tState2', 'tState3'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+      });
+      const noObj = document.getElementById('noObj');
+      if (noObj) noObj.checked = false;
+      const objectBuilder = document.getElementById('objectBuilder');
+      if (objectBuilder) objectBuilder.style.display = 'block';
+      const noChg = document.getElementById('noChg');
+      if (noChg) noChg.checked = false;
+      const transBuilder = document.getElementById('transBuilder');
+      if (transBuilder) transBuilder.style.display = 'block';
+      onUpdate();
+    }
+
+    function applyAnnotationItems(items) {
+      resetAnnotationForm();
+      loadedItemsByType = {};
+      if (Array.isArray(items)) {
+        items.forEach(item => {
+          if (item && item.type) loadedItemsByType[item.type] = item;
+        });
+      }
+
+      setSingleSelection('env', answerForType('environment_classification'));
+      setMultiSelection('coarse', answerForType('coarse_activity_classification'));
+      setMultiSelection('dog', answerForType('dog_finegrained_activity_classification'));
+      setMultiSelection('nav', answerForType('navigation_context_classification'));
+      applySummaryAnswer(answerForType('video_summary'));
+      const objectAnswer = answerForType('object_context');
+      if (objectAnswer !== null) applyObjectAnswer(objectAnswer);
+      applyTransitionAnswer(answerForType('transition_description'));
+
+      onUpdate();
+    }
+
+    function answerForType(type) {
+      return loadedItemsByType[type] ? loadedItemsByType[type].answer : null;
+    }
+
+    function setSingleSelection(key, answer) {
+      S[key].clear();
+      if (answer && DATA[key].includes(answer)) S[key].add(answer);
+      buildList(key);
+      refreshMs(key);
+    }
+
+    function setMultiSelection(key, answer) {
+      S[key].clear();
+      const values = Array.isArray(answer) ? answer : [];
+      values.forEach(value => {
+        if (DATA[key].includes(value)) S[key].add(value);
+      });
+      buildList(key);
+      refreshMs(key);
+    }
+
+    function applySummaryAnswer(answer) {
+      const values = Array.isArray(answer) ? answer : [];
+      setSelectByText('summarySurface', stripSummaryPrefix(values.find(value => String(value).startsWith('Surface: ')), 'Surface'));
+      setSelectByText('summaryWeather', stripSummaryPrefix(values.find(value => String(value).startsWith('Weather: ')), 'Weather'));
+      setSelectByText('summaryTime', stripSummaryPrefix(values.find(value => String(value).startsWith('Time: ')), 'Time'));
+      summaryObjects.length = 0;
+      values
+        .filter(value => String(value).startsWith('Object: '))
+        .map(normalizeObjectContextLabel)
+        .forEach(value => {
+          if (value && !summaryObjects.includes(value)) summaryObjects.push(value);
+        });
+      noImportantObject = false;
+      const noObj = document.getElementById('noObj');
+      if (noObj) noObj.checked = noImportantObject;
+      const objectBuilder = document.getElementById('objectBuilder');
+      if (objectBuilder) objectBuilder.style.display = 'block';
+      renderSummaryObjectTags();
+    }
+
+    function normalizeObjectContextLabel(value) {
+      if (!value) return '';
+      return String(value).replace(/^Object:\s*/i, '').trim();
+    }
+
+    function stripSummaryPrefix(value, prefix) {
+      if (!value) return '';
+      return String(value).replace(new RegExp(`^${prefix}:\\s*`, 'i'), '').trim();
+    }
+
+    function applyObjectAnswer(answer) {
+      const values = Array.isArray(answer) ? answer : [];
+      summaryObjects.length = 0;
+      values
+        .map(normalizeObjectContextLabel)
+        .filter(Boolean)
+        .forEach(value => {
+          if (!summaryObjects.includes(value)) summaryObjects.push(value);
+        });
+      noImportantObject = summaryObjects.length === 0;
+      const noObj = document.getElementById('noObj');
+      if (noObj) noObj.checked = noImportantObject;
+      const objectBuilder = document.getElementById('objectBuilder');
+      if (objectBuilder) objectBuilder.style.display = noImportantObject ? 'none' : 'block';
+      renderSummaryObjectTags();
+    }
+
+    function setSelectByText(id, text) {
+      const select = document.getElementById(id);
+      if (!select) return;
+      select.value = '';
+      if (!text) return;
+      for (const option of select.options) {
+        if (option.text === text) {
+          select.value = option.value;
+          return;
+        }
+      }
+    }
+
+    function applyTransitionAnswer(answer) {
+      const value = Array.isArray(answer) ? answer[0] : answer;
+      if (!value) return;
+      if (value === 'No Major Change') {
+        const noChg = document.getElementById('noChg');
+        if (noChg) noChg.checked = true;
+        onTransToggle();
+        return;
+      }
+      const states = value.split(' To ').slice(0, 3);
+      ['tState1', 'tState2', 'tState3'].forEach((id, index) => {
+        const el = document.getElementById(id);
+        if (el) el.value = states[index] || '';
+      });
+      onTransChange();
+    }
+
+    /* Oxford-comma list joiner */
+    function joinList(a) {
+      if (!a.length) return '';
+      if (a.length === 1) return a[0];
+      if (a.length === 2) return `${a[0]} and ${a[1]}`;
+      return `${a.slice(0, -1).join(', ')}, and ${a[a.length - 1]}`;
+    }
+
+    /* ─────────────────────────────────────
+       TRANSITION
+    ───────────────────────────────────── */
+    function onTransToggle() {
+      const noChg = document.getElementById('noChg');
+      const bld = document.getElementById('transBuilder');
+      if (!noChg || !bld) return;
+      const nc = noChg.checked;
+      bld.style.display = nc ? 'none' : 'block';
+
+      if (nc) {
+        ['tState1', 'tState2', 'tState3'].forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.value = '';
+        });
+      }
+
+      onUpdate();
+    }
+
+    function getTransitionSequence() {
+      const states = [
+        document.getElementById('tState1')?.value,
+        document.getElementById('tState2')?.value,
+        document.getElementById('tState3')?.value,
+      ].filter(Boolean);
+
+      const sequence = [];
+      states.forEach(state => {
+        if (!sequence.length || sequence[sequence.length - 1] !== state) {
+          sequence.push(state);
+        }
+      });
+      return sequence;
+    }
+
+    function onTransChange() {
+      onUpdate();
+    }
+
+    function getTransTxt() {
+      if (document.getElementById('noChg')?.checked)
+        return 'No Major Change';
+
+      const sequence = getTransitionSequence();
+      if (!sequence.length) return '';
+      return sequence.length <= 1 ? 'No Major Change' : sequence.join(' To ');
+    }
+
+    /* ─────────────────────────────────────
+       PROGRESS + CENTRAL UPDATE
+    ───────────────────────────────────── */
+    function onUpdate() {
+      /* Progress bar */
+      const env = S.env.size > 0;
+      const nc = document.getElementById('noChg')?.checked || false;
+      const transitionSelected = getTransitionSequence().length > 0;
+      const trans_txt_ok = Boolean(getTransTxt());
+      const object_ok = noImportantObject || summaryObjects.length > 0;
+      const sum_ok = selectedOptionText('summarySurface') && selectedOptionText('summaryWeather');
+
+      const n = [
+        env,
+        S.coarse.size > 0,
+        S.dog.size > 0,
+        S.nav.size > 0,
+        object_ok,
+        sum_ok,
+        trans_txt_ok,
+      ].filter(Boolean).length;
+
+      const progTxt = document.getElementById('progTxt');
+      const progFill = document.getElementById('progFill');
+      const hdrBadge = document.getElementById('hdrbadge');
+      if (progTxt) progTxt.textContent = `${n} / 7`;
+      if (progFill) progFill.style.width = `${n / 7 * 100}%`;
+      if (hdrBadge) hdrBadge.textContent = `${n} / 7 complete`;
+
+      clearCompletedMissingHighlights({
+        env,
+        coarse: S.coarse.size > 0,
+        dog: S.dog.size > 0,
+        nav: S.nav.size > 0,
+        objects: object_ok,
+        summary: sum_ok,
+        transition: trans_txt_ok,
+      });
+    }
+
+    function setCardMissing(cardId, missing) {
+      const card = document.getElementById(cardId);
+      if (card) card.classList.toggle('missing', missing);
+    }
+
+    function clearCompletedMissingHighlights(status) {
+      const coarseOk = status.env && status.coarse;
+      const checks = [
+        ['card-env-coarse', coarseOk],
+        ['card-dog', status.dog],
+        ['card-nav', status.nav],
+        ['card-objects', status.objects],
+        ['card-summary', status.summary],
+        ['card-transition', status.transition],
+      ];
+      checks.forEach(([cardId, ok]) => {
+        const card = document.getElementById(cardId);
+        if (card && ok) card.classList.remove('missing');
+      });
+    }
+
+    function validateForDownload() {
+      const nc = document.getElementById('noChg')?.checked || false;
+      const transitionSelected = getTransitionSequence().length > 0;
+      const trText = getTransTxt();
+      const status = {
+        env: S.env.size > 0,
+        coarse: S.coarse.size > 0,
+        dog: S.dog.size > 0,
+        nav: S.nav.size > 0,
+        objects: noImportantObject || summaryObjects.length > 0,
+        summary: Boolean(selectedOptionText('summarySurface') && selectedOptionText('summaryWeather')),
+        transition: Boolean((nc || transitionSelected) && trText),
+      };
+
+      setCardMissing('card-env-coarse', !(status.env && status.coarse));
+      setCardMissing('card-dog', !status.dog);
+      setCardMissing('card-nav', !status.nav);
+      setCardMissing('card-objects', !status.objects);
+      setCardMissing('card-summary', !status.summary);
+      setCardMissing('card-transition', !status.transition);
+
+      const firstMissing = document.querySelector('.card.missing');
+      if (firstMissing) {
+        firstMissing.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return false;
+      }
+      return true;
+    }
+
+    /* ─────────────────────────────────────
+       JSON BUILDER
+    ───────────────────────────────────── */
+    function padClipNum(num) {
+      return String(num).padStart(6, '0');
+    }
+
+    function buildJSON() {
+      const participant = document.getElementById('participantSel').value || 'UNKNOWN';
+      const segment = document.getElementById('segmentSel').value || '0';
+      const clipNum = padClipNum(clipNumberFromPath(currentJsonPath || currentJsonFileName));
+      const clipIndex = Number(clipNum);
+      const baseId = loadedItemsByType.environment_classification?.id || `${participant}_${segment}_${clipIndex}`;
+      const videoPath = loadedItemsByType.environment_classification?.video || `${participant}/${segment}/clip_${clipNum}.mp4`;
+      const sumT = buildSummary();
+      const trT = getTransTxt();
+
+      return [
+        {
+          id: baseId,
+          video: videoPath,
+          type: 'environment_classification',
+          question: "Which environment label best matches this video? Choose exactly one label from: ['Forest', 'Indoor', 'Intersection', 'None', 'Playground', 'Rural', 'Trail', 'Urban']. Return only one label.",
+          answer: [...S.env][0] || ''
+        },
+        {
+          id: baseId,
+          video: videoPath,
+          type: 'coarse_activity_classification',
+          question: "Which coarse activity labels are present in this video? Choose all applicable labels only from: ['Crossing Street', 'Crowd Present', 'Distraction Event', 'Environmental Monitoring', 'Human Dog Interaction', 'Indoor Navigation', 'Investigation', 'Navigating Obstacle', 'None', 'Object Interaction', 'Person Passing Close', 'Playing', 'Running', 'Social Encounter', 'Stationary', 'Trotting', 'Turning', 'Walking']. Return the answer as a list. If none apply, return an empty list.",
+          answer: [...S.coarse]
+        },
+        {
+          id: baseId,
+          video: videoPath,
+          type: 'dog_finegrained_activity_classification',
+          question: "Which dog fine-grained activity labels are present in this video? Consider only dog fine-grained activity labels. Choose all applicable labels only from: ['Ascending Stairs', 'Backing Up', 'Carrying Object', 'Crouching', 'Descending Stairs', 'Drinking', 'Grabbing Object', 'Head Looking Down', 'Head Looking Forward', 'Head Looking Left', 'Head Looking Right', 'Head Looking Up', 'Head Scanning', 'Head Shake', 'Jumping Up', 'Licking Object', 'Lying Down', 'Nudging', 'Jumping', 'Rolling', 'Running', 'Pulling Forward', 'Resist Backward', 'Sitting', 'Sniffing Ground', 'Sniffing Object', 'Social Approach', 'Stopped', 'Trotting', 'Walking Forward']. Return the answer as a list. If none apply, return an empty list.",
+          answer: [...S.dog]
+        },
+        {
+          id: baseId,
+          video: videoPath,
+          type: 'navigation_context_classification',
+          question: "Which navigation context labels are present in this video? Choose all applicable labels only from: ['Nav At Open Space', 'Nav At Obstacle', 'Nav At Narrow Space', 'Nav At Stairs', 'Nav At Curb', 'Nav At Crosswalk', 'Nav At Traffic Signal', 'Nav At Crossing Street', 'Nav At Indoor Space', 'Nav At Door', 'Nav At Intersection', 'Nav At Vehicle Nearby', 'None']. Return the answer as a list. If none apply, return an empty list.",
+          answer: [...S.nav]
+        },
+        {
+          id: baseId,
+          video: videoPath,
+          type: 'object_context',
+          question: "Which important visible objects and image locations are present in this video? Return a list of readable labels such as 'Person At Left Top Close (0m-2m)'. If none apply, return an empty list.",
+          answer: noImportantObject ? [] : [...summaryObjects]
+        },
+        {
+          id: baseId,
+          video: videoPath,
+          type: 'video_summary',
+          question: "Which ordered summary labels describe this video? Return a list of readable labels.",
+          answer: sumT
+        },
+        {
+          id: baseId,
+          video: videoPath,
+          type: 'transition_description',
+          question: "Which main dog activity transition describes this video? Return a list with one readable transition, such as 'Stopped To Walking' or 'Walking To Turning To Walking'. If no important activity change occurs, return ['No Major Change'].",
+          answer: trT ? [trT] : []
+        },
+      ];
+    }
+
+    /* ─────────────────────────────────────
+       EXPORT ACTIONS
+    ───────────────────────────────────── */
+    function downloadJSON() {
+      const participant = document.getElementById('participantSel').value;
+      const progTxt = document.getElementById('progTxt').textContent;
+
+      if (!participant) {
+        toast('⚠ Please select a participant first');
+        return;
+      }
+
+      if (progTxt !== '7 / 7') {
+        validateForDownload();
+        toast('All 7 fields must be completed (7/7)');
+        return;
+      }
+
+      const fileName = currentJsonFileName || 'annotation.json';
+      const blob = new Blob([JSON.stringify(buildJSON(), null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = Object.assign(document.createElement('a'), { href: url, download: fileName });
+      a.click();
+      URL.revokeObjectURL(url);
+      toast('⬇ Download started');
+    }
+
+    let _toastTimer;
+    function toast(msg) {
+      const el = document.getElementById('toast');
+      el.textContent = msg;
+      el.classList.add('on');
+      clearTimeout(_toastTimer);
+      _toastTimer = setTimeout(() => el.classList.remove('on'), 2600);
+    }
+
+    /* ─────────────────────────────────────
+       BOOT
+    ───────────────────────────────────── */
+    init();
+  </script>
 </body>
+
 </html>
