@@ -1000,9 +1000,6 @@
             <line x1="16" y1="17" x2="8" y2="17" />
           </svg>
           <h2>⑥ Video Summary Labels</h2>
-          <div class="slot">
-            <button class="btn btn-sm btn-ghost" onclick="copySummary()">Copy</button>
-          </div>
         </div>
         <div class="card-body">
           <div class="summary-grid">
@@ -1025,8 +1022,6 @@
               </select>
             </div>
           </div>
-          <textarea id="summaryBox" class="summary-box empty" readonly
-            placeholder="Select surface, weather, and time…">Select surface, weather, and time…</textarea>
           <p class="hint" style="margin-top:6px;">✨ These selected labels are saved as the video_summary answer list.
           </p>
         </div>
@@ -2017,8 +2012,8 @@
     function joinList(a) {
       if (!a.length) return '';
       if (a.length === 1) return a[0];
-      if (a.length === 2) return `$${a[0]} and $${a[1]}`;
-      return `$${a.slice(0, -1).join(', ')}, and $${a[a.length - 1]}`;
+      if (a.length === 2) return `${a[0]} and ${a[1]}`;
+      return `${a.slice(0, -1).join(', ')}, and ${a[a.length - 1]}`;
     }
 
     /* ─────────────────────────────────────
@@ -2083,18 +2078,6 @@
        PROGRESS + CENTRAL UPDATE
     ───────────────────────────────────── */
     function onUpdate() {
-      /* Rebuild summary display */
-      const sum = buildSummary();
-      const sb = document.getElementById('summaryBox');
-      if (sb) {
-        if (sum.length) { sb.value = sum.join('\n'); sb.classList.remove('empty'); }
-<<<<<<< HEAD
-        else { sb.value = 'Select surface, weather, time, and objects…'; sb.classList.add('empty'); }
-=======
-        else { sb.value = 'Select surface, weather, and time…'; sb.classList.add('empty'); }
->>>>>>> 4db5ce0f (update)
-      }
-
       /* Progress bar */
       const env = S.env.size > 0;
       const nc = document.getElementById('noChg')?.checked || false;
@@ -2239,17 +2222,6 @@
       a.click();
       URL.revokeObjectURL(url);
       toast('⬇ Download started');
-    }
-
-    function copySummary() {
-      const sb = document.getElementById('summaryBox');
-      if (sb.value === 'Select surface, weather, and time…' || sb.value.trim() === '') {
-        toast('⚠ No summary generated yet');
-        return;
-      }
-      navigator.clipboard.writeText(sb.value)
-        .then(() => toast('📋 Summary copied!'))
-        .catch(() => toast('❌ Copy failed'));
     }
 
     /* ─────────────────────────────────────
