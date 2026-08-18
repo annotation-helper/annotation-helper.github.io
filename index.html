@@ -156,6 +156,23 @@
       transition: background .3s, border-color .3s;
     }
 
+    .card.missing {
+      border-color: #ef4444;
+      box-shadow: 0 0 0 2px rgba(239, 68, 68, .35), var(--sh);
+    }
+
+    .missing-note {
+      display: none;
+      margin-top: 10px;
+      color: #ef4444;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .card.missing .missing-note {
+      display: block;
+    }
+
     .card-head {
       padding: 11px 16px;
       border-bottom: 1px solid var(--border);
@@ -888,7 +905,7 @@
     <section class="right">
 
       <!-- ① Environment  +  ② Coarse Activity -->
-      <div class="card">
+      <div class="card" id="card-env-coarse">
         <div class="card-head">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M4 6h16M4 12h16M4 18h7" />
@@ -915,12 +932,13 @@
             </div>
             <div class="tags" id="tg-coarse"></div>
           </div>
+          <p class="missing-note">Please finish environment and coarse activity.</p>
 
         </div>
       </div>
 
       <!-- ③ Dog Fine-Grained Activity -->
-      <div class="card">
+      <div class="card" id="card-dog">
         <div class="card-head">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="11" cy="11" r="8" />
@@ -938,11 +956,12 @@
             </div>
             <div class="tags" id="tg-dog"></div>
           </div>
+          <p class="missing-note">Please finish dog fine-grained activity.</p>
         </div>
       </div>
 
       <!-- ④ Navigation Context -->
-      <div class="card">
+      <div class="card" id="card-nav">
         <div class="card-head">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <polygon points="3 11 22 2 13 21 11 13 3 11" />
@@ -959,11 +978,12 @@
             </div>
             <div class="tags" id="tg-nav"></div>
           </div>
+          <p class="missing-note">Please finish navigation context.</p>
         </div>
       </div>
 
       <!-- ⑤ Objects -->
-      <div class="card">
+      <div class="card" id="card-objects">
         <div class="card-head">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <rect x="3" y="3" width="18" height="18" rx="2" />
@@ -1003,11 +1023,12 @@
             <p class="hint" style="margin-top:6px;">Add each important visible object with its image position and distance
               bucket.</p>
           </div>
+          <p class="missing-note">Please add an object or check that there is no important object.</p>
         </div>
       </div>
 
       <!-- ⑥ Video Summary -->
-      <div class="card">
+      <div class="card" id="card-summary">
         <div class="card-head">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
@@ -1040,11 +1061,12 @@
           </div>
           <p class="hint" style="margin-top:6px;">✨ These selected labels are saved as the video_summary answer list.
           </p>
+          <p class="missing-note">Please finish surface, weather, and time.</p>
         </div>
       </div>
 
       <!-- ⑦ Transition Description -->
-      <div class="card">
+      <div class="card" id="card-transition">
         <div class="card-head">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <line x1="5" y1="12" x2="19" y2="12" />
@@ -1088,6 +1110,7 @@
 
           <textarea id="transResult" class="summary-box" style="display:none;"
             placeholder="Transition description will appear here..."></textarea>
+          <p class="missing-note">Please finish transition description.</p>
 
         </div>
       </div>
@@ -2149,6 +2172,66 @@
       if (progTxt) progTxt.textContent = `${n} / 7`;
       if (progFill) progFill.style.width = `${n / 7 * 100}%`;
       if (hdrBadge) hdrBadge.textContent = `${n} / 7 complete`;
+
+      clearCompletedMissingHighlights({
+        env,
+        coarse: S.coarse.size > 0,
+        dog: S.dog.size > 0,
+        nav: S.nav.size > 0,
+        objects: object_ok,
+        summary: sum_ok,
+        transition: transOk && trans_txt_ok,
+      });
+    }
+
+    function setCardMissing(cardId, missing) {
+      const card = document.getElementById(cardId);
+      if (card) card.classList.toggle('missing', missing);
+    }
+
+    function clearCompletedMissingHighlights(status) {
+      const coarseOk = status.env && status.coarse;
+      const checks = [
+        ['card-env-coarse', coarseOk],
+        ['card-dog', status.dog],
+        ['card-nav', status.nav],
+        ['card-objects', status.objects],
+        ['card-summary', status.summary],
+        ['card-transition', status.transition],
+      ];
+      checks.forEach(([cardId, ok]) => {
+        const card = document.getElementById(cardId);
+        if (card && ok) card.classList.remove('missing');
+      });
+    }
+
+    function validateForDownload() {
+      const nc = document.getElementById('noChg')?.checked || false;
+      const transitionSelected = getTransitionSequence().length > 0;
+      const trText = getTransTxt();
+      const status = {
+        env: S.env.size > 0,
+        coarse: S.coarse.size > 0,
+        dog: S.dog.size > 0,
+        nav: S.nav.size > 0,
+        objects: noImportantObject || summaryObjects.length > 0,
+        summary: Boolean(selectedOptionText('summarySurface') && selectedOptionText('summaryWeather') && selectedOptionText('summaryTime')),
+        transition: Boolean((nc || transitionSelected) && trText),
+      };
+
+      setCardMissing('card-env-coarse', !(status.env && status.coarse));
+      setCardMissing('card-dog', !status.dog);
+      setCardMissing('card-nav', !status.nav);
+      setCardMissing('card-objects', !status.objects);
+      setCardMissing('card-summary', !status.summary);
+      setCardMissing('card-transition', !status.transition);
+
+      const firstMissing = document.querySelector('.card.missing');
+      if (firstMissing) {
+        firstMissing.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return false;
+      }
+      return true;
     }
 
     /* ─────────────────────────────────────
@@ -2234,6 +2317,7 @@
       }
 
       if (progTxt !== '7 / 7') {
+        validateForDownload();
         toast('All 7 fields must be completed (7/7)');
         return;
       }
