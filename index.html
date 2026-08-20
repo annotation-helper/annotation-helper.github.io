@@ -1314,7 +1314,7 @@
       'Vehicle',
       'Bicycle',
       'Scooter',
-      'Dog',
+      'Dog (not camera dog)',
       'Crosswalk',
       'Curb',
       'Traffic Signal',
@@ -2025,7 +2025,10 @@
 
     function normalizeObjectContextLabel(value) {
       if (!value) return '';
-      return String(value).replace(/^Object:\s*/i, '').trim();
+      return String(value)
+        .replace(/^Object:\s*/i, '')
+        .replace(/^Dog At /, 'Dog (not camera dog) At ')
+        .trim();
     }
 
     function stripSummaryPrefix(value, prefix) {
